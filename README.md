@@ -13,30 +13,34 @@ Goals
   * Advisers create an account and register online
   * Advisers can edit their preferences online after registration 
   * School/adviser data preserved year-to-year 
-2. Generate online invoices
-  * And updated account balance
-  * No online bill payment
-  * Clean interface for USG Finance
-3. Organize Staff Information
+2. Collect New Staff information
+3. Member/Staff Information
+  * Central location for all documents and resources concerning conference preparation
   * Track meeting attendance
   * Record delegate attendance during conference
 
+4. Generate online invoices
+  * And updated account balance
+  * No online bill payment
+  * Clean interface for USG Finance
+
+
 Decisions
 -----------
-- Framework or CMS
+- All decisions have been resolved. See below.
 
 ### Resolved Decisions
-- Languages: PHP, jQuery, Less
+- Framework: CodeIgniter with [Ion Auth](https://github.com/benedmunds/CodeIgniter-Ion-Auth)
+- Languages: PHP, jQuery/JavaScript, Less
 - Database: MySQL
-- Design: Based mostly on [Twitter Bootstrap](github.com/twbs/bootstrap)
-- Main Website: WordPress
- * Some integration would be nice
-- Host: Cheap/Shared Hosting
+- Design: Based mostly on [Twitter Bootstrap](github.com/twbs/bootstrap) with influences from [Bootswatch Flatly](http://bootswatch.com/flatly/)
+- Environment: Shared Hosting (Linux/MySQL/PHP)
 
 Alternatives
 --------------
 Other student developers have no doubt tried tackling some of these problems.
-- [Huxley](github.com/bmun/huxley) by Berkeley Model United Nations
+- [Huxley](github.com/bmun/huxley) by Berkeley Model United Nations, using Django and Facebook's React
+  * We decided against using and expanding Huxley because of the constraints of our web host.
 
 About NUMUN
 -------------
