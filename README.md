@@ -1,7 +1,7 @@
 DAIS
 ====
 
-Delegate and Adviser Information System (Internal Name: DAIS) by [Northwestern University Model United Nations](numun.org)
+Delegate and Adviser Information System (Internal Name: DAIS) by [Northwestern University Model United Nations](http://numun.org)
 
 Objective
 ----------
@@ -33,13 +33,13 @@ Decisions
 - Framework: CodeIgniter with [Ion Auth](https://github.com/benedmunds/CodeIgniter-Ion-Auth)
 - Languages: PHP, jQuery/JavaScript, Less
 - Database: MySQL
-- Design: Based mostly on [Twitter Bootstrap](github.com/twbs/bootstrap) with influences from [Bootswatch Flatly](http://bootswatch.com/flatly/)
+- Design: Based mostly on [Twitter Bootstrap](https://github.com/twbs/bootstrap) with influences from [Bootswatch Flatly](http://bootswatch.com/flatly/)
 - Environment: Shared Hosting (Linux/MySQL/PHP)
 
 Alternatives
 --------------
 Other student developers have no doubt tried tackling some of these problems.
-- [Huxley](github.com/bmun/huxley) by Berkeley Model United Nations, using Django and Facebook's React
+- [Huxley](https://github.com/bmun/huxley) by Berkeley Model United Nations, using Django and Facebook's React
   * We decided against using and expanding Huxley because of the constraints of our web host.
 
 About NUMUN
