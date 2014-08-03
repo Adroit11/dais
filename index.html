@@ -1,39 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <title>DAIS by NUMUN</title>
 
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <title>DAIS by NUMUN</title>
   </head>
-
   <body>
-    <header>
-      <div class="inner">
+    <div class="wrapper">
+      <header>
         <h1>DAIS</h1>
-        <h2>Delegate and Adviser Information System by Northwestern University Model United Nations</h2>
-        <a href="https://github.com/NUMUN/dais" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
+        <p>Delegate and Adviser Information System by Northwestern University Model United Nations</p>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
-<a name="dais" class="anchor" href="#dais"><span class="octicon octicon-link"></span></a>DAIS</h1>
+        <p class="view"><a href="https://github.com/NUMUN/dais">View the Project on GitHub <small>NUMUN/dais</small></a></p>
 
-<p>Delegate and Adviser Information System (Internal Name: DAIS) by <a href="numun.org">Northwestern University Model United Nations</a></p>
 
-<h2>
+        <ul>
+          <li><a href="https://github.com/NUMUN/dais/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/NUMUN/dais/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/NUMUN/dais">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>
 <a name="goals" class="anchor" href="#goals"><span class="octicon octicon-link"></span></a>Goals</h2>
 
 <ol>
@@ -45,7 +40,18 @@
 <li>School/adviser data preserved year-to-year </li>
 </ul>
 </li>
-<li>Generate online invoices
+<li>Collect New Staff information</li>
+<li>
+<p>Member/Staff Information</p>
+
+<ul>
+<li>Central location for all documents and resources concerning conference preparation</li>
+<li>Track meeting attendance</li>
+<li>Record delegate attendance during conference</li>
+</ul>
+</li>
+<li>
+<p>Generate online invoices</p>
 
 <ul>
 <li>And updated account balance</li>
@@ -53,33 +59,17 @@
 <li>Clean interface for USG Finance</li>
 </ul>
 </li>
-<li>Organize Staff Information
-
-<ul>
-<li>Track meeting attendance</li>
-<li>Record delegate attendance during conference</li>
-</ul>
-</li>
 </ol><h2>
-<a name="decisions" class="anchor" href="#decisions"><span class="octicon octicon-link"></span></a>Decisions</h2>
+<a name="software" class="anchor" href="#software"><span class="octicon octicon-link"></span></a>Software</h2>
 
 <ul>
-<li>Framework or CMS</li>
-</ul><h3>
-<a name="resolved-decisions" class="anchor" href="#resolved-decisions"><span class="octicon octicon-link"></span></a>Resolved Decisions</h3>
-
-<ul>
-<li>Languages: PHP, jQuery, Less</li>
+<li>Framework: CodeIgniter with <a href="https://github.com/benedmunds/CodeIgniter-Ion-Auth">Ion Auth</a>
+</li>
+<li>Languages: PHP, jQuery/JavaScript, Less</li>
 <li>Database: MySQL</li>
-<li>Design: Based mostly on <a href="github.com/twbs/bootstrap">Twitter Bootstrap</a>
+<li>Design: Based mostly on <a href="https://github.com/twbs/bootstrap">Twitter Bootstrap</a> with influences from <a href="http://bootswatch.com/flatly/">Bootswatch Flatly</a>
 </li>
-<li>Main Website: WordPress
-
-<ul>
-<li>Some integration would be nice</li>
-</ul>
-</li>
-<li>Host: Cheap/Shared Hosting</li>
+<li>Environment: Shared Hosting (Linux/MySQL/PHP)</li>
 </ul><h2>
 <a name="alternatives" class="anchor" href="#alternatives"><span class="octicon octicon-link"></span></a>Alternatives</h2>
 
@@ -87,32 +77,25 @@
 
 <ul>
 <li>
-<a href="github.com/bmun/huxley">Huxley</a> by Berkeley Model United Nations</li>
+<a href="https://github.com/bmun/huxley">Huxley</a> by Berkeley Model United Nations, using Django and Facebook's React
+
+<ul>
+<li>We decided against using and expanding Huxley because of the constraints of our web host.</li>
+</ul>
+</li>
 </ul><h2>
 <a name="about-numun" class="anchor" href="#about-numun"><span class="octicon octicon-link"></span></a>About NUMUN</h2>
 
 <p>NUMUN is Northwestern University's Model United Nations club and an annual conference in Evanston, IL for delegates at the high school level. We are Northwestern University students dedicated to crafting the best Model UN conference in the Midwest. This will be our 12th year, but we are still focused on a personal and meaningful experience for all delegates.</p>
 
 <p>The Northwestern University Model United Nations conference originated in 2004 when a group of dedicated Northwestern undergrads sought to fill a void in the community’s extracurriculars. In the years since, the conference has almost doubled in size, but its dedication to delegate experience has never changed. NUMUN is typically hosted every year at the Norris University Center on campus, directly adjacent to Lake Michigan.</p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/NUMUN/dais/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/NUMUN/dais/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/NUMUN/dais"></a> is maintained by <a href="https://github.com/NUMUN">NUMUN</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/NUMUN">NUMUN</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-
-  
+    <script src="javascripts/scale.fix.js"></script>
+    
   </body>
 </html>
