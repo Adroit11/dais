@@ -1,7 +1,4 @@
-DAIS
-====
-
-Delegate and Adviser Information System (Internal Name: DAIS) by [Northwestern University Model United Nations](http://numun.org)
+School registration portal by [Northwestern University Model United Nations](http://numun.org)
 
 Objective
 ----------
