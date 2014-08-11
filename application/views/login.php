@@ -158,10 +158,6 @@ border: 0px solid transparent;
 	i#emergency-link-icon{
 		color: #e21a1a;
 	}
-	#emergency-icon{
-		color: #e21a1a;
-		padding: 0.5em;
-	}
 	.reg-container.form-control{
 		width: 60% !important;
 	}
@@ -182,30 +178,35 @@ border: 0px solid transparent;
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
+    	checkAlerts();
+    	alertInterval = setInterval(checkAlerts, 1000 * 60 * 2);
     		$(window).on("ready scroll resize", function () {
 				handleScroll()
 			});
-	setInterval(checkAlerts(), 1000 * 60 * 2);
 	});
 	function checkAlerts(){
-		$.getJSON('/alerts', function(alert){
-			if (alert == "ok")
+		$.ajax({
+		type: "GET",
+		url: '/alerts',
+		async: 'false',
+		success: function(response){
+			if(response == "ok")
 			{
-				//do nothing
-				console.log("doing nothing");
+				//There are no active alerts. Do nothing,
 			}
 			else
 			{
-			console.log("doing something");
-			var title = alert[0].title;
-			var desc = alert[0].description;
-			$(".emergency-message").html('<i class="fa fa-exclamation-triangle" id="emergency-icon"></i>' + title);
-			$(".emergency-message").after('<p class="lead">' + desc + '</p>');
+			//active alert
+			var response = $.parseJSON(response);
+			var title = response.title;
+			var desc = response.description;
+			$("#emergency-title").text(title);
+			$("#emergency-message").text(desc);
 			$("#emergency").slideDown();
 			//stop the timer, since we have an alert already
-			clearInterval(this);
+			clearInterval(alertInterval);
 			}
-		});
+		}});
 	}
 	
 	function handleScroll(){
@@ -269,7 +270,8 @@ border: 0px solid transparent;
 		<div class="container main-container">
 		<div class="row" id="emergency">
 			<h1 class="emergency-head">EMERGENCY</h1>
-			<h2 class="emergency-message"></h2>
+			<h2 id="emergency-title"></h2>
+			<p class="lead" id="emergency-message"></p>
 		</div><!-- /#emergency -->
 		<div class="row">
 			<div id="reg-title-0" class="text-center">
