@@ -7,11 +7,8 @@ class Alerts extends CI_Controller {
 		$row = $alerts->row();
 		
 		if (!empty($row)){
-				$alerts_result = '[{';
-				$alerts_result .= '"title":"' . $row->title . '"';
-				$alerts_result .= ',';
-				$alerts_result .= '"description":"' . $row->desc . '"';
-				$alerts_result .= '}]';
+				$array = array('title' => $row->title, 'description' => $row->desc);
+				$alerts_result = json_encode($array);
 				echo $alerts_result;
 			}else{
 			echo "ok";

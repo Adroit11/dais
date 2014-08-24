@@ -66,7 +66,7 @@ class Nu_schools extends CI_Model
 		      $committeeid = $row->committeeid;
 		      $committee_name = $this->get_committee($committeeid);
 		      $committee_desc = $this->get_committee_desc($committeeid);
-			  $delegate_slots_result .= '<td><a href="#" class="btn btn-xs btn-info pop" data-toggle="popover" title="'.$committee_name.'" data-content="'.$committee_desc.'"><i class="fa fa-info"></i></a>&nbsp; '.$committee_name.'</td>';
+			  $delegate_slots_result .= '<td><button class="btn btn-xs btn-info pop" data-toggle="popover" title="'.$committee_name.'" data-content="'.$committee_desc.'"><i class="fa fa-info"></i></button>&nbsp; '.$committee_name.'</td>';
 		      }else{
 			  $delegate_slots_result .= "<td>N/A</td>";
 		      }
@@ -74,8 +74,188 @@ class Nu_schools extends CI_Model
 		      }
 		return $delegate_slots_result;
 		}else{
-			return 'No delegate slots have been assigned to your school.';
+			return '<tr><td>No delegate slots have been assigned to your school.</tr>';
 		}	
+	}
+	public function get_committees_list(){
+		$committees = $this->db->query('SELECT * FROM committees');
+		
+		if ($committees->num_rows() > 0)
+		{
+			$all_committees = '<ul class="committee-list">';
+			foreach ($committees->result() as $row){
+				$all_committees .= '<li>';
+				$all_committees .= '<a href="javascript:void(0);" data-id="#committee-id-' . $row->id . '" class="committee-link">' . $row->name . '</a>';
+				$all_committees .= '</li>';
+			}		
+				$all_committees .= '</ul>';
+			return $all_committees;
+		}else{
+			$empty_response .= '<div class="spacious col-sm-12">';
+			$empty_response .= '<div class="col-sm-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>Sorry, committee information isn&#8217;t available yet.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;
+		}
+	}
+	public function get_committee_divs(){
+		$committees = $this->db->query('SELECT * FROM committees');
+		
+		if ($committees->num_rows() > 0)
+		{
+			$committee_divs = '';
+			foreach ($committees->result() as $row){
+				$committee_divs .= '<div id="committee-id-' . $row->id . '" class="committee-desc-container hidden">';
+				$committee_divs .= '<h1 class="committee-title">' . $row->name . '</h1>';
+				$committee_divs .= '<div class="committee-labels">';
+				$committee_divs .= '<p class="lead">';
+			
+				if (!empty($row->full_name)){
+				$committee_divs .= '' . $row->full_name . '<br/>';
+				}
+				if ($row->type == 'crisis'){
+				$committee_divs .= '<a href="#crisis-exp"><span class="label label-warning" style="text-transform: capitalize;">' . $row->type . '</span></a>';
+				}else{
+				$committee_divs .= '<span class="label label-primary" style="text-transform: capitalize;">' .  $row->type . '</span>';
+				}
+				$committee_divs .= '&nbsp;&nbsp;<span class="label label-primary" style="text-transform: capitalize;">' .  $row->size . '</span>';
+				$committee_divs .= '</p>';
+				$committee_divs .= '</div>';
+				$committee_divs .= '<p class="lead">Description</p>';
+				$committee_divs .= '<p class="committee-desc">' . $this->get_committee_desc($row->id) . '</p>';
+				if ($row->type != 'crisis' && $row->type != 'non-crisis'){
+					//No Topics
+				}else{
+				$committee_divs .= '<p class="lead">Topics</p>';
+				$committee_divs .= '<p class="committee-desc">' . $this->get_committee_topics($row->id) . '</p>';
+				}
+				$committee_divs .= '</div>';
+			}	
+			return $committee_divs;
+		}else{
+			$empty_response = '<div class="spacious col-sm-12">';
+			$empty_response .= '<div class="col-sm-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>Sorry, committee information isn&#8217;t available yet.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;
+		}
+	}
+	public function get_committee_topics($committeeid){
+		$topics = $this->db->query('SELECT * FROM committee_topics WHERE committeeid = ' . $committeeid);
+		
+		if ($topics->num_rows() > 0)
+		{
+			$committee_topics = '';
+			foreach ($topics->result() as $row){
+			}
+			
+		}else{
+			$empty_response = '<div class="spacious col-sm-12">';
+			$empty_response .= '<div class="col-sm-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead">Sorry, this committee&#8217;s topics are not yet available.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;
+		}
+	}
+	public function get_all_committees(){
+		$committees = $this->db->query('SELECT * FROM committees');
+		
+		if ($committees->num_rows() > 0)
+		{
+			$all_committees = '';
+			foreach ($committees->result() as $row){
+				$all_committees .= '<tr>';
+				$all_committees .= '<td>' . $row->id . '</td>';
+				$all_committees .= '<td><strong>' . $row->name . '</strong></td>';
+				if(!empty($row->location)){
+				$all_committees .= '<td>' . $row->location . '</td>';
+				}else{
+				$all_committees .= '<td>TBD</td>';
+				}
+				$all_committees .= '<td style="text-transform:capitalize">' . $row->size . '</td>';
+				$all_committees .= '<td style="text-transform:capitalize">' . $row->type . '</td>';
+				$all_committees .= '</tr>';
+			}		
+				$all_committees .= '</tbody></table>';
+			return $all_committees;
+		}else{
+			$empty_response = '</tbody></table>';
+			$empty_response .= '<div class="spacious col-md-12">';
+			$empty_response .= '<div class="col-md-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>There aren&#8217;t any committees.</strong></p><p>You can <a href="#">add committees</a> once they are available.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;
+		}
+	}
+	public function get_crisis_committees(){
+		$committees = $this->db->query('SELECT * FROM committees WHERE type=\'crisis\'');
+		
+		if ($committees->num_rows() > 0)
+		{
+			$all_committees = '';
+			foreach ($committees->result() as $row){
+				$all_committees .= '<tr>';
+				$all_committees .= '<td class="col-md-1">' . $row->id . '</td>';
+				$all_committees .= '<td class="col-md-3"><strong>' . $row->name . '</strong></td>';
+				if(!empty($row->location)){
+				$all_committees .= '<td>' . $row->location . '</td>';
+				}else{
+				$all_committees .= '<td>TBD</td>';
+				}
+				$all_committees .= '<td style="text-transform:capitalize">' . $row->size . '</td>';
+				$all_committees .= '</tr>';
+			}		
+				$all_committees .= '</tbody></table>';
+			return $all_committees;
+		}else{
+			$empty_response = '</tbody></table>';
+			$empty_response .= '<div class="spacious col-md-12">';
+			$empty_response .= '<div class="col-md-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>There aren&#8217;t any crisis committees.</strong></p><p>You can <a href="#">add committees</a> once they are available.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;
+		}
+	}
+	public function get_non_crisis_committees(){
+		$committees = $this->db->query('SELECT * FROM committees WHERE type=\'non-crisis\'');
+		
+		if ($committees->num_rows() > 0)
+		{
+			$all_committees = '';
+			foreach ($committees->result() as $row){
+				$all_committees .= '<tr>';
+				$all_committees .= '<td class="col-md-1">' . $row->id . '</td>';
+				$all_committees .= '<td class="col-md-3"><strong>' . $row->name . '</strong></td>';
+				if(!empty($row->location)){
+				$all_committees .= '<td>' . $row->location . '</td>';
+				}else{
+				$all_committees .= '<td>TBD</td>';
+				}
+				$all_committees .= '<td style="text-transform:capitalize">' . $row->size . '</td>';
+				$all_committees .= '</tr>';
+			}		
+				$all_committees .= '</tbody></table>';
+			return $all_committees;
+		}else{
+			$empty_response = '</tbody></table>';
+			$empty_response .= '<div class="spacious col-md-12">';
+			$empty_response .= '<div class="col-md-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>There aren&#8217;t any non-crisis committees.</strong></p><p>You can <a href="#">add committees</a> once they are available.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;
+		}
 	}
 	public function get_committee($committee_id){
 		if (!empty($committee_id)){

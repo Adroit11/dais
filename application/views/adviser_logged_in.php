@@ -4,16 +4,21 @@
 	$school = $this->nu_schools->get_school($userid);
 	$school_address = $this->nu_schools->get_school_address($userid);
 	$school_id = $this->nu_schools->get_school_id($userid);
+	$school_del_reg = $this->reg_preferences->schoolDelegateCount($school_id);
 	$delegate_slots = $this->nu_schools->get_delegate_slots($school_id);
 	$last2 = substr($school_address, -2);
-	$customer_number = '0'.$school_id.$last2;
+	if (strlen($school_id) < 2){
+		$customer_number = '0'.$school_id.$last2;
+	}else{
+		$customer_number = $school_id.$last2;
+	}
 ?>
 <!doctype html>
 <html>
 	<head>
 	<title>Advisers - NUMUN</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!--<link href='//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic|Raleway:400,700,300' rel='stylesheet' type='text/css'>-->
+	<link href='//fonts.googleapis.com/css?family=Raleway:400,700,300' rel='stylesheet' type='text/css'>
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link href="https://dl.dropboxusercontent.com/s/kuf4za5pbv9kbbx/style.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/css/bootstrapValidator.min.css"/>
@@ -198,7 +203,11 @@ border: 0px solid transparent;
 	.footer{
 		display: none;
 	}
-	}
+  [class*="col-sm-"] {
+    float: left;
+  }
+
+}
 	</style>
 	<script src="https://dl.dropboxusercontent.com/s/6tls9z1rsoh4yc2/jquery.min.js"></script>
 	<script type="text/javascript">
@@ -230,6 +239,9 @@ border: 0px solid transparent;
 			return false;
 		});
 		$('.pop').popover({placement: 'right', trigger: 'hover'});
+		$('.pop').click(function(e){
+		e.preventDefault();
+		});
 		$("#del-assignments-submit").click(function(event){
 			event.preventDefault();
 			var del_formdata = $(".delegate-assign:input").serialize();
@@ -256,17 +268,23 @@ border: 0px solid transparent;
 			var slot_exists = $(this).attr('id');
 			var slot = slot_exists.substring(0, slot_exists.length - 7);
 			console.log(slot);
-			$(this).after('<div class="form-group col-sm-8"><input type="text" class="form-control delegate-assign" name="' + slot + '" id="' + slot + '" placeholder="New Delegate"></div>');
+			$(this).after('<br /><div class="form-group col-sm-8"><input type="text" class="form-control delegate-assign" name="' + slot + '" id="' + slot + '" placeholder="New Delegate"></div>');
 		});
 		$(document).on("click", ".undo-edit", function(e){
 			console.log('fired');
 			e.preventDefault();
 			console.log('fired');
 			$(this).parent().find(".currently").detach();
-			console.log('currently');
 			$(this).parent().find(".form-group").detach();
-			$(".edit-slot:hidden").show();
+			$(this).parent().find(".edit-slot:hidden").show();
 			$(this).detach();
+		});
+		$("#edit-delegate-numbers").click(function(e){
+			e.preventDefault();
+			$(this).after('<a href="#" class="btn btn-danger btn-sm pull-right undo-edit"><i class="fa fa-times fa-inverse"></i></a>');
+			$(this).hide();
+			
+			
 		});
 
 	});
@@ -311,10 +329,10 @@ border: 0px solid transparent;
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
           	<li class="lead"><a href="#welcome" class="welcome-page">ACCESS</a></li>
-			<li> <a href="#register" class="app-page">Registration</a></li>
+			<li> <a href="#register" class="app-page">Preferences</a></li>
 			<li> <a href="#invoice" class="app-page">Invoice</a></li>
-			<li> <a href="#forms" class="app-page">Forms & Downloads</a></li>
 			<li> <a href="#delegates" class="app-page">Delegates</a></li>
+			<li> <a href="#forms" class="app-page">Forms</a></li>
 			<li id="emergency-link"> <a href="#emergency" class="smoothScroll"><i class="fa fa-exclamation-triangle fa-inverse" id="emergency-link-icon"></i>&nbsp;&nbsp; Alert</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -356,16 +374,61 @@ border: 0px solid transparent;
 			</div>
 		</div>
 		</div>
+		<div class="row hidden-welcome" id="register">
+		<div class="col-md-12">
+		<div class="row">
+			<h1 class="default-head">Edit Preferences</h1>
+			<div class="col-sm-6">
+			<p class="lead">Update your delegate count and country preferences or add additional advisers below.</p>
+			</div>
+			<div class="col-sm-4">
+			<h5><strong><?php echo $school; ?></strong></h5>
+			<p>School ID: <?php echo $customer_number; ?></p>
+			</div>
+		</div>
+		<form role="form" class="reg-preferences">
+		<div class="row">
+			<h3>Delegates</h3>
+			<?php echo $school_del_reg; ?>
+			<div class="col-sm-4">
+				<button class="btn btn-warning" id="edit-delegate-numbers">Edit</button>
+			</div>
+		</div>
+		<div class="row">
+		<h3>Country Preferences</h3>
+		<div class="col-sm-6">
+		<ol>
+			<li>Russia</li>
+			<li>United States</li>
+			<li>Iran, Islamic Republic of</li>
+		</ol>
+		</div>
+		<div class="col-sm-4">
+			<button class="btn btn-warning" id="edit-countries">Edit</button>
+		</div>
+		</div>
+		<div class="row">
+		<h3>Additional Advisers</h3> 
+		</div>
+		</form>
+		</div>
+  		<div class="col-sm-6">
+  			<button class="btn btn-success" id="del-assignments-submit" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
+  			</div>
+
+		</div><!-- /#register -->
 		<div class="row hidden-welcome" id="invoice">
 			<h1 class="default-head">Invoice</h1>
-			<div class="invoice-container">
-			<div class="col-sm-5">
-			<h4><small>Invoice for:</small></h4>
+			<div class="col-sm-2">
+			<h5>Bill to:</h5>
+			</div>
+			<div class="col-sm-8">
 			<strong><?php echo $school; ?></strong>
 			<p><?php echo $school_address; ?></p>
 			</div>
-			<div class="col-sm-4 pull-right">
-			<h4>Customer #<small><?php echo $customer_number; ?></small></h4>
+			<div class="col-sm-2 pull-right">
+			<h4>&#8470; &nbsp;<?php echo $customer_number; ?></h4>
+			<h5>8/1/2014</h5>
 			</div>
 			<table class="table table-hover">
 				<tr>
@@ -409,7 +472,6 @@ border: 0px solid transparent;
 			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#paymentInfo">How to Pay</button>
 			</div>
 			<p>&nbsp;</p>
-			</div>
 		</div><!-- /#invoice -->
 		<div class="row hidden-welcome" id="forms">
 			<h1 class="default-head">Forms & Downloads</h1>
@@ -434,11 +496,15 @@ border: 0px solid transparent;
 			<p>Your assignments can be changed at any time before <strong>February 28, 2015</strong> at <strong>11:59 pm</strong> CST.</p>
 			<form role="form" class="del-assignments">
 			<table class="table table-hover">
+			<thead>
 				<tr><th>Delegate Name</th><th>Position</th><th>Committee</th></tr>
+			</thead>
+			<tbody>
 				<?php echo $delegate_slots; ?>
+			</tbody>
   			</table>
   			<div class="col-sm-2">
-  			<button class="btn btn-success" id="del-assignments-submit" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
+  			<button class="btn btn-success" id="del-assignments-submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
   			</div>
   			<div class="col-sm-2">
   			<button class="btn btn-primary" id="del-assignments-print"><i class="fa fa-print fa-inverse"></i>&nbsp;&nbsp; Print</button>

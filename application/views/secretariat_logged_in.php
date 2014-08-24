@@ -1,14 +1,19 @@
 <?php
 	$user = $this->ion_auth->user()->row();
+	$alerts = $this->alerts_model->get_all_alerts();
+	$committees_all = $this->nu_schools->get_all_committees();
+	$committees_crisis = $this->nu_schools->get_crisis_committees();
+	$committees_non_crisis = $this->nu_schools->get_non_crisis_committees();
+	$all_staff = $this->secretariat_func->get_all_staff();
 ?>
 <!doctype html>
 <html>
 	<head>
-	<title>Staff - NUMUN</title>
+	<title>Secretariat - NUMUN</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!--<link href='//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic|Raleway:400,700,300' rel='stylesheet' type='text/css'>-->
+	<link href='//fonts.googleapis.com/css?family=Raleway:400,700,300' rel='stylesheet' type='text/css'>
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-	<link href="https://dl.dropboxusercontent.com/s/kuf4za5pbv9kbbx/style.min.css" rel="stylesheet">
+	<link href="https://dl.dropboxusercontent.com/s/8dd9oigm2ycxkeb/sect-style.min.css" rel="stylesheet">
 	<style type="text/css">
 	/* Sticky footer styles
 -------------------------------------------------- */
@@ -55,6 +60,15 @@ a.light-footer:active{
 }
 .container .text-muted {
   margin: 20px 0;
+}
+.huge{
+	font-size: 3em;
+}
+.spacious{
+	background-color: #f0f0f0;
+	padding: 30px 0px;
+	margin-top:-21px;
+	margin-bottom: 40px;
 }
 */
 /* Navbar
@@ -301,7 +315,42 @@ border: 0px solid transparent;
 		$(".voting-results-table").append("<tr><td>" + currVoter + "</td><td>No</td></tr>");
 		nextVoter();
 		});
-
+		$(".school-table").click(function(){
+		var schooltbl = $(this).attr("id");
+		schoolID = schooltbl.substr(schooltbl.length - 3);
+		if($('#school' + schoolID).hasClass("out")) {
+        $('#school' + schoolID).addClass("in");
+        $('#school' + schoolID).removeClass("out");
+        $('#row' + schoolID).hide();
+	    } else {
+	    $('#school' + schoolID).addClass("out");
+	    $('#school' + schoolID).removeClass("in");
+	    $('#row' + schoolID).show();
+	    }
+		});
+		/*https://www.dropbox.com/s/wg6giibj8ay7h2l/schools1.json*/
+		$("#adviser-checkin").keyup(function(){
+			var searchAdviser = $(this).val();
+			if ( searchAdviser ){
+			$("#checkin-search-results").html('<p class="lead">Adviser not found</p>');
+			}
+			else{
+			// No search entered. Clear results.
+			$("#checkin-search-results").html("");
+			}
+		});
+		
+		$("#school-checkin").keyup(function(){
+			var searchSchoolID = $(this).val();
+			if ( searchSchoolID ){
+			$("#checkin-search-results2").html('<p class="lead">School not found</p>');
+			}
+			else
+			{
+			// No search entered. Clear results.
+			$("#checkin-search-results2").html("");
+			}
+		});
 	});
 		function nextVoter(){
 		var nextToVote = $(".voter-list li:first-child");
@@ -366,33 +415,61 @@ function results(){
         </div>
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
-          	<li class="lead"><a href="#welcome" class="welcome-page">StaffAccess</a></li>
-			<li> <a href="#meetings" class="app-page">Staff Meetings</a></li>
-			<li class="dropdown">
-	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">DISEC <span class="caret"></span></a>
+          	<li class="lead"><a href="#welcome" class="welcome-page">SECRETARIAT</a></li>
+          	<li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Conference <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
-	            <li><a href="#myCommittee" class="app-page">Committee Details</a></li>
+	            <li><a href="#sec-conf-settings" class="app-page">Conference Setup</a></li>
+	            <li><a href="#sec-alerts" class="app-page">Issue Alert</a></li>
+	          </ul>
+	        </li>
+          	<li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools <span class="caret"></span></a>
+	          <ul class="dropdown-menu" role="menu">
+	            <li><a href="#sec-reg-schools" class="app-page">Registered Schools</a></li>
+	            <li><a href="#sec-invoices" class="app-page">Invoices</a></li>
+	            <li><a href="#sec-assignments" class="app-page">Assignments</a></li>
+	            <li><a href="#sec-checkin" class="app-page">Check-In</a></li> 
+	            <li class="divider"></li>
+	            <li><a href="#sec-adviser-lookup" class="app-page">Find Advisers</a></li>
+	            <li><a href="#sec-school-forms" class="app-page">School Forms</a></li>
+	          </ul>
+	        </li>
+	        <li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Committees <span class="caret"></span></a>
+	          <ul class="dropdown-menu" role="menu">
+	          	<li class="dropdown">
+	            <li><a href="#sec-committees" class="app-page">All Committees</a></li>
+			    <li><a href="#sec-committees-non-crisis" class="app-page"><i class="fa fa-caret-right"></i>&nbsp;&nbsp;Non-Crisis</a></li>
+			    <li><a href="#sec-committees-crisis" class="app-page"><i class="fa fa-caret-right"></i>&nbsp;&nbsp;Crisis</a></li>
+	            <li class="divider"></li>
+	            <li><a href="#sec-webpages" class="app-page">Approve Committee Web Pages</a></li>
+	            <li><a href="#sec-awards" class="app-page">Awards</a></li>
+	          </ul>
+	        </li>
+	        <li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Staff <span class="caret"></span></a>
+	          <ul class="dropdown-menu" role="menu">
+	            <li><a href="#sec-all-staff" class="app-page">All Staff</a></li>
 	            <li><a href="#myCommitteePage" class="app-page">Public Web Page</a></li>
 	            <li><a href="#attendance" class="app-page">Roster</a></li>
 	            <li class="divider"></li>
-	            <li><a href="#tools" class="app-page">Tools</a></li>
-	            <li><a href="#staff-forms" class="app-page">Forms & Downloads</a></li>
+	            <li><a href="#tools" class="app-page">New Staff</a></li>
 	          </ul>
 	        </li>
-			<li> <a href="#staff-feedback" class="app-page">Feedback</a></li>
 			<li id="emergency-link"> <a href="#emergency" class="app-page"><i class="fa fa-exclamation-triangle fa-inverse" id="emergency-link-icon"></i>&nbsp;&nbsp; Alert</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
           <li class="dropdown">
-	          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->first_name . ' ' . $user->last_name;?>&nbsp;<span class="caret"></span></a>
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->first_name . ' ' . $user->last_name; ?> <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
 	            <li><a href="#user" class="app-page">Profile</a></li>
 	            <li class="divider"></li>
-	            <li><a href="/logout">Log Out</a></li>
+	            <li><a href="#logout">Log Out</a></li>
 	          </ul>
 	        </li>
           <form class="navbar-form navbar-right">
-          <a class="btn btn-danger" id="help-popover" data-toggle="popover" title="Help" data-placement="bottom" data-html="true">I need Help</a>
+          <a class="btn btn-danger" id="help-popover" data-toggle="popover" title="Help" data-placement="bottom" data-html="true">Help</a>
           </form>
           </ul>
         </div><!--/.nav-collapse data-toggle="modal" data-target="#needsHelpModal"-->
@@ -409,12 +486,12 @@ function results(){
 		</div><!-- /#emergency -->
 		<div class="row" id="welcome">
 		<div class="col-md-7">
-			<h1>Welcome,&nbsp;<?php echo $user->first_name;?></h1>
-			<p class="lead">Thank you for being a part of the NUMUN XII team.</p>
+			<h1>Welcome, Michael</h1>
+			<p class="lead">SECRETARIAT ACCESS</p>
 			<p>We're glad to have you!</p>
-			<p>This year, we're using one online system to handle all of our school registration and delegate data in one place. We're also using it to track staff attendance at meetings. And it's really cool.</p>
-			<p>Hopefully, this system will make your life easier, not more complicated. However, we are open to your suggestions and we want to hear about any issues you encounter with this new system. At this point, we're pretty sure we've avoided <em>Healthcare.gov</em>-level problems, but no one is perfect, including our Tech Director, Michael McCarthy. Huge shout out and many thanks to him for his hard work on this over the summer!</p>
-			<p>With love,</p>
+			<p>Attention users,<br />
+			This area of the web site may contain sensitive data. Therefore, please be cautious when accessing this site in front of delegates and advisers.</p>
+			<p>Thank you.</p>
 			<div class="col-md-3">
 			<img src="http://placehold.it/100x100" style="border-radius: 100px;"/>
 			</div>
@@ -443,17 +520,216 @@ function results(){
 			<h1 class="default-head">Profile</h1>
 			<ol class="breadcrumb">
 			  <li rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Staff</li>
-			  <li class="active"><? echo $user->first_name . ' ' . $user->last_name;?></li>
-			  <li class="pull-right bread-tags"><span class="label label-primary">3rd Year</span>
+			  <li class="active">Michael McCarthy</li>
+			  <li class="pull-right bread-tags"><span class="label label-success">Secretariat</span>
+			  <span class="label label-primary">3rd Year</span>
 			  <span class="label label-primary">DISEC</span>
 			  <span class="label label-primary">Chair</span></li>
 			</ol>
 		</div><!-- /#user -->
+		<div class="row hidden-welcome" id="sec-alerts">
+			<h1 class="default-head">Emergency Notification System</h1>
+			<h3>Current Alerts</h3>
+			<?php
+			if(isset($alerts)){
+			echo '<table class="table">';
+			echo '<thead><tr><th>#</th><th class="col-sm-3">Title</th><th>Message</th><th>Status</th></tr></thead>';
+			echo '<tbody>';
+			echo $alerts;
+			}
+			?>
+			<h3>New Alert</h3>
+			<p class="lead">Quickly post emergency information to conference websites</p>
+			<p>Your alert will immediately be posted to the main NUMUN website as well as all pages within the portal and the Press Corps website.</p>
+			<form role="form" class="form-horizontal">
+			<div class="form-group">
+					<label for="alert-title" class="col-md-2 control-label">Alert Title</label>
+					<div class="col-md-6">
+						<input type="text" class="form-control" id="alert-title" placeholder="e.g., Fire Alarm" />
+					</div>
+			</div>
+			<div class="form-group">
+					<label for="alert-title" class="col-md-2 control-label">Message</label>
+					<div class="col-md-6">
+						<textarea class="form-control" id="alert-message" placeholder="Type a concise, yet informative message."></textarea>
+					</div>
+			</div>
+			<div class="form-group">
+			<div class="col-sm-3 col-sm-offset-5">
+			<button class="btn btn-warning pull-right">Issue Alert</button>
+			</div>
+			</div>
+			</form>
+		</div><!-- /#sec-alerts -->
+		<div class="row hidden-welcome" id="sec-reg-schools">
+			<h1 class="default-head">Registered Schools</h1>
+			<div class="row">
+			              <div class="col-lg-4 col-md-6">
+			              	<div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-university fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">30</div>
+                                        <div>Schools</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+			              </div>
+			              <div class="col-lg-4 col-md-6">
+                          	<div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-group fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">699</div>
+                                        <div>Delegates</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+			              </div>
+			              <div class="col-lg-4 col-md-6">
+                          	<div class="panel panel-success">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-usd fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">57,105</div>
+                                        <div>Potential Revenue</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+			              </div>
+			</div>
+			<h3>All Schools</h3>
+			<table class="table table-hover table-bordered">
+				<tr><th class="col-md-4">School</th><th>Primary Adviser</th><th>Address</th><th># of Advisers</th><th>Delegates</th><th>Preferences</th></tr>
+<tr id="row001" class="collapse in"><td><div class="col-md-6"><strong>Seven Hills School</strong><br /> Cincinnati, OH</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show001">Show</button></div></td></tr>
+<tr id="school001" class="collapse out">
+	<td>Seven Hills School<br /><br /><button type="button" class="btn btn-primary school-table" id="hide001">Hide</button></td>
+    <td><strong>Brian Wabler</strong><br />brian.wabler@7hills.org<br />(513) 232-498</td>
+    <td>5400 Red Bank Rd<br />Cincinnati, OH 45227</td>
+    <td>2</td>
+    <td>12</td>
+    <td><ol><li>Nigeria</li> <li>Kuwait</li> <li>Italy</li></ol></td>
+</tr>
+<tr id="row002" class="collapse in"><td><div class="col-md-6"><strong>University School of Milwaukee</strong><br />Milwaukee, WI</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show002">Show</button></div></td></tr>
+<tr id="school002" class="collapse out">
+	<td>University School of Milwaukee<br /><br /><button type="button" class="btn btn-primary school-table" id="hide002">Hide</button></td>
+    <td><strong>Ben Zarwell</strong>
+    <br />bzarwell@usmk12.org<br />
+    (414) 540-3468</td>
+    <td>2100 W. Fairy Chasm Rd. <br />Milwaukee, WI 53217</td>
+    <td>2</td>
+    <td>12</td>
+    <td><ol><li>France</li>
+    <li>Denmark</li>
+    <li>Spain</li></ol></td>
+</tr>
+<tr id="row003" class="collapse in"><td><div class="col-md-6"><strong>Middleton High School</strong><br /> Middleton, WI</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show003">Show</button></div></td></tr>
+<tr id="school003" class="collapse out">
+	<td>Middleton High School<br /><br /><button type="button" class="btn btn-primary school-table" id="hide003">Hide</button></td>
+    <td><strong>David A Piovanetti</strong><br />
+    DPiovanetti@mcpasd.k12.wi.us<br />
+    (608) 213-7383</td>
+    <td>2100 Bristol St<br />
+    Middleton, WI 53562</td>
+    <td>2</td>
+    <td>20</td>
+    <td><ol><li>Pakistan</li><li>Korea, Republic of</li><li>Russian Federation</li></ol></td>
+</tr>
+<tr id="row004" class="collapse in"><td><div class="col-md-6"><strong>Walter Payton College Prep</strong><br />Chicago</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show004">Show</button></div></td></tr>
+<tr id="school004" class="collapse out">
+	<td>Walter Payton College Prep<br /><br /><button type="button" class="btn btn-primary school-table" id="hide004">Hide</button></td>
+    <td><strong>Aaron Weiss</strong><br /> amweiss@cps.edu<br />(773) 304-7791</td>
+    <td>1034 N. Wells St.<br />
+    Chicago, IL 60610</td>
+    <td>2</td>
+    <td>20</td>
+    <td><ol><li>India</li>
+    <li>Syrian Arab Republic</li>
+    <li>Republic of China</li></ol></td>
+</tr>
+<tr id="row005" class="collapse in"><td><div class="col-md-6"><strong>Niles Township High School</strong><br />Niles, IL</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show005">Show</button></div></td></tr>
+<tr id="school005" class="collapse out">
+	<td>Niles Township High School<br /><br /><button type="button" class="btn btn-primary school-table" id="hide005">Hide</button></td>
+    <td><strong>Matt Wiemer</strong><br />matwie@d219.org<br />(847) 626-2867</td>
+    <td>5701 Oakton<br /> Skokie, IL 60077</td>
+    <td>2</td>
+    <td>24</td>
+    <td><ol><li>Canada</li><li>PR China</li>
+    <li>India</li></ol></td>
+</tr>			
+  			</table>
+		</div>
+		<div class="row hidden-welcome" id="sec-adviser-lookup">
+			<h1 class="default-head">Adviser/School Lookup</h1>
+			<p class="lead">Delegate credentials contain School ID numbers rather than School names. Use this form to look up Schools and Advisers by ID number.</p>
+			<form class="horizontal" role="form">
+				<div class="form-group">
+					<label for="adviser-search" class="col-md-4 control-label">Locate Adviser(s) and Schools</label>
+					<div class="col-md-8">
+					<input type="text" class="form-control" id="adviser-search" placeholder="Type a Delegate ID, School ID, School name, or Adviser name" />
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="row hidden-welcome" id="sec-assignments">
+			<h1 class="default-head">School Assignments</h1>
+		</div>
+		<div class="row hidden-welcome" id="sec-school-forms">
+			<h1 class="default-head">School Forms</h1>
+		</div>
+		<div class="row hidden-welcome" id="sec-checkin">
+			<h1 class="default-head">NUMUN XII Check-In</h1>
+			<h4><span class="label label-danger">Secretariat-Only</span></h4>
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+					<label for="adviser-checkin" class="col-md-3 control-label">Adviser Name</label>
+					<div class="col-md-8">
+					<input type="text" class="form-control" id="adviser-checkin" placeholder="e.g., Morty Schapiro" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="school-checkin" class="col-md-3 control-label">School ID Number</label>
+					<div class="col-md-8">
+					<input type="text" class="form-control" id="school-checkin" placeholder="e.g., 1058" />
+					<p class="help-block">School ID is printed at the top of the confirmation page.</p>
+					</div>
+				</div>
+					<div class="col-md-8 col-md-offset-3">
+					 <div id="checkin-search-results"></div>
+					  <div id="checkin-search-results2"></div>
+					</div>
+
+			</form>
+		</div>
+		<div class="row hidden-welcome" id="sec-all-staff">
+			<h1 class="default-head">NUMUN XII Staff</h1>
+		<table class="table table-hover">
+				<thead>
+				<tr><th>Name</th><th>Committee</th><th>Role</th></tr>
+				</thead>
+				<tbody>
+				<?php
+				echo $all_staff;
+				?>
+		</div><!-- /#sec-all-staff -->
+		
 		<div class="row hidden-welcome" id="meetings">
 			<h1 class="default-head">Staff Meetings</h1>
 			<ol class="breadcrumb">
-			  <li rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Staff</li>
-			  <li><a href="#user" class="app-page"><? echo $user->first_name . ' ' . $user->last_name;?></a></li>
+			  <li title="You don't currently have access to conference-wide pages.">Staff</li>
+			  <li><a href="#user" class="app-page">Michael McCarthy</a></li>
 			  <li class="active">Meetings</li>
 			</ol>
 			<p class="lead">Answer the following questions to self-report your attendance. Otherwise, use a laptop at the front of the room to sign in.</p>
@@ -505,55 +781,50 @@ function results(){
 			  </div><!-- /.form-group -->
 			</form>
 		</div><!-- /#meetings -->
-		<div class="row hidden-welcome" id="myCommittee">
-			<h1 class="default-head">DISEC</h1>
+		<div class="row hidden-welcome" id="sec-committees">
+			<h1 class="default-head">All Committees</h1>
 			<ol class="breadcrumb">
-			  <li rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Committees</li>
-			  <li class="active">DISEC</li>
-			  <li class="pull-right bread-tags"><span class="label label-primary">McCormick Auditorium</span>
-			  <span class="label label-primary">Large</span>
-			  <span class="label label-default">Non-Crisis</span></li>
+			  <li><a href="#">Committees</a></li>
 			</ol>
-			<div class="col-md-6">
-			<p class="lead"><strong>Chair</strong><br/>Michael McCarthy</p>
-			<p class="lead"><strong>Moderator</strong><br />Anna Rennich</p>
-			</div>
-			<div class="col-md-4">
-			<p class="lead"><strong>Vice Chair</strong><br />Jacob Skaggs</p>
-			<p class="lead text-muted">
-				<strong>Crisis Staffer</strong>
-				<br />
-				<a class="btn btn-default gchatLink" href="gtalk:chat?jid=mmcc93@gmail.com"><i class="fa fa-comments"></i>&nbsp;&nbsp;Jake Hume</a>
-			</p>
-			<p><strong>Note:</strong> Your crisis staffer is assigned to other committees and may not be available.</p>
-			</div>
-		</div><!-- /#myCommittee -->
-		<div class="row hidden-welcome" id="myCommitteePage">
-			<h1 class="default-head">Web Page</h1>
+			<?php
+			if(isset($committees_all)){
+			echo '<table class="table">';
+			echo '<thead><tr><th class="col-sm-1">#</th><th class="col-sm-4">Committee</th><th>Location</th><th>Size</th><th>Type</th></tr></thead>';
+			echo '<tbody>';
+			echo $committees_all;
+			}
+			?>
+		</div><!-- /#sec-committees -->
+		<div class="row hidden-welcome" id="sec-committees-crisis">
+			<h1 class="default-head">Crisis Committees</h1>
 			<ol class="breadcrumb">
-			  <li rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Committees</li>
-			  <li><a href="#myCommittee" class="app-page">DISEC</a></li>
-			  <li class="active">Web Page</li>
+			  <li><a href="#sec-committees" class="app-page">Committees</a></li>
+			  <li>Crisis</li>
 			</ol>
-			<p class="lead">Edit your committee's public-facing web page on numun.org.</p>
-			<form class="form-horizontal" role="form">
-			<div class="form-group">
-			<label class="control-label col-sm-4" for="committeePageText">Page Content</label>
-			<div class="col-sm-6">
-			<textarea class="form-control" id="committeePageText" rows="6"></textarea>
-			</div>
-			</div>
-			<div class="form-group">
-			<div class="col-md-2 col-md-offset-7">
-			<button class="btn btn-default">Clear</button>
-			</div>
-			<div class="col-md-2">
-			<button class="btn btn-success">Save</button>
-			</div>
-			</div>
-			</form>
-			<p>Your message will be reviewed by Secretariat and posted online.</p>
-		</div><!-- /#myCommitteePage -->
+			<?php
+			if(isset($committees_crisis)){
+			echo '<table class="table">';
+			echo '<thead><tr><th class="col-sm-1">#</th><th class="col-sm-4">Committee</th><th>Location</th><th>Size</th></tr></thead>';
+			echo '<tbody>';
+			echo $committees_crisis;
+			}
+			?>
+		</div><!-- /#sec-committees-crisis -->
+		<div class="row hidden-welcome" id="sec-committees-non-crisis">
+			<h1 class="default-head">Non-Crisis Committees</h1>
+			<ol class="breadcrumb">
+			  <li><a href="#sec-committees" class="app-page">Committees</a></li>
+			  <li>Non-crisis</li>
+			</ol>
+			<?php
+			if(isset($committees_non_crisis)){
+			echo '<table class="table">';
+			echo '<thead><tr><th class="col-sm-1">#</th><th class="col-sm-4">Committee</th><th>Location</th><th>Size</th></tr></thead>';
+			echo '<tbody>';
+			echo $committees_non_crisis;
+			}
+			?>
+		</div><!-- /#sec-committees-crisis -->
 		<div class="row hidden-welcome" id="attendance">
 			<h1 class="default-head">Roster</h1>
 			<ol class="breadcrumb">
@@ -580,7 +851,7 @@ function results(){
 		<div class="row hidden-welcome" id="tools">
 			<h1 class="default-head">Tools</h1>
 			<ol class="breadcrumb">
-			  <li rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Committees</li>
+			  <li title="You don't currently have access to conference-wide pages.">Committees</li>
 			  <li><a href="#myCommittee" class="app-page">DISEC</a></li>
 			  <li class="active">Tools</li>
 			</ol>
@@ -649,7 +920,7 @@ function results(){
 		<div class="row hidden-welcome" id="staff-forms">
 			<h1 class="default-head">Forms & Downloads</h1>
 			<ol class="breadcrumb">
-			  <li rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Committees</li>
+			  <li title="You don't currently have access to conference-wide pages.">Committees</li>
 			  <li><a href="#myCommittee" class="app-page">DISEC</a></li>
 			  <li class="active">Forms & Downloads</li>
 			</ol>
@@ -661,8 +932,8 @@ function results(){
 		<div class="row hidden-welcome" id="staff-feedback">
 			<h1 class="default-head">Feedback</h1>
 			<ol class="breadcrumb">
-			  <li rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Staff</li>
-			  <li><a href="#user" class="app-page"><? echo $user->first_name . ' ' . $user->last_name;?></a></li>
+			  <li title="You don't currently have access to conference-wide pages.">Staff</li>
+			  <li><a href="#user" class="app-page">Michael McCarthy</a></li>
 			  <li class="active">Feedback</li>
 			</ol>
 			<p class="lead">How can we improve?</p>
@@ -866,7 +1137,7 @@ function results(){
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-8 col-xs-6">
-			<h2>NUMUN Staff</h2>
+			<h2>NUMUN Secretariat</h2>
 			<p class="lead">We run this.</p>
 			<div class="col-sm-5 btn-vert-block hidden-welcome">
 				<h3>Secretariat Contacts</h3>
@@ -902,5 +1173,9 @@ function results(){
     </div>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/vyw905x5bt4btyb/jquery.easing.1.3.js"></script>
+	<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/0xv21rvkx2te0m6/collapse.js"></script>
+	<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/a0vjlxe9507dezv/tooltip.js"></script>
+	<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/i5sdei3w9rw68e4/popover.js"></script>
+    <!--<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/gac3jsdaikll6en/smoothscroll.js"></script>-->
 	</body>
 </html>

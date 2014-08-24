@@ -7,6 +7,9 @@ class Welcome extends CI_Controller {
 		$this->load->library('ion_auth');
 		$this->load->helper('url');
 		$this->load->model('nu_schools');
+		$this->load->model('reg_preferences');
+		$this->load->model('alerts_model');
+		$this->load->model('secretariat_func');
 		$secretariat = array(1,2);
 		$staff = array(3);
 		$adviser = array(4);

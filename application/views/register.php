@@ -197,58 +197,70 @@ border: 0px solid transparent;
 			var formContainerParent = $(this).parents(".reg-container");
 			console.log(formContainerParent);
 		});
-		$("#reg-button").click(function(){
-		 $("#reg-title-0").hide();
-		 $("#reg-title-1").fadeIn();
-		 $(".reg-progress").fadeIn();
-		 $("#reg-container-0").hide();
-		 $("#reg-container-1").fadeIn();
-		 $("#reg-heading").fadeIn();
-		});
     	$("#submit-reg-1").click(function(){
-		 console.log( "Click1" );
-		 $("#reg-title-1").hide();
-		 $("#reg-title-2").fadeIn();
-		 $("#reg-container-1").hide();
-		 $("#reg-container-2").fadeIn();
+		 history.pushState({
+			 id: 2,
+			 page: "Step 2"	 
+		 }, null, "/register");
+		 getPage(2);
 		 });
 		 $("#submit-reg-2").click(function(){
-		 console.log( "Click2" );
-		 $("#reg-title-2").hide();
-		 $("#reg-title-3").fadeIn();
-		 $("#reg-container-2").hide();
-		 $("#reg-container-3").fadeIn();
+		  history.pushState({
+			 id: 3,
+			 page: "Step 3"	 
+		 }, null, "/register");
+		 getPage(3);
 		 });
 		 $("#submit-reg-3").click(function(){
-		 console.log( "Click3" );
-		 $("#reg-title-3").fadeOut();
-		 $("#reg-title-4").fadeIn();
-		 $("#reg-container-3").fadeOut();
-		 $("#reg-container-4").fadeIn();
-		 $(window).scrollTop(0);
+		 history.pushState({
+			 id: 4,
+			 page: "Step 4"	 
+		 }, null, "/register");
+		 getPage(4);
+		 $("#submitDone").hide();
+		 $("#waiting").show();
+		 $("html, body").animate({ scrollTop: 0 }, "slow");
+		 var formData = $("#reg-form").serializeArray();
+		 $.ajax({
+		type: "POST",
+		url: '/registration/submit',
+		async: 'true',
+		data: formData,
+		success: function(response){
+			var response = $.parseJSON(response);
+			var error = response.errormessage;
+			var type = response.type;
+			$("#error-message").text(error);
+			$("#error-message").addClass("alert-" + type + "");
+			$("#waiting").hide();
+			$("#submitDone").show();
+			},
+		error: function(){
+			$("#error-message").text("We could not complete the registration process because of a server error. Please try again.");
+			$("#error-message").addClass("alert-danger");
+			$("#waiting").hide();
+			$("#submitDone").show();
+		}
+		});
 		 });
 		 $("#back-reg-1").click(function(){
-		 console.log( "Back to 1" );
-		 $("#reg-title-2").hide();
-		 $("#reg-title-1").fadeIn();
-		 $("#reg-container-2").hide();
-		 $("#reg-container-1").fadeIn();
+		  history.pushState({
+			 id: 1,
+			 page: "Step 1"	 
+		 }, null, "/register");
+		 getPage(1);		 
 		 });
 		 $("#back-reg-2").click(function(){
-		 console.log( "Back to 2" );
-		 $("#reg-title-3").hide();
-		 $("#reg-title-2").fadeIn();
-		 $("#reg-container-3").hide();
-		 $("#reg-container-2").fadeIn();
+		  history.pushState({
+			 id: 2,
+			 page: "Step 2"	 
+		 }, null, "/register");
+		 getPage(2);
 		 });
-		 $("#exit-reg").click(function(){
-			 $("#reg-title-0").fadeIn('fast');
-			 $("#reg-title-1").hide();
-			 $(".reg-progress").hide();
-			 $("#reg-container-0").fadeIn('fast');
-			 $("#reg-container-1").hide();
-			 $("#reg-heading").hide();
-		 });
+		 function isEmail(email) {
+		  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		  return regex.test(email);
+		 }
 		 $("#emailAddress").blur(function(){
 		 	var formEmail = $(this).val();
 		 	if ( formEmail )
@@ -261,14 +273,21 @@ border: 0px solid transparent;
 				{
 				//username ok
 				//check if valid email address
-				$("#emailAddress").parent().addClass('has-success has-feedback');
+				if (!isEmail(formEmail)){
+				//not an email
+				$("#emailAddress").parent().find('.form-group').addClass('has-error has-feedback');
+				$("p.help-block").hide().before('<span class="fa fa-cross form-control-feedback"></span><p class="help-block">This isn\'t a valid email address.</p>');
+				}
+				else{
+				$("#emailAddress").parent().find('.form-group').addClass('has-success has-feedback');
 				$("#emailAddress").after('<span class="fa fa-check form-control-feedback"></span>');
+				}
 				}
 				else
 				{
 				//username is taken	
-				$("#emailAddress").parents().find('.form-group').addClass('has-error has-feedback');
-				$("p.help-block").hide().before('<span class="fa fa-cross form-control-feedback"></span><p class="help-block">You have already registered an account with that email address.</p>');
+				$("#emailAddress").parent().find('.form-group').addClass('has-error has-feedback');
+				$("p.help-block").hide().before('<span class="fa fa-cross form-control-feedback"></span><p class="help-block">You have already created an account with that email address.</p>');
 				}
 			});
 			}
@@ -298,6 +317,19 @@ border: 0px solid transparent;
 			 
 		 });
 	});
+	function getPage(pageid){
+		 $(".reg-title:visible").hide();
+		 $("#reg-title-"+ pageid).fadeIn();
+		 $(".reg-container:visible").hide();
+		 $("#reg-container-"+ pageid).fadeIn();
+	}
+	window.onpopstate = function (event) {  
+	  var pageid = "";
+	  if(event.state) {
+	    pageid = event.state.id;
+	  }
+	  getPage(pageid);
+	}
 	function handleScroll(){
                 if($(window).scrollTop()<=100)
                 {
@@ -365,7 +397,7 @@ border: 0px solid transparent;
 		<div class="container main-container">
 		
 		<div class="row" id="register">
-		<form class="form-horizontal" role="form">
+		<form class="form-horizontal" role="form" id="reg-form">
 			<h1 class="default-head" id="reg-heading">Registration</h1>
 			
 			<div class="reg-title" id="reg-title-1">
@@ -395,26 +427,29 @@ border: 0px solid transparent;
 			  <div class="form-group">
 			    <label for="emailAddress" class="col-sm-4 control-label">Email Address</label>
 			    <div class="col-sm-8">
-			    <input type="email" class="form-control track-progress" id="emailAddress" placeholder="Enter email">
+			    <input type="email" class="form-control track-progress" id="emailAddress" name="accountEmail" placeholder="Enter email">
 			    <p class="help-block">Your email address will be your username. Please use a valid address.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="passwordCreate" class="col-sm-4 control-label">Password</label>
 			    <div class="col-sm-8">
-			    <input type="password" class="form-control track-progress" id="passwordCreate" placeholder="Password">
+			    <input type="password" class="form-control track-progress" id="passwordCreate" name="accountPassword" placeholder="Password">
 			    </div>
 			  </div>
 			  <div class="form-group">
-			    <label for="primaryAdviser" class="col-sm-4 control-label">Primary Adviser</label>
-			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="primaryAdviser" placeholder="Your Name">
+			    <label for="primaryAdviserFirst" class="col-sm-4 control-label">Primary Adviser</label>
+			    <div class="col-sm-4">
+			    <input type="text" class="form-control track-progress" id="primaryAdviserFirst" name="primaryFirstName" placeholder="First Name">
+			    </div>
+			    <div class="col-sm-4">
+			    <input type="text" class="form-control track-progress" id="primaryAdviserLast" name="primaryLastName" placeholder="Last Name">
 			    </div>
 			  </div>
 			   <div class="form-group">
 			    <label for="primaryAdviserPhone" class="col-sm-4 control-label">Primary Phone Contact</label>
 			    <div class="col-sm-8">
-			    <input type="tel" class="form-control track-progress last" id="primaryAdviserPhone" placeholder="(847) 500-1234">
+			    <input type="tel" class="form-control track-progress last" id="primaryAdviserPhone" name="primaryPhone" placeholder="(847) 500-1234">
 			    </div>
 			  </div>
 			  <a href="/login" class="btn btn-default reg-next"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;Back to Login</a>
@@ -426,25 +461,25 @@ border: 0px solid transparent;
 			  <div class="form-group">
 			    <label for="schoolName" class="col-sm-4 control-label">School or Club Name</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="schoolName" placeholder="Example High School">
+			    <input type="text" class="form-control track-progress" id="schoolName" name="schoolName" placeholder="Example High School">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="schoolAddress" class="col-sm-4 control-label">Mailing Address</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="schoolAddress" placeholder="1234 Campus Drive">
+			    <input type="text" class="form-control track-progress" id="schoolAddress" name="schoolAddress" placeholder="1234 Campus Drive">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="schoolCity" class="col-sm-4 control-label">City</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="schoolCity" placeholder="Evanston">
+			    <input type="text" class="form-control track-progress" id="schoolCity" name="schoolCity" placeholder="Evanston">
 			    </div>
 			  </div>
 			   <div class="form-group">
 			    <label for="schoolState" class="col-sm-4 control-label">State</label>
 			    <div class="col-sm-3">
-			    	<select id="schoolState" name="state" class="form-control track-progress"> 
+			    	<select id="schoolState" name="schoolState" class="form-control track-progress"> 
 <option value="" selected="selected">Select a State</option> 
 <option value="AL">Alabama</option> 
 <option value="AK">Alaska</option> 
@@ -502,7 +537,7 @@ border: 0px solid transparent;
 			    </div>
 			    <label for="zipCode" class="col-sm-3 control-label">ZIP Code</label>
 			    <div class="col-sm-2">
-			    	<input type="text" class="form-control track-progress last" id="zipCode" placeholder="00000">
+			    	<input type="text" class="form-control track-progress last" id="zipCode" name="schoolZIP" placeholder="00000">
 			    </div>
 			  </div>
 			  	<button type="button" class="btn btn-primary" id="back-reg-1"><i class="fa fa-chevron-left fa-inverse"></i>&nbsp;&nbsp;Back</button>
@@ -514,11 +549,11 @@ border: 0px solid transparent;
 		  	 <div class="form-group">
 			    <label for="minDelSize" class="col-sm-4 control-label">Minimum number of Delegates</label>
 			    <div class="col-sm-2">
-			    <input type="text" class="form-control track-progress" id="minDelSize" placeholder="0">
+			    <input type="text" class="form-control track-progress" id="minDelSize" name="minDelSlots" placeholder="0">
 			    </div>
 			    <label for="maxDelSize" class="col-sm-4 control-label">Maximum Delegates</label>
 			    <div class="col-sm-2">
-			    <input type="text" class="form-control track-progress" id="maxDelSize" placeholder="1000">
+			    <input type="text" class="form-control track-progress" id="maxDelSize" name="maxDelSlots" placeholder="1000">
 			    </div>
 			  </div>
 		  	</div>
@@ -528,10 +563,10 @@ border: 0px solid transparent;
 			    <div class="col-sm-8">
 			    <div class="checkbox">
 		        <label class="radio-inline">
-		          <input type="radio" name="delType" class="track-progress" id="singleDel" value="singleDel" /> Single delegation
+		          <input type="radio" name="delType" class="track-progress" id="singleDel" name="delType" value="single" /> Single delegation
 		        </label>
 		        <label class="radio-inline">
-		          <input type="radio" name="delType" class="track-progress" id="multiDel" value="multiDel" /> Multiple delegations
+		          <input type="radio" name="delType" class="track-progress" id="multiDel" name="delType" value="multiple" /> Multiple delegations
 		        </label>
 		      </div>
 			    <p class="help-block">Each delegation generally represents one country. We recommend multiple delegations (i.e., multiple country assignments) for organizations with more than x delegates.</p>
@@ -542,7 +577,7 @@ border: 0px solid transparent;
 			    <div class="col-sm-8">
 			    	<div class="checkbox">
 			    		<label>
-			    			<input type="checkbox" class="track-progress" id="crisisCheck" /> Yes, some of my delegates would like to be in immersive crisis committees.
+			    			<input type="checkbox" class="track-progress" id="crisisCheck" name="crisis" /> Yes, some of my delegates would like to be in immersive crisis committees.
 			    		</label> 
 			    	</div>
 			    </div>
@@ -552,7 +587,7 @@ border: 0px solid transparent;
 			    <div class="col-sm-8">
 			    	<div class="checkbox">
 			    		<label>
-			    			<input type="checkbox" class="track-progress" id="pressCheck" /> Yes, one of my delegates would like to be part of the Press Corps.
+			    			<input type="checkbox" class="track-progress" id="pressCheck" name="press" /> Yes, one of my delegates would like to be part of the Press Corps.
 			    		</label> 
 			    	</div>
 			    	<p class="help-block">The Press Corps is a small committee that produces news in print and online for the conference. No media or journalism experience is required.</p>
@@ -1173,13 +1208,13 @@ border: 0px solid transparent;
 			  <div class="form-group">
 			    <label for="secondAdviser" class="col-sm-4 control-label">Second Adviser</label>
 			    <div class="col-sm-6">
-			    <input type="text" class="form-control track-progress" id="secondAdviser" placeholder="First Name Last Name">
+			    <input type="text" class="form-control track-progress" id="secondAdviser" name="secondName" placeholder="First Name Last Name">
 			    </div>
 			  </div>
 			   <div class="form-group">
 			    <label for="secondAdviserPhone" class="col-sm-4 control-label">Second Adviser's Phone Number</label>
 			    <div class="col-sm-6">
-			    <input type="tel" class="form-control track-progress" id="secondAdviserPhone" placeholder="(847) 500-1234">
+			    <input type="tel" class="form-control track-progress" id="secondAdviserPhone" name="secondPhone" placeholder="(847) 500-1234">
 			    </div>
 			    <div class="col-sm-2">
 			    	<button type="button" class="btn btn-danger btn-sm" id="delete-adviser-2"><i class="fa fa-minus fa-inverse"></i>&nbsp;&nbsp;Delete</button>
@@ -1188,13 +1223,13 @@ border: 0px solid transparent;
 			  <div class="form-group third-adviser">
 			    <label for="thirdAdviser" class="col-sm-4 control-label">Third Adviser</label>
 			    <div class="col-sm-6">
-			    <input type="text" class="form-control" id="thirdAdviser" placeholder="First Name Last Name">
+			    <input type="text" class="form-control" id="thirdAdviser" name="thirdName" placeholder="First Name Last Name">
 			    </div>
 			  </div>
 			   <div class="form-group third-adviser">
 			    <label for="thirdAdviserPhone" class="col-sm-4 control-label">Third Adviser's Phone Number</label>
 			    <div class="col-sm-6">
-			    <input type="tel" class="form-control" id="thirdAdviserPhone" placeholder="(847) 500-1234">
+			    <input type="tel" class="form-control" id="thirdAdviserPhone" name="thirdPhone" placeholder="(847) 500-1234">
 			    </div>
 			    <div class="col-sm-2">
 			    	<button type="button" class="btn btn-danger btn-sm" id="delete-adviser-3"><i class="fa fa-minus fa-inverse"></i>&nbsp;&nbsp;Delete</button>
@@ -1203,13 +1238,13 @@ border: 0px solid transparent;
 			   <div class="form-group fourth-adviser">
 			    <label for="fourthAdviser" class="col-sm-4 control-label">Fourth Adviser</label>
 			    <div class="col-sm-6">
-			    <input type="text" class="form-control" id="fourthAdviser" placeholder="First Name Last Name">
+			    <input type="text" class="form-control" id="fourthAdviser" name="fourthName" placeholder="First Name Last Name">
 			    </div>
 			  </div>
 			   <div class="form-group fourth-adviser">
 			    <label for="secondAdviserPhone" class="col-sm-4 control-label">Fourth Adviser's Phone Number</label>
 			    <div class="col-sm-6">
-			    <input type="tel" class="form-control" id="fourthAdviserPhone" placeholder="(847) 500-1234">
+			    <input type="tel" class="form-control" id="fourthAdviserPhone" name="fourthPhone" placeholder="(847) 500-1234">
 			    </div>
 			    <div class="col-sm-2">
 			    	<button type="button" class="btn btn-danger btn-sm" id="delete-adviser-4"><i class="fa fa-minus fa-inverse"></i>&nbsp;&nbsp;Delete</button>
@@ -1231,73 +1266,81 @@ border: 0px solid transparent;
 			</div>
 		  </div><!-- reg-container-3 -->
 		  <div class="reg-container" id="reg-container-4">
-		  <div class="alert alert-success" role="alert"><strong>All done!</strong> Your information has been saved and your account is now active.</div>
+		  <div id="waiting">
+		  <p class="text-center"><i class="fa fa-refresh fa-spin fa-4x"></i></p>
+		  </div>
+		  <div id="submitDone">
+		  <div class="alert" role="alert" id="error-message"><strong>All done!</strong> Your information has been saved and your account is now active. <a href="/" class="btn btn-primary btn-sm pull-right ">Login Now</a></div>
 		  <p class="lead">Your Account & Contact Information</p>
 		  	<div class="form-group">
 			    <label class="col-sm-4 control-label">Email Address</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">email@example.com</p>
+			      <p class="form-control-static" id="confirmEmail"></p>
 			    </div>
 			</div>
 			<div class="form-group">
 			    <label class="col-sm-4 control-label">Primary Adviser</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">First Last</p>
+			      <p class="form-control-static" id="confirmName"></p>
 			    </div>
 			</div>
 			<div class="form-group">
 			    <label class="col-sm-4 control-label">Primary Phone Number</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">(847) 500-1234</p>
+			      <p class="form-control-static" id="confirmPrimaryPhone"></p>
 			    </div>
 			</div>
 		  <p class="lead">Your Organization</p>
 		  <div class="form-group">
 			    <label class="col-sm-4 control-label">School or Club Name</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">Example High School</p>
+			      <p class="form-control-static" id="confirmSchoolName"></p>
 			    </div>
 			</div>
 			<div class="form-group">
 			    <label class="col-sm-4 control-label">Mailing Address</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">1234 Campus Drive<br />Evanston, IL 60208</p>
+			      <p class="form-control-static" id="confirmAddress"></p>
 			    </div>
 			</div>
 		  <p class="lead">Your Delegates & Additional Advisers</p>
 		  <div class="form-group">
 			    <label class="col-sm-4 control-label">Number of Delegates</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static"><strong>0</strong> to <strong>1,000</strong> delegates</p>
+			      <p class="form-control-static" id="confirmMinMax"><strong>0</strong> to <strong>1,000</strong> delegates</p>
 			    </div>
 			</div>
 			<div class="form-group">
 			    <label class="col-sm-4 control-label">Number of Delegations</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">Multiple</p>
+			      <p class="form-control-static" id="confirmDelType"></p>
 			    </div>
 			</div>
 			<div class="form-group">
 			    <label class="col-sm-4 control-label">Crisis Committees</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">Yes</p>
+			      <p class="form-control-static" id="confirmCrisis"></p>
 			    </div>
 			</div>
 			<div class="form-group">
 			    <label class="col-sm-4 control-label">Press Corps</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static">No</p>
+			      <p class="form-control-static" id="confirmPress"></p>
 			    </div>
 			</div>
 		  <p class="lead">Thank You</p>
 		  <div class="form-group">
 		  <div class="col-sm-8 col-sm-offset-2">
-		  	<p>You have successfully registered your team for NUMUN XII. This confirmation page and the email you should receive soon represent confirmation that we have secured at least your minimum number of desired spots for the 2015 conference. Remember that you can make changes to your preferences by logging in to your account at this site.</p>
+		  <div id="confirmSecGenThanks">
+		  </div>
+		  	<!--<p>You have successfully registered your team for NUMUN XII. This confirmation page and the email you should receive soon represent confirmation that we have secured at least your minimum number of desired spots for the 2015 conference. Remember that you can make changes to your preferences by logging in to your account at this site.</p>
 		  	<p>Thanks again for deciding to attend NUMUN XII. Our staff is excited to work with your bright and innovative delegates!</p>
-		  	<p class="lead">Evie Atwater <br/><small>Secretary-General, NUMUN XII</small></p>
+		  	<p class="lead">Evie Atwater <br/><small>Secretary-General, NUMUN XII</small></p>-->
+		  	<p class="lead" id="confirmSecGenSignature"></p>
 		  	 <p>&nbsp;</p>
 		  </div>
 		  </div>
+		  </div><!-- submitDone -->
 
 
 		  <p>&nbsp;</p>
