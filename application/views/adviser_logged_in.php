@@ -3,10 +3,11 @@
 	$userid = $user->id;
 	$school = $this->nu_schools->get_school($userid);
 	$school_address = $this->nu_schools->get_school_address($userid);
+	$school_zip = $this->nu_schools->get_school_zip($userid);
 	$school_id = $this->nu_schools->get_school_id($userid);
 	$school_del_reg = $this->reg_preferences->schoolDelegateCount($school_id);
 	$delegate_slots = $this->nu_schools->get_delegate_slots($school_id);
-	$last2 = substr($school_address, -2);
+	$last2 = substr($school_zip, -2);
 	if (strlen($school_id) < 2){
 		$customer_number = '0'.$school_id.$last2;
 	}else{

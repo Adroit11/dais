@@ -30,13 +30,24 @@ class Nu_schools extends CI_Model
 		}
 	}
 	public function get_school_address($adviser_id){
-		$school_query = $this->db->query('SELECT s.address FROM schools s inner join advisers a on s.id = a.schoolid WHERE a.userid = '.$adviser_id.' LIMIT 1');
+		$school_query = $this->db->query('SELECT s.address, s.city, s.state, s.zipcode FROM schools s inner join advisers a on s.id = a.schoolid WHERE a.userid = '.$adviser_id.' LIMIT 1');
 		$row = $school_query->row(); 
 		if(isset($row)){
-		return $row->address;
+		$address_block = $row->address . '<br \>' . $row->city . ', ' . $row->state . ' ' . $row->zipcode;
+		return $address_block;
 		}
 		else{
-			return 'School address not found.';
+			return 'Error: School address could not be located.';
+		}
+	}
+	public function get_school_zip($adviser_id){
+		$school_query = $this->db->query('SELECT s.zipcode FROM schools s inner join advisers a on s.id = a.schoolid WHERE a.userid = '.$adviser_id.' LIMIT 1');
+		$row = $school_query->row(); 
+		if(isset($row)){
+		return $row->zipcode;
+		}
+		else{
+			return '#####';
 		}
 	}
 	public function get_delegate_slots($schoolid){
