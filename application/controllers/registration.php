@@ -81,9 +81,9 @@ class Registration extends CI_Controller {
 			$newPrimary = $this->new_reg->newPrimaryAdviser($adviserID , $schoolID, $fullName, $phone);
 			if ($newPrimary == false){
 				//error
-				$errormessage = "Sorry, we couldn&spos;t complete the registration process because there was an error while entering your contact information into our database. However, your adviser account was created and your school preferences were saves. Please contact us at support@numun.org before logging in.";
+				$errormessage = "Sorry, we couldn&spos;t complete the registration process because there was an error while entering your contact information into our database. However, your adviser account was created and your school preferences were saved. Please contact us at support@numun.org before logging in.";
 			}else{
-			//secondary advisers use the same userid for now
+			//secondary advisers need either unique userids or a different table see Issue #12
 			//get secondary adviser information, for each one:
 			
 			if (!empty($this->input->post('secondName')) && !empty($this->input->post('secondPhone'))){
@@ -99,7 +99,7 @@ class Registration extends CI_Controller {
 			if (!empty($this->input->post('fourthName')) && !empty($this->input->post('fourthPhone'))){
 			$name3 = $this->input->post('thirdName');
 			$phone3 =  $this->input->post('thirdPhone');
-			$this->new_reg->newSecondaryAdviser($adviserID , $schoolID, $name3, $phone3);
+			$this->new_reg->newSecondaryAdviser($adviserID , $schoolID, $name4, $phone4);
 			}
 			}//New Primary adviser failed?
 			}//$schoolID false?

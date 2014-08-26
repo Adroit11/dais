@@ -389,7 +389,89 @@ border: 0px solid transparent;
 							message: 'Please provide a valid phone number.' 
 						 }
 					 }
+				 },
+				 schoolName: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please provide a school or club name.'
+						 }
+					 }
+				 },
+				 schoolAddress: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please provide a mailing address.'
+						 },
+						 stringLength: {
+							 min: 5,
+							 message: 'Please provide a valid mailing address.'
+						 }
+					 }
+				 },
+				 schoolCity: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please provide your city.'
+						 }
+					 }
+				 },
+				 schoolState: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please select your state or choose Other.'
+						 }
+					 }
+				 },
+				 schoolZIP: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please provide your ZIP code.'
+						 }
+					 }
+				 },
+				 minDelSlots: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please provide a minimum number of delegates.'
+						 }
+					 }
+				 },
+				 maxDelSlots: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please provide a maximum number of delegates.'
+						 }
+					 }
+				 },
+				 delType: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please select a delegation type.'
+						 }
+					 }
+				 },
+				 countryPref1: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please select your first choice for country preferences.'
+						 }
+					 }
+				 },
+				 countryPref2: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please select your second choice for country preferences.'
+						 }
+					 }
+				 },
+				 countryPref3: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please select your third choice for country preferences.'
+						 }
+					 }
 				 }
+				 
 			 }
 		 });
 		 $('#primaryAdviserPhone').formatter({
@@ -410,10 +492,29 @@ border: 0px solid transparent;
 			$('#submit-reg-1').prop("disabled", true);
 			}
 		});
+		$('#zipCode').on('keyup', function(){
+			if($(".reg-container:visible").children().hasClass('has-error')){
+				$('#submit-reg-2').prop("disabled", true);
+			}else{
+				var zipLength = $(this).val().length;
+				if(zipLength == 5){
+					$('#submit-reg-2').prop("disabled", false);
+				}else{
+					$('#submit-reg-2').prop("disabled", true);
+			}
+			}
+		});
+		$('#countryPref3').on('focus', function(){
+			if($(".reg-container:visible").children().hasClass('has-error')){
+					$('#submit-reg-3').prop("disabled", true);
+				}else{
+					$('#submit-reg-3').prop("disabled", false);
+			}
+		});
 	});
 	function getPage(pageid){
 		if($(".reg-container:visible").children().hasClass('has-error')){
-			//do nothing?	
+			//do nothing?
 		}else{
 		 $(".reg-title:visible").hide();
 		 $("#reg-title-"+ pageid).fadeIn();
@@ -526,7 +627,7 @@ border: 0px solid transparent;
 			    <label for="emailAddress" class="col-sm-4 control-label">Email Address</label>
 			    <div class="col-sm-8">
 			    <input type="email" class="form-control track-progress" id="emailAddress" name="accountEmail" placeholder="Enter email">
-			    <p class="help-block">Your email address will be your username.</p>
+			    <p class="help-block">Your email address will also be your username.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
@@ -578,7 +679,8 @@ border: 0px solid transparent;
 			    <label for="schoolState" class="col-sm-4 control-label">State</label>
 			    <div class="col-sm-3">
 			    	<select id="schoolState" name="schoolState" class="form-control track-progress"> 
-<option value="" selected="selected">Select a State</option> 
+<option value="" selected="selected">Select a State</option>
+<option value="International">Other / International</option>
 <option value="AL">Alabama</option> 
 <option value="AK">Alaska</option> 
 <option value="AZ">Arizona</option> 
@@ -639,7 +741,7 @@ border: 0px solid transparent;
 			    </div>
 			  </div>
 			  	<button type="button" class="btn btn-primary" id="back-reg-1"><i class="fa fa-chevron-left fa-inverse"></i>&nbsp;&nbsp;Back</button>
-			    <button type="button" class="btn btn-primary pull-right reg-next" id="submit-reg-2">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
+			    <button type="button" class="btn btn-primary pull-right reg-next" id="submit-reg-2" disabled="disabled">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
 				<p>&nbsp;</p>
 		  </div><!-- reg-container-2 -->
 		  <div class="reg-container" id="reg-container-3">
@@ -667,7 +769,7 @@ border: 0px solid transparent;
 		          <input type="radio" name="delType" class="track-progress" id="multiDel" name="delType" value="multiple" /> Multiple delegations
 		        </label>
 		      </div>
-			    <p class="help-block">Each delegation generally represents one country. We recommend multiple delegations (i.e., multiple country assignments) for organizations with more than x delegates.</p>
+			    <p class="help-block">Each delegation represents one country. We recommend multiple delegations (i.e., multiple country assignments) for organizations with more than x delegates.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
@@ -1357,7 +1459,7 @@ border: 0px solid transparent;
 			</div>
 			<div class="row">
 			  <button type="button" class="btn btn-primary" id="back-reg-2"><i class="fa fa-chevron-left fa-inverse"></i>&nbsp;&nbsp;Back</button>
-			    <button type="button" class="btn btn-success pull-right reg-next" id="submit-reg-3">Submit&nbsp;&nbsp;<i class="fa fa-share fa-inverse"></i></button>
+			    <button type="button" class="btn btn-success pull-right reg-next" id="submit-reg-3" disabled="disabled">Submit&nbsp;&nbsp;<i class="fa fa-share fa-inverse"></i></button>
 			</div>
 			<div class="row">
 				<p>&nbsp;</p>
