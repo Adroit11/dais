@@ -6,6 +6,7 @@
 	<!--<link href='//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic|Raleway:400,700,300' rel='stylesheet' type='text/css'>-->
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link href="https://dl.dropboxusercontent.com/s/kuf4za5pbv9kbbx/style.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.1/css/bootstrapValidator.min.css"/>
 	<style type="text/css">
 	/* Sticky footer styles
 -------------------------------------------------- */
@@ -167,6 +168,8 @@ border: 0px solid transparent;
 	}
 	</style>
 	<script src="https://dl.dropboxusercontent.com/s/6tls9z1rsoh4yc2/jquery.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.1/js/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/pe47osgi7digvrj/jquery.formatter.min.js"></script>
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
@@ -261,7 +264,7 @@ border: 0px solid transparent;
 		  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 		  return regex.test(email);
 		 }
-		 $("#emailAddress").blur(function(){
+		 /*$("#emailAddress").blur(function(){
 		 	var formEmail = $(this).val();
 		 	if ( formEmail )
 		 	{
@@ -292,6 +295,7 @@ border: 0px solid transparent;
 			});
 			}
 		 });
+		 */
 		 $("#additional-adviser").click(function(){
 			 console.log("add adviser");
 			 if ($(".third-adviser").css("display") == "none"){
@@ -316,12 +320,106 @@ border: 0px solid transparent;
 			 $(".fourth-adviser").fadeOut();
 			 
 		 });
+		 $("#reg-form").bootstrapValidator({
+			 feedbackIcons: {
+				 valid: 'fa fa-check',
+				 invalid: 'fa fa-times',
+				 validating: 'fa fa-refresh',
+			 },
+			 fields: {
+				 accountEmail: {
+					 message: 'This is not a valid email address.',
+					 threshold: 5,
+					 validators: {
+						 notEmpty: {
+							 message: 'You must provide a valid email address.'
+						 },
+						 emailAddress: {
+							 message: 'This is not a valid email address.'
+						 },
+						 remote: {
+							 message: 'Someone with this email address has already registered.',
+							 url: '/checkuser',
+							 data: function(validator) {
+								return {
+								form_username: validator.getFieldElements('accountEmail').val()
+							 };
+						 }
+					 }
+					 
+				 }
+				 },
+				 accountPassword: {
+					 validators: {
+						 notEmpty: {
+							 message: 'You must create a strong password.'
+						 },
+						 different: {
+							 field: 'accountEmail',
+							 message: 'Your password should be different from your email address.'
+						 },
+						 stringLength: {
+							 min: 6,
+							 message: 'Your password should be at least 6 characters long.'
+						 },
+						 
+					 }
+				 },
+				 primaryFirstName: {
+					 validators: {
+						 notEmpty: {
+							 message: 'Please type your first name.'
+						 }
+					 }
+				 },
+				 primaryLastName: {
+					 validators: {
+						 notEmpty: {
+							message: 'Please type your last name.' 
+						 }
+						}
+				 },
+				 primaryPhone: {
+					 validators: {
+					 	 stringLength: {
+						 	min: 14,
+						 	message: 'Please provide a valid phone number.' 
+					 	 },
+						 notEmpty: {
+							message: 'Please provide a valid phone number.' 
+						 }
+					 }
+				 }
+			 }
+		 });
+		 $('#primaryAdviserPhone').formatter({
+		  'pattern': '({{999}}) {{999}}-{{9999}}',
+		  'persistent': false
+		});
+		$('#primaryAdviserPhone').on('keyup', function(){
+			if($(".reg-container:visible").children().hasClass('has-success')){
+				var phoneLength = $(this).val().length;
+				if(phoneLength == 14){ 
+					$(this).addClass('has-success');
+					$('#submit-reg-1').prop("disabled", false);
+				}else{
+					$(this).addClass('has-error');
+					$('#submit-reg-1').prop("disabled", true);
+				}
+			}else{
+			$('#submit-reg-1').prop("disabled", true);
+			}
+		});
 	});
 	function getPage(pageid){
+		if($(".reg-container:visible").children().hasClass('has-error')){
+			//do nothing?	
+		}else{
 		 $(".reg-title:visible").hide();
 		 $("#reg-title-"+ pageid).fadeIn();
 		 $(".reg-container:visible").hide();
 		 $("#reg-container-"+ pageid).fadeIn();
+		 }
 	}
 	window.onpopstate = function (event) {  
 	  var pageid = "";
@@ -428,7 +526,7 @@ border: 0px solid transparent;
 			    <label for="emailAddress" class="col-sm-4 control-label">Email Address</label>
 			    <div class="col-sm-8">
 			    <input type="email" class="form-control track-progress" id="emailAddress" name="accountEmail" placeholder="Enter email">
-			    <p class="help-block">Your email address will be your username. Please use a valid address.</p>
+			    <p class="help-block">Your email address will be your username.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
@@ -453,7 +551,7 @@ border: 0px solid transparent;
 			    </div>
 			  </div>
 			  <a href="/login" class="btn btn-default reg-next"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;Back to Login</a>
-			   <button type="button" class="btn btn-primary reg-next pull-right" id="submit-reg-1">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
+			   <button type="button" class="btn btn-primary reg-next pull-right" id="submit-reg-1" disabled="disabled">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
 
 		  <p>&nbsp;</p>
 		  </div><!-- reg-container-1 -->

@@ -85,7 +85,14 @@ class Nu_schools extends CI_Model
 		      }
 		return $delegate_slots_result;
 		}else{
-			return '<tr><td>No delegate slots have been assigned to your school.</tr>';
+			$empty_response = '</tbody></table>';
+			$empty_response .= '<div class="spacious col-md-12">';
+			$empty_response .= '<div class="col-md-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>No delegate slots.</strong><br /> No delegate slots have been assigned to your school.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;
 		}	
 	}
 	public function get_committees_list(){

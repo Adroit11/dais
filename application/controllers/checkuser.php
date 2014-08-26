@@ -8,14 +8,20 @@ class Checkuser extends CI_Controller {
 			if (isset($form_username)){
 				if ($this->ion_auth->email_check($form_username) == true){
 				//username is already in use (email_check() returned true)
-				echo "bad username";
+				$response = false;
 				}else{
 				//username is available
-				echo "ok";
+				$response = true;
 				}
+			echo json_encode(array(
+				'valid' => $response,
+			));	
 			}else{
 			//no data sent
-				echo "bad request";
+				$response = false;
+				echo json_encode(array(
+				'valid' => $response,
+			));	
 			}
 			
 }

@@ -39,7 +39,35 @@ class Reg_preferences extends CI_Model
 		}
 	}
 	public function additionalAdvisers($schoolid){
-		$query = $this->db->query('SELECT name FROM advisers WHERE schoolid = '.$schoolid.'');
-		
+		$query = $this->db->query('SELECT name FROM advisers WHERE schoolid= \''.$schoolid.'\' AND type=\'secondary\'');
+		if($query->num_rows() == 0){
+			return "You are the only adviser for this school.";	
+		}elseif($query->num_rows() > 0){
+			foreach ($query->result() as $row){
+				echo "<p><strong>" . $row->name . "</strong></p>";
+				echo "<p>" . $row->phone . "</p>";
+			}
+		}
+	}
+	public function getSchoolCountryPrefs($schoolid){
+		$prefs_query = $this->db->query('SELECT * FROM schools WHERE id=\'' . $schoolid . '\'');
+		if($prefs_query->num_rows() > 0){
+			$country_prefs = '<ol>';
+			foreach ($prefs_query->result() as $row){
+			$country_prefs .= '<li>';
+			$country_prefs .= $row->country1;
+			$country_prefs .= '</li>';
+			$country_prefs .= '<li>';
+			$country_prefs .= $row->country2;
+			$country_prefs .= '</li>';
+			$country_prefs .= '<li>';
+			$country_prefs .= $row->country3;
+			$country_prefs .= '</li>';
+			}
+			$country_prefs .= '</ol>';
+			return $country_prefs;
+		}else{
+			echo "<p>Error: no country preferences were found.</p>";
+		}
 	}
 	}

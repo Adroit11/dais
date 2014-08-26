@@ -6,6 +6,8 @@
 	$school_zip = $this->nu_schools->get_school_zip($userid);
 	$school_id = $this->nu_schools->get_school_id($userid);
 	$school_del_reg = $this->reg_preferences->schoolDelegateCount($school_id);
+	$school_country_prefs = $this->reg_preferences->getSchoolCountryPrefs($school_id);
+	$school_advisers = $this->reg_preferences->additionalAdvisers($school_id);
 	$delegate_slots = $this->nu_schools->get_delegate_slots($school_id);
 	$last2 = substr($school_zip, -2);
 	if (strlen($school_id) < 2){
@@ -181,6 +183,12 @@ border: 0px solid transparent;
 	.print-header{
 		display: none;
 	}
+	.spacious{
+	background-color: #f0f0f0;
+	padding: 30px 0px;
+	margin-top:-21px;
+	margin-bottom: 40px;
+	}
 	/*---Stack buttons---*/
 	@media (max-width: 767px) {
     .btn-vert-block + .btn-vert-block {
@@ -204,9 +212,9 @@ border: 0px solid transparent;
 	.footer{
 		display: none;
 	}
-  [class*="col-sm-"] {
+  /*[class*="col-sm-"] {
     float: left;
-  }
+  }*/
 
 }
 	</style>
@@ -340,7 +348,7 @@ border: 0px solid transparent;
           <li class="dropdown">
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->first_name . ' ' . $user->last_name;?>&nbsp;<span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
-	            <li><a href="#user" class="app-page">Profile</a></li>
+	            <li><a href="#profile" class="app-page">Profile</a></li>
 	            <li class="divider"></li>
 	            <li><a href="auth/logout">Log Out</a></li>
 	          </ul>
@@ -398,22 +406,20 @@ border: 0px solid transparent;
 		<div class="row">
 		<h3>Country Preferences</h3>
 		<div class="col-sm-6">
-		<ol>
-			<li>Russia</li>
-			<li>United States</li>
-			<li>Iran, Islamic Republic of</li>
-		</ol>
+		<?php echo $school_country_prefs; ?>
 		</div>
 		<div class="col-sm-4">
 			<button class="btn btn-warning" id="edit-countries">Edit</button>
 		</div>
 		</div>
 		<div class="row">
-		<h3>Additional Advisers</h3> 
+		<h3>Additional Advisers</h3>
+		<?php echo $school_advisers; ?>
 		</div>
 		</form>
 		</div>
   		<div class="col-sm-6">
+  			<p>&nbsp;</p>
   			<button class="btn btn-success" id="del-assignments-submit" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
   			</div>
 
@@ -491,6 +497,62 @@ border: 0px solid transparent;
 			    <button class="btn btn-lg btn-success">Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></button>
 			</div>
 		</div><!-- /#forms -->
+		<div class="row hidden-welcome" id="profile">
+			<h1 class="default-head">Profile</h1>
+			<div class="col-md-12">
+			<p class="lead"><strong><?php echo $user->first_name . ' ' . $user->last_name; ?></strong><br /><span><?php echo  $school; ?></span></p>
+			<p>Your profile page is the place to make corrections and changes to your personal contact information prior to NUMUN XII. You can also view correspondence between you and Secretariat in a simple view.</p><br /><br />
+			</div>
+			<h3>Contact Information</h3>
+			<form class="form-horizontal">
+			<div class="form-group">
+				<label class="col-md-4 control-label" for="primaryPhone">Phone Number</label>
+				<div class="col-md-6 col-md-offset-1">
+				<input type="text" class="form-control" id="primaryPhone" value="(773) 616-1658">
+				</div>
+			</div>
+			<div class="form-group">
+			  <label class="col-md-4 control-label" for="checkboxes">Emergency Text Messages</label>
+			  <div class="col-md-6 col-md-offset-1">
+			  <div class="radio">
+			    <label for="checkboxes-0">
+			      <input type="radio" name="checkboxes" id="checkboxes-0" value="yes">
+			      Yes, in an emergency, please text me at <strong>773-616-1658</strong>
+			    </label>
+			  </div>
+			  <div class="radio">
+			    <label for="checkboxes-0">
+			      <input type="radio" name="checkboxes" id="checkboxes-0" value="yes">
+			      Yes, but text me at <input type="text" id="cellPhone" placeholder="Cell #"> instead. 
+			    </label>
+			  </div>
+			  <div class="radio">
+			    <label for="checkboxes-1">
+			      <input type="radio" name="checkboxes" id="checkboxes-1" value="no">
+			      No, please do not text me.
+			    </label>
+			  </div>
+			  <span class="help-block">We will not text you for any other reason.</span>  
+			  </div>
+			</div>
+			</form>
+			<h3>Privacy Preferences</h3>
+			<p>At the conclusion of NUMUN XII, we will remove your information from our database if you wish. Otherwise, we may store your school address and other information to speed up the registration process for you in future years.</p>
+			  
+			<h3>Messages</h3>
+			<table class="table table-hover">
+			<thead>
+				<tr><th>#</th><th>Title</th><th>Message</th></tr>
+			</thead>
+			<tbody>
+				</tbody></table><div class="spacious col-md-12"><div class="col-md-12 text-center"><h2><i class="fa fa-exclamation-circle"></i></h2><p class="lead"><strong>No Messages</strong><br> You have no messages.</p></div></div>			
+			<h3>Delete your Profile</h3>
+			<div class="col-sm-10">
+			<p class="lead"><strong>Warning</strong> This option permanently deletes all of the data associated with you in our database. We will retain school information as a precaution until we are notified of any changes.</p>
+			<br />
+			<button class="btn btn-danger btn-lg">Delete Profile</button>
+			</div>
+		</div><!-- /#profile -->
 		<div class="row hidden-welcome" id="delegates">
 			<h1 class="default-head">Delegates</h1>
 			<p class="lead">Assign your organization's delegate positions to individual students below.</p>

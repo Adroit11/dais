@@ -5,6 +5,10 @@
 	$committees_crisis = $this->nu_schools->get_crisis_committees();
 	$committees_non_crisis = $this->nu_schools->get_non_crisis_committees();
 	$all_staff = $this->secretariat_func->get_all_staff();
+	$all_schools = $this->secretariat_func->get_all_schools();
+	$status_alert = $this->secretariat_func->conference_status('alert');
+	$status_panel = $this->secretariat_func->conference_status('panel');
+	$current_conference = $this->secretariat_func->current_conference();
 ?>
 <!doctype html>
 <html>
@@ -419,7 +423,7 @@ function results(){
           	<li class="dropdown">
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Conference <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
-	            <li><a href="#sec-conf-settings" class="app-page">Conference Setup</a></li>
+	            <li><a href="#sec-conf-settings" class="app-page">Setup</a></li>
 	            <li><a href="#sec-alerts" class="app-page">Issue Alert</a></li>
 	          </ul>
 	        </li>
@@ -500,6 +504,14 @@ function results(){
 			</div>
 		</div>
 		<div class="col-md-4 col-md-offset-1">
+		<?php if (isset($current_conference)){?>
+		<h3 class="lead"><?php echo $current_conference; ?></h3>
+		<?php echo $status_alert; 
+			}else{
+				echo '<div class="alert alert-danger">No conference has been set up. <br> Create a new conference under <strong>Conference > Setup</strong>.</div>';
+			}
+		?>
+		
 		<h3 class="lead">Upcoming Meetings & Events</h3>
 		<ul class="event-list">
 		<li><strong>9/18</strong> <div class="pull-right">New Staff Introduction</div></li>
@@ -510,12 +522,36 @@ function results(){
 		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
 		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
 		</ul>
+		<div class="col-xs-5">
+		<button class="btn btn-success btn-block">
+		<i class="fa fa-plus"></i>&nbsp;&nbsp;New
+		</button>
+		</div>
+		<div class="col-xs-7">
+		<button class="btn btn-primary btn-block">
+		<i class="fa fa-calendar-o"></i>&nbsp;&nbsp;Manage Events
+		</button>
+		</div>
+		<p>&nbsp;</p>
 		<h4 class="lead">Important Dates</h4>
 		<ul class="event-list">
 		<li><strong>4/15-4/18 2015</strong> NUMUN XII <br /><em>Required for all members</em></li>
 		</ul>
 		</div>
 		</div><!-- /#welcome -->
+		<div class="row hidden-welcome" id="sec-conf-settings">
+			<h1 class="default-head">Conference Setup</h1>
+			<h3><?php echo $current_conference; ?></h3>
+			<p class="lead">Name</p>
+			<p class="lead">Secretary-General</p>
+			
+			<p class="lead">Registration Status</p>
+			<form class="form-horizontal">
+				<select id="reg-status" class="form-control"><option>Select a Status...</option><option>Closed</option><option>Open</option><option>Waitlist</option></select>
+			</form>
+			<p class="lead">Registration Message</p>
+			<h3>Past Conferences</h3>
+		</div>
 		<div class="row hidden-welcome" id="user">
 			<h1 class="default-head">Profile</h1>
 			<ol class="breadcrumb">
@@ -564,6 +600,7 @@ function results(){
 		<div class="row hidden-welcome" id="sec-reg-schools">
 			<h1 class="default-head">Registered Schools</h1>
 			<div class="row">
+						  <?php echo $status_panel; ?>
 			              <div class="col-lg-4 col-md-6">
 			              	<div class="panel panel-primary">
                             <div class="panel-heading">
@@ -607,10 +644,22 @@ function results(){
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                          	</div>
 			              </div>
+                          
 			</div>
 			<h3>All Schools</h3>
+			<table class="table table-hover">
+				<thead>
+				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Slots</th></tr>
+				</thead>
+				<tbody>
+				<?php
+				echo $all_schools;
+				?>
+
+			<br><hr><br>
+			
 			<table class="table table-hover table-bordered">
 				<tr><th class="col-md-4">School</th><th>Primary Adviser</th><th>Address</th><th># of Advisers</th><th>Delegates</th><th>Preferences</th></tr>
 <tr id="row001" class="collapse in"><td><div class="col-md-6"><strong>Seven Hills School</strong><br /> Cincinnati, OH</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show001">Show</button></div></td></tr>
