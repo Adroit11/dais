@@ -91,4 +91,29 @@ class New_reg extends CI_Model
 	$this->db->insert('advisers', $adviser); 
 			
 	}
+	
+	public function confirmationMessage(){
+	$query = $this->db->query('SELECT * FROM conference WHERE current=1');
+	if ($query->num_rows() > 0){
+		if ($query->num_rows() > 1){
+			//multiple conferences, throw error
+			return false;
+		}elseif($query->num_rows() == 1){
+		$row = $query->row(); 
+		$thankYou = $row->reg_thank_you;
+		$secGen = $row->sec_gen;
+		$numerals = $row->numerals;
+		$confPage = array(
+			'thankYou' => $thankYou,
+			'secGen' => $secGen,
+			'numerals' => $numerals,
+		);
+		return $confPage;
+		}
+	}else{
+		//0 rows returned
+		return false;
+	}
+		
+	}
 }

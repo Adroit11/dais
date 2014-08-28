@@ -245,6 +245,32 @@ border: 0px solid transparent;
 			}else{
 			$("#error-message").text(error);
 			}
+			if(response.adviserName){
+				var adviserName = response.adviserName;
+				var adviserEmail = response.adviserEmail;
+				var schoolID = response.schoolID;
+				var email = response.email;
+				var phone = response.phone
+				var school = response.school;
+				var address = response.address;
+				var delMin = response.delMin;
+				var delMax = response.delMax;
+				var thankYou = response.thankYou;
+				var secGen = response.secGen;
+				var numerals = response.numerals;
+				
+				$('#confirmEmail').text(adviserEmail);
+				$('#confirmName').text(adviserName);
+				$('#confirmPrimaryPhone').text(phone);
+				$('#confirmSchoolName').text(school);
+				$('#confirmAddress').text(address);
+				$('#confirmMin').text(delMin);
+				$('#confirmMax').text(delMax);
+				$('#confirmSecGenThanks').html(thankYou);
+				$('#secGenName').text(secGen);
+				$('#confirmNumerals').text(numerals);
+				
+			}
 			$("#error-message").addClass("alert-" + type + "");
 			$("#waiting").hide();
 			$("#reg-progressbar").attr("aria-valuenow", "100");
@@ -590,7 +616,7 @@ border: 0px solid transparent;
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
             <li class="lead"><a href="/login" id="sys-title">ACCESS</a></li>
-			<li> <a href="#register" class="smoothScroll">Registration</a></li>
+			<li> <a href="#" class="smoothScroll">Registration</a></li>
 			<li id="emergency-link"> <a href="#emergency" class="smoothScroll"><i class="fa fa-exclamation-triangle fa-inverse" id="emergency-link-icon"></i>&nbsp;&nbsp; Alert</a></li>
           </ul>
           <!--
@@ -1528,36 +1554,16 @@ border: 0px solid transparent;
 		  <div class="form-group">
 			    <label class="col-sm-4 control-label">Number of Delegates</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static" id="confirmMinMax"><strong>0</strong> to <strong>1,000</strong> delegates</p>
-			    </div>
-			</div>
-			<div class="form-group">
-			    <label class="col-sm-4 control-label">Number of Delegations</label>
-			    <div class="col-sm-8">
-			      <p class="form-control-static" id="confirmDelType"></p>
-			    </div>
-			</div>
-			<div class="form-group">
-			    <label class="col-sm-4 control-label">Crisis Committees</label>
-			    <div class="col-sm-8">
-			      <p class="form-control-static" id="confirmCrisis"></p>
-			    </div>
-			</div>
-			<div class="form-group">
-			    <label class="col-sm-4 control-label">Press Corps</label>
-			    <div class="col-sm-8">
-			      <p class="form-control-static" id="confirmPress"></p>
+			      <p class="form-control-static"><strong><span id="confirmMin">0</span></strong> to <strong><span id="confirmMax">1,000</span></strong> delegates</p>
 			    </div>
 			</div>
 		  <p class="lead">Thank You</p>
 		  <div class="form-group">
 		  <div class="col-sm-8 col-sm-offset-2">
-		  <div id="confirmSecGenThanks">
-		  </div>
+		  <div id="confirmSecGenThanks"></div>
 		  	<!--<p>You have successfully registered your team for NUMUN XII. This confirmation page and the email you should receive soon represent confirmation that we have secured at least your minimum number of desired spots for the 2015 conference. Remember that you can make changes to your preferences by logging in to your account at this site.</p>
-		  	<p>Thanks again for deciding to attend NUMUN XII. Our staff is excited to work with your bright and innovative delegates!</p>
-		  	<p class="lead">Evie Atwater <br/><small>Secretary-General, NUMUN XII</small></p>-->
-		  	<p class="lead" id="confirmSecGenSignature"></p>
+		  	<p>Thanks again for deciding to attend NUMUN XII. Our staff is excited to work with your bright and innovative delegates!</p>-->
+		  	<p class="lead"><span id="secGenName"></span> <br/><small>Secretary-General, NUMUN <span id="confirmNumerals"></span></small></p>
 		  	 <p>&nbsp;</p>
 		  </div>
 		  </div>

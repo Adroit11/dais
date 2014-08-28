@@ -40,12 +40,13 @@ class Registration extends CI_Controller {
 									'first_name' => $this->input->post('primaryFirstName'),
 									'last_name' => $this->input->post('primaryLastName'),
 									);
-			$group = array('4'); // Sets user to adviser. No need for array('1', '2') as user is always set to member by default <- what are the implications of this?
+			$group = array('4'); // Sets user to adviser. No need for array('1', '2') as user is always set to member by default <- what are the implications of this? Staff has to be given a different number
+			
 	
 			$adviserID = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
 			//check for errors
 			if ($adviserID == false){
-			$errormessage = "Sorry, we couldn&spos;t complete the registration process because there was an error while creating an adviser account. Please email us at support@numun.org.";
+			$errormessage = "Sorry, we couldn\'t complete the registration process because there was an error while creating an adviser account. Please email us at support@numun.org.";
 			}else{
 			
 			/*---------------------------------------------
@@ -79,7 +80,7 @@ class Registration extends CI_Controller {
 			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $minDelSlots, $maxDelSlots, $delType, $crisis_pref, $press_pref, $country1, $country2, $country3);
 			if ($schoolID == false){
 				//error
-				$errormessage = "Sorry, we couldn&spos;t complete the registration process because there was an error while entering your school into our database. However, your adviser account was created. Please contact us at support@numun.org to continue registration.";	
+				$errormessage = "Sorry, we couldn\'t complete the registration process because there was an error while entering your school into our database. However, your adviser account was created. Please contact us at support@numun.org to continue registration.";	
 			}else{
 			
 			//we have the userid of the adviser account created above: $adviserID 
@@ -90,7 +91,7 @@ class Registration extends CI_Controller {
 			$newPrimary = $this->new_reg->newPrimaryAdviser($adviserID , $schoolID, $fullName, $phone);
 			if ($newPrimary == false){
 				//error
-				$errormessage = "Sorry, we couldn&spos;t complete the registration process because there was an error while entering your contact information into our database. However, your adviser account was created and your school preferences were saved. Please contact us at support@numun.org before logging in.";
+				$errormessage = "Sorry, we couldn\'t complete the registration process because there was an error while entering your contact information into our database. However, your adviser account was created and your school preferences were saved. Please contact us at support@numun.org before logging in.";
 			}else{
 			//secondary advisers need either unique userids or a different table see Issue #12
 			//get secondary adviser information, for each one:
@@ -122,11 +123,33 @@ class Registration extends CI_Controller {
 				);
 				$json = json_encode($jsonarray);
 			}else{
-				$jsonarray = array(
+			//no errors
+			//get messages from database for confirmation page
+			$confMessages = $this->new_reg->confirmationMessage();
+			
+			//generate human-readable school ID rather than database ID 
+			//(i.e., 0 (optional) + db ID + last 2 of ZIP
+					$last2 = substr($schoolZIP, -2);
+					if (strlen($schoolID) < 2){
+						$customer_number = '0'.$schoolID.$last2;
+					}else{
+						$customer_number = $schoolID.$last2;
+					}
+				$confirmVariables = array(
+					//success so send submitted variables
 					'errormessage' => 'What? Everything worked, apparently. Whoa!',
 					'type' => 'success',
-					
+					'adviserEmail' => $email,
+					'adviserName' => $newPrimary,
+					'schoolID' => $customer_number,
+					'email' => $email,
+					'phone' => $phone,
+					'school' => $schoolName,
+					'address' => $schoolAddress,
+					'delMin' => $minDelSlots,
+					'delMax' => $maxDelSlots,
 				);
+				$jsonarray = array_merge($confirmVariables, $confMessages);
 				$json = json_encode($jsonarray);
 			}
 			echo $json;
