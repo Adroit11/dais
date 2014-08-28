@@ -181,10 +181,11 @@ class Secretariat_func extends CI_Model
 		   $schools_result .= '<tr>';
 		   $schools_result .= '<td>' . $row->id . '</td>';
 		   $schools_result .= '<td>' . $row->school_name . '</td>';
-		   $schools_result .= '<td>' . $row->adviser_name . '<br />' . $row->adviser_phone . '</td>';
+		   $schools_result .= '<td><strong>' . $row->adviser_name . '</strong><br />' . $row->adviser_phone . '</td>';
 		   $schools_result .= '<td>' . $row->address . '<br />'. $row->city .', '. $row->state .' '. $row->zipcode .'</td>';
 		   $schools_result .= '<td><strong>' . $row->min_del_slots . '</strong> to <strong>' . $row->max_del_slots . '</strong></td>';
 		   $schools_result .= '<td><button class="btn btn-success btn-sm">Assign Slots</button><br />School ID:' . $row->id . '</td>';
+		   $schools_result .= '<td><button class="btn btn-info btn-sm">Email</button></td>';
 		   $schools_result .= '</tr>';
 		   }
 		   $schools_result .= '</tbody></table>';

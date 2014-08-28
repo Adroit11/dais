@@ -267,7 +267,8 @@ border: 0px solid transparent;
 			}
 		}});
 	}
-	$(window).scroll(function(){
+	/*$(window).scroll(function(){
+	// super glitchy
 		var logoTop = $('#logo-top').offset();
 		if ($(window).scrollTop() > logoTop.top){
 		

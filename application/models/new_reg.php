@@ -59,6 +59,22 @@ class New_reg extends CI_Model
 	);
 	
 	$this->db->insert('advisers', $adviser); 
+	//
+	$adviserQuery = $this->db->query('SELECT * FROM advisers WHERE userid=\''.$userid.'\' AND schoolid=\''.$schoolid.'\'');
+	if ($adviserQuery->num_rows() > 0){
+		if ($adviserQuery->num_rows() > 1){
+			//multiple advisers, throw error
+			return false;
+		}elseif($adviserQuery->num_rows() == 1){
+		$row = $adviserQuery->row(); 
+		$adviserName = $row->name;
+		return $adviserName;
+		}
+	}else{
+		//0 rows returned
+		return false;
+	}
+
 		
 	}
 	public function newSecondaryAdviser($userid, $schoolid, $fullName, $phone){

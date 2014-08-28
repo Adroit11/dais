@@ -617,7 +617,7 @@ function results(){
                         </div>
 			              </div>
 			              <div class="col-lg-4 col-md-6">
-                          	<div class="panel panel-primary">
+                          	<div class="panel panel-info">
                             <div class="panel-heading">
                                 <div class="row">
                                     <div class="col-xs-3">
@@ -651,7 +651,7 @@ function results(){
 			<h3>All Schools</h3>
 			<table class="table table-hover">
 				<thead>
-				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Slots</th></tr>
+				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Slots</th><th>Email</th></tr>
 				</thead>
 				<tbody>
 				<?php

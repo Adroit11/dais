@@ -6,23 +6,30 @@ class Registration extends CI_Controller {
 			$this->load->helper('url');
 			$this->load->model('nu_schools');
 			$this->load->model('new_reg');
-			
-			$adviser = array(4);
-			if ($this->ion_auth->logged_in() && $this->ion_auth->in_group($adviser)){
+			if ($this->ion_auth->logged_in()){
 			//already logged in; don't create an account
 			//We don't want to re-direct and confuse. Let's give them a button to go to the page to edit prefs
+			$errorIcon = 'fa-exclamation-triangle';
+			$errorTitle = 'Already Logged In';
+			$errorMessage = 'It looks like you\'re already logged in to your account.';
+			$loggedInLink = '/welcome';
+			$loggedInLinkText = 'Your Account';
 			
-			
-			
-			$jsonresponse = '[';
-			//Something like, "Hey there [name], We're not sure how you got here, but the proper place to edit school preferences is [link]
-			$jsonresponse .= ']';
-			
-			return $jsonresponse;
-			
+			$jsonarray = array(
+					'errorIcon' => $errorIcon,
+					'errorTitle' => $errorTitle,
+					'errorMessage' => $errorMessage,
+					'link' => $loggedInLink,
+					'linkText' => $loggedInLinkText,
+					'type' => 'warning',	
+				);
+				$json = json_encode($jsonarray);
+			echo $json;
+
 			}else{
+			//user is not logged in, can register
 			$username = $this->input->post('accountEmail');
-			if(!empty($username)){
+			if($username !== false){
 			/*---------------------------------------------
 			--------Step 1. -- Create an adviser account --
 			-----------------------------------------------*/
@@ -52,22 +59,24 @@ class Registration extends CI_Controller {
 			$minDelSlots = $this->input->post('minDelSlots');
 			$maxDelSlots = $this->input->post('maxDelSlots');
 			$delType = $this->input->post('delType');
+			$crisis = $this->input->post('crisis');
+			$press = $this->input->post('press');
 			//Crisis and press prefs are boolean options, we have to check to see if their checkboxes are checked
-			if(!empty($this->input->post('crisis'))){
-				$crisis = 1;
+			if($crisis == 1){
+				$crisis_pref = 1;
 			}else{
-				$crisis = 0;
+				$crisis_pref = 0;
 			}
-			if(!empty($this->input->post('press'))){
-				$press = 1;
+			if($press == 1){
+				$press_pref = 1;
 			}else{
-				$press = 0;
+				$press_pref = 0;
 			}
 			$country1 = $this->input->post('countryPref1');
 			$country2 = $this->input->post('countryPref2');
 			$country3 = $this->input->post('countryPref3');
 			
-			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $minDelSlots, $maxDelSlots, $delType, $crisis, $press, $country1, $country2, $country3);
+			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $minDelSlots, $maxDelSlots, $delType, $crisis_pref, $press_pref, $country1, $country2, $country3);
 			if ($schoolID == false){
 				//error
 				$errormessage = "Sorry, we couldn&spos;t complete the registration process because there was an error while entering your school into our database. However, your adviser account was created. Please contact us at support@numun.org to continue registration.";	
@@ -97,8 +106,8 @@ class Registration extends CI_Controller {
 			$this->new_reg->newSecondaryAdviser($adviserID , $schoolID, $name3, $phone3);
 			}
 			if (!empty($this->input->post('fourthName')) && !empty($this->input->post('fourthPhone'))){
-			$name3 = $this->input->post('thirdName');
-			$phone3 =  $this->input->post('thirdPhone');
+			$name4 = $this->input->post('fourthName');
+			$phone4 =  $this->input->post('fourthPhone');
 			$this->new_reg->newSecondaryAdviser($adviserID , $schoolID, $name4, $phone4);
 			}
 			}//New Primary adviser failed?
@@ -106,7 +115,12 @@ class Registration extends CI_Controller {
 			}//$adviserID false?
 			//return confirmation info
 			if(!empty($errormessage)){
-				$json = '{"errormessage": "'.$errormessage.'", "type": "warning"}';
+				$jsonarray = array(
+					'errormessage' => $errormessage,
+					'type' => 'warning',
+					
+				);
+				$json = json_encode($jsonarray);
 			}else{
 				$jsonarray = array(
 					'errormessage' => 'What? Everything worked, apparently. Whoa!',
@@ -115,10 +129,11 @@ class Registration extends CI_Controller {
 				);
 				$json = json_encode($jsonarray);
 			}
-			return $json;
+			echo $json;
 			
 			//username empty
 			}else{
+			//accountEmail not set
 			$json = '{"errormessage": "No data was submitted.", "type": "danger"}';
 			echo $json;
 			}

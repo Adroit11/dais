@@ -233,9 +233,23 @@ border: 0px solid transparent;
 			var response = $.parseJSON(response);
 			var error = response.errormessage;
 			var type = response.type;
+			if(response.errorTitle){
+				var icon = response.errorIcon;
+				var title = response.errorTitle;
+				var message = response.errorMessage;
+				var link = response.link;
+				var linkText = response.linkText;
+				var htmlErrorMessage = '<h3><i class="fa '+ icon +'"></i>' + title + '<a href="' + link + '" class="btn btn-info pull-right">' + linkText + '</a></h3> ' + message + '';
+				
+				$("#error-message").html(htmlErrorMessage);
+			}else{
 			$("#error-message").text(error);
+			}
 			$("#error-message").addClass("alert-" + type + "");
 			$("#waiting").hide();
+			$("#reg-progressbar").attr("aria-valuenow", "100");
+			$("#reg-progressbar").css("width", "100%");
+			$("#reg-progressbar-sr").html("100% Complete");
 			$("#submitDone").show();
 			},
 		error: function(){
@@ -497,7 +511,7 @@ border: 0px solid transparent;
 				$('#submit-reg-2').prop("disabled", true);
 			}else{
 				var zipLength = $(this).val().length;
-				if(zipLength == 5){
+				if(zipLength >= 5){
 					$('#submit-reg-2').prop("disabled", false);
 				}else{
 					$('#submit-reg-2').prop("disabled", true);
@@ -601,6 +615,13 @@ border: 0px solid transparent;
 			
 			<div class="reg-title" id="reg-title-1">
 				<h2>Step 1     <small>&nbsp;&nbsp;Create Account</small></h2>
+				<noscript>
+				<div class="alert alert-danger">
+				<h3><i class="fa fa-exclamation-triangle"></i> &nbsp; JavaScript is Disabled <a href="http://www.enable-javascript.com/" target="_blank" class="btn btn-info pull-right"><i class="fa fa-external-link"></i> &nbsp;Enable JavaScript</a></h3>
+				Registration for NUMUN requires JavaScript to be enabled in your browser.
+				
+				</div>
+				</noscript>
 				
 			</div>
 			<div class="reg-title" id="reg-title-2">
@@ -1470,7 +1491,7 @@ border: 0px solid transparent;
 		  <p class="text-center"><i class="fa fa-refresh fa-spin fa-4x"></i></p>
 		  </div>
 		  <div id="submitDone">
-		  <div class="alert" role="alert" id="error-message"><strong>All done!</strong> Your information has been saved and your account is now active. <a href="/" class="btn btn-primary btn-sm pull-right ">Login Now</a></div>
+		  <div class="alert" role="alert" id="error-message"><strong>All done!</strong> Awaiting confirmation from the server.</div>
 		  <p class="lead">Your Account & Contact Information</p>
 		  	<div class="form-group">
 			    <label class="col-sm-4 control-label">Email Address</label>
