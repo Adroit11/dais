@@ -8,14 +8,13 @@ Goals
 ---------
 1. Handle school registration
   * Advisers create an account and register online
-  * Advisers can edit their preferences online after registration 
-  * School/adviser data preserved year-to-year 
+  * Advisers can edit their preferences online ~~after~~ during registration 
+  * School/adviser data preserved year-to-year (if requested)
 2. Collect New Staff information
 3. Member/Staff Information
   * Central location for all documents and resources concerning conference preparation
   * Track meeting attendance
   * Record delegate attendance during conference
-
 4. Generate online invoices
   * And updated account balance
   * No online bill payment
