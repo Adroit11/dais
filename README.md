@@ -6,6 +6,9 @@ Create a beautiful, secure online registration and management system for a Model
 
 Goals
 ---------
+
+[Status of critical features](https://github.com/NUMUN/dais/wiki/Status-of-Critical-Features)
+
 1. Handle school registration
   * Advisers create an account and register online
   * Advisers can edit their preferences online ~~after~~ during registration 
