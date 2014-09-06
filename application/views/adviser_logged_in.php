@@ -9,6 +9,7 @@
 	$school_country_prefs = $this->reg_preferences->getSchoolCountryPrefs($school_id);
 	$school_advisers = $this->reg_preferences->additionalAdvisers($school_id);
 	$delegate_slots = $this->nu_schools->get_delegate_slots($school_id);
+	$phone = $this->nu_schools->get_phone($userid);
 	$last2 = substr($school_zip, -2);
 	if (strlen($school_id) < 2){
 		$customer_number = '0'.$school_id.$last2;
@@ -16,306 +17,10 @@
 		$customer_number = $school_id.$last2;
 	}
 ?>
-<!doctype html>
-<html>
-	<head>
-	<title>Advisers - NUMUN</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href='//fonts.googleapis.com/css?family=Raleway:400,700,300' rel='stylesheet' type='text/css'>
-	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-	<link href="https://dl.dropboxusercontent.com/s/kuf4za5pbv9kbbx/style.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/css/bootstrapValidator.min.css"/>
-	<style type="text/css">
-	/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-  margin-top: 100px;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 240px;
-}
-div.dark-footer{
-	background: #333;
-	color: #fff;
-	padding: 2.75em 0px 2em 0px;
-}
-div.light-footer{
-	background: #777;
-	color: #eee;
-	padding: 1.75em 0px 1em 0px;
-}
-a.light-footer:link{
-	color: #fff;
-}
-a.light-footer:visited{
-	color: #fff;
-}
-a.light-footer:hover{
-	color: #eee;
-	text-decoration: none;
-}
-a.light-footer:active{
-	color: #fff;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #bbb;
-}
-.container .text-muted {
-  margin: 20px 0;
-}
-*/
-/* Navbar
--------------------------------------------------- */
-.navbar-default {
-border-color: transparent;
-background-color: #dadada;
-}
-.navbar.container{
-	height: 50px;
-}
-div#main-nav-content{
-	height: 50px;
-}
-div#main-nav-content.compact{
-	height: 30px;
-	font-size: 0.8em;
-}
-.navbar-toggle {
-border-color: transparent;
-border: 0px solid transparent;
-}
 
-.navbar-default .navbar-nav > li > a:hover,
-.navbar-default .navbar-nav > li > a:focus {
-	background-color: #16a085;
-	color: white;
-}
-.navbar-header{
-	background: url('https://dl.dropboxusercontent.com/s/qxo7l62zezl8hdi/numun-bootstrap-nav.png') no-repeat;
-	background-size: 100%;
-	width: 240px;
-	height: 60px;
-	border-top: 8px transparent solid;
-	border-left: 10px transparent solid;
-}
-.navbar{
-	font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	font-size: 1.2em;
-}
-.navbar-brand{
-	display: none;
-}
+<?php $this->html_includes->load_page("adviser_head"); ?>
+<?php $this->html_includes->load_page("adviser_scripts"); ?>
 
-/* Custom styles
--------------------------------------------------- */
-	.hidden-welcome{
-	    display: none;
-    }
-	.header{
-		color:#f0f0f0;
-		font-family: 'Raleway', sans-serif;
-		padding-top: 0.5em;
-		padding-left: 1em;	
-	}
-	h1.header{
-		font-weight: 800;
-	}
-	h2.header{
-		font-weight: 400;
-	}
-	
-	.main-container{
-		margin-top: 1em;
-		width: 70%;
-		margin-right: auto;
-		margin-left: auto;
-	}
-	.default-head{
-		padding: 15px 0px 10px 0px;
-		font-family: 'Raleway', sans-serif;	
-		font-weight: 600;
-		font-size: 3em;
-		color: #74007d;
-		text-transform: uppercase;
-		border-bottom: 1px solid rgba(116,0,125,0.75);
-		margin-bottom: 1.5em;
-	}
-	.emergency-head{
-		padding:10px;
-		font-family: 'Raleway', sans-serif;	
-		font-weight: 400;
-		color: white;
-		background: #e21a1a;
-	}
-	#emergency, #emergency-link{
-		display: none;
-	}
-	i#emergency-link-icon{
-		color: #e21a1a;
-	}
-	#emergency-icon{
-		color: #e21a1a;
-		padding: 0.5em;
-	}
-	.reg-container.form-control{
-		width: 60% !important;
-	}
-	.third-adviser, .fourth-adviser{
-		display: none;
-	}
-	.invoice-container{
-		width: 60%;
-	}
-	tr#total-row{
-		border-top: solid #333 2px;
-	}
-	tr.double-del {
-	border-left: 3px solid #317bb4;
-	}
-	.print-header{
-		display: none;
-	}
-	.spacious{
-	background-color: #f0f0f0;
-	padding: 30px 0px;
-	margin-top:-21px;
-	margin-bottom: 40px;
-	}
-	/*---Stack buttons---*/
-	@media (max-width: 767px) {
-    .btn-vert-block + .btn-vert-block {
-        margin-top: 10px;    
-    }    
-	}
-	@media print {
-	html{
-	margin-top:0px;
-	}
-	.print-header{
-		display: block;
-		width: 300px;
-	}
-	.default-head{
-		font-size: 2em;
-	}
-	.btn{
-		display: none;
-	}
-	.footer{
-		display: none;
-	}
-  /*[class*="col-sm-"] {
-    float: left;
-  }*/
-
-}
-	</style>
-	<script src="https://dl.dropboxusercontent.com/s/6tls9z1rsoh4yc2/jquery.min.js"></script>
-	<script type="text/javascript">
-	$( document ).ready(function() {
-    	console.log( "ready!" );
-    		$(window).on("ready scroll resize", function () {
-				handleScroll()
-			});
-		$(".app-page").click(function(){
-			var showID = $(this).attr("href");
-			$("#welcome").hide();
-			$(".hidden-welcome:visible").hide();
-			$(showID + ":hidden").fadeIn("fast");
-			if ($(".dropdown-menu:visible").index > -1)
-			{
-				$(".dropdown-menu:visible").hide();	
-			}
-			$(window).scrollTop(0);
-			return false;
-		});
-		$(".welcome-page").click(function(){
-			$(".hidden-welcome:visible").hide();
-			$("#welcome").fadeIn("fast");
-			if ($(".dropdown-menu:visible").index > -1)
-			{
-				$(".dropdown-menu:visible").hide();	
-			}
-			$(window).scrollTop(0);
-			return false;
-		});
-		$('.pop').popover({placement: 'right', trigger: 'hover'});
-		$('.pop').click(function(e){
-		e.preventDefault();
-		});
-		$("#del-assignments-submit").click(function(event){
-			event.preventDefault();
-			var del_formdata = $(".delegate-assign:input").serialize();
-			console.log(del_formdata);
-			$.post( "/assign_delegates/submit", del_formdata, function(data) {
-			var updates = jQuery.parseJSON(data);
-			for ( var i in updates) {
-	        var id = updates[i].id;
-	        var name = updates[i].name;
-	        console.log(id);
-	        console.log(name);
-			$('#slot_' + id + '_exists').parent().html('<span class="del-name-exists">' + name + '</span>&nbsp;&nbsp;<a href="#" class="btn btn-xs btn-warning pull-right edit-slot new" id="slot_' + id + '_exists">Edit</a>');
-			}
-			}, "text");
-			$('.currently:visible').remove();
-			});
-		$(".double-del").tooltip();
-		$(".edit-slot").click(function(e){
-			e.preventDefault();
-			$(this).after('<a href="#" class="btn btn-danger btn-sm pull-right undo-edit"><i class="fa fa-times fa-inverse"></i></a>');
-			$(this).hide();
-			$(this).parent().prepend('<span class="currently" style="font-weight: bold;">Currently:&nbsp;</span>');
-			$(this).find(".del-name-exists").wrapInner('<p class="editing_slot"></p>');
-			var slot_exists = $(this).attr('id');
-			var slot = slot_exists.substring(0, slot_exists.length - 7);
-			console.log(slot);
-			$(this).after('<br /><div class="form-group col-sm-8"><input type="text" class="form-control delegate-assign" name="' + slot + '" id="' + slot + '" placeholder="New Delegate"></div>');
-		});
-		$(document).on("click", ".undo-edit", function(e){
-			console.log('fired');
-			e.preventDefault();
-			console.log('fired');
-			$(this).parent().find(".currently").detach();
-			$(this).parent().find(".form-group").detach();
-			$(this).parent().find(".edit-slot:hidden").show();
-			$(this).detach();
-		});
-		$("#edit-delegate-numbers").click(function(e){
-			e.preventDefault();
-			$(this).after('<a href="#" class="btn btn-danger btn-sm pull-right undo-edit"><i class="fa fa-times fa-inverse"></i></a>');
-			$(this).hide();
-			
-			
-		});
-
-	});
-	function handleScroll(){
-                if($(window).scrollTop()<=100)
-                {
-                    $(".navbar-brand").hide();
-                    $('#main-nav-content').removeClass('compact');
-                    $("#navbar-quick-login").show();
-                    $(".navbar-header").show();
-                }
-                else
-                {
-                    $('#main-nav-content').addClass('compact');
-                    $("#navbar-quick-login").hide();
-                    $(".navbar-header").hide();
-                    $(".navbar-brand").hide();
-                }
-            }        
-   
-
-	</script>
 	</head>
 	<body data-spy="scroll" data-offset="0" data-target="#navbar-main">
 	<div id="navbar-top">
@@ -400,7 +105,7 @@ border: 0px solid transparent;
 			<h3>Delegates</h3>
 			<?php echo $school_del_reg; ?>
 			<div class="col-sm-4">
-				<button class="btn btn-warning" id="edit-delegate-numbers">Edit</button>
+				<button class="btn btn-warning" id="edit-delegate-numbers" disabled="disabled">Edit</button>
 			</div>
 		</div>
 		<div class="row">
@@ -409,7 +114,7 @@ border: 0px solid transparent;
 		<?php echo $school_country_prefs; ?>
 		</div>
 		<div class="col-sm-4">
-			<button class="btn btn-warning" id="edit-countries">Edit</button>
+			<button class="btn btn-warning" id="edit-countries" disabled="disabled">Edit</button>
 		</div>
 		</div>
 		<div class="row">
@@ -420,7 +125,7 @@ border: 0px solid transparent;
 		</div>
   		<div class="col-sm-6">
   			<p>&nbsp;</p>
-  			<button class="btn btn-success" id="del-assignments-submit" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
+  			<button class="btn btn-success" id="school-prefs-save" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
   			</div>
 
 		</div><!-- /#register -->
@@ -470,15 +175,17 @@ border: 0px solid transparent;
 				</tr>
 			</table>
 			<div class="col-sm-1">
-			<button type="button" class="btn btn-primary">Print&nbsp;&nbsp;<i class="fa fa-print fa-inverse"></i></button>
+			<button type="button" class="btn btn-primary" onclick="window.print()">Print&nbsp;&nbsp;<i class="fa fa-print fa-inverse"></i></button>
 			</div>
 			<div class="col-sm-2 col-sm-offset-1">
-			<button type="button" class="btn btn-primary">Save PDF&nbsp;&nbsp;<i class="fa fa-file fa-inverse"></i></button>
+			<button type="button" class="btn btn-primary" disabled="disabled">Save PDF&nbsp;&nbsp;<i class="fa fa-file fa-inverse"></i></button>
 			</div>
 			<div class="col-sm-2 pull-right">
 			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#paymentInfo">How to Pay</button>
 			</div>
 			<p>&nbsp;</p>
+			
+			
 		</div><!-- /#invoice -->
 		<div class="row hidden-welcome" id="forms">
 			<h1 class="default-head">Forms & Downloads</h1>
@@ -489,12 +196,12 @@ border: 0px solid transparent;
 			<div class="col-sm-6">
 			<h3>Liability Waiver</h3>
 			<p>This document waives and holds harmless NUMUN and Northwestern University from liability related to attending the NUMUN conference.</p>
-			    <button class="btn btn-lg btn-success">Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></button>
+			    <button class="btn btn-lg btn-success" disabled="disabled">Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></button>
 			</div>
 			<div class="col-sm-6">
 			<h3>Photo Release</h3>
 			<p>This document allows NUMUN to use the names and photographs of individual delegates for advertising and marketing purposes in the future.</p>
-			    <button class="btn btn-lg btn-success">Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></button>
+			    <button class="btn btn-lg btn-success" disabled="disabled">Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></button>
 			</div>
 		</div><!-- /#forms -->
 		<div class="row hidden-welcome" id="profile">
@@ -508,36 +215,82 @@ border: 0px solid transparent;
 			<div class="form-group">
 				<label class="col-md-4 control-label" for="primaryPhone">Phone Number</label>
 				<div class="col-md-6 col-md-offset-1">
-				<input type="text" class="form-control" id="primaryPhone" value="(773) 616-1658">
+				<input type="text" class="form-control" id="primaryPhone" value="<?php echo $phone; ?>">
 				</div>
 			</div>
 			<div class="form-group">
-			  <label class="col-md-4 control-label" for="checkboxes">Emergency Text Messages</label>
+			  <label class="col-md-4 control-label" for="checkboxes">Would you allow our staff to send you a text message (SMS) in a serious emergency? <small>(Opt-In; Charges may apply.)</small></label>
 			  <div class="col-md-6 col-md-offset-1">
 			  <div class="radio">
 			    <label for="checkboxes-0">
 			      <input type="radio" name="checkboxes" id="checkboxes-0" value="yes">
-			      Yes, in an emergency, please text me at <strong>773-616-1658</strong>
-			    </label>
-			  </div>
-			  <div class="radio">
-			    <label for="checkboxes-0">
-			      <input type="radio" name="checkboxes" id="checkboxes-0" value="yes">
-			      Yes, but text me at <input type="text" id="cellPhone" placeholder="Cell #"> instead. 
+			      Yes, in an emergency, please text me at <strong><?php echo $phone; ?></strong>
 			    </label>
 			  </div>
 			  <div class="radio">
 			    <label for="checkboxes-1">
-			      <input type="radio" name="checkboxes" id="checkboxes-1" value="no">
+			      <input type="radio" name="checkboxes" id="checkboxes-1" value="yes">
+			      Yes, but text me at <input type="text" id="phone-2" placeholder="Cell #"> instead. 
+			    </label>
+			  </div>
+			  <div class="radio">
+			    <label for="checkboxes-2">
+			      <input type="radio" name="checkboxes" id="checkboxes-2" value="no">
 			      No, please do not text me.
 			    </label>
 			  </div>
 			  <span class="help-block">We will not text you for any other reason.</span>  
 			  </div>
 			</div>
+			<div class="col-md-2 col-md-offset-9">
+			<button class="btn btn-success pull-right" id="save-contact-prefs"><i class="fa fa-check"></i> &nbsp; Save</button>
+			</div>
 			</form>
 			<h3>Privacy Preferences</h3>
+			<p class="lead">About Your Privacy</p>
+			<div class="row">
+			<div class="col-md-3">
+			<p>Your personal data includes:</p>
+			<ul>
+			<li>name</li>
+			<li>phone number(s)</li>
+			<li>email address</li>
+			<li>School/organization name and mailing address</li>
+			</ul>
+			</div>
+			<div class="col-md-6 col-md-offset-2">
+			<p class="help-block">We respect your privacy. Your information will never be sold and will not be provided to a third party, except as strictly necessary for the operation of the NUMUN conference.</p>
+			</div>
+			<p>&nbsp;</p>
+			</div>
+			<p class="lead">Options</p>
 			<p>At the conclusion of NUMUN XII, we will remove your information from our database if you wish. Otherwise, we may store your school address and other information to speed up the registration process for you in future years.</p>
+			<form class="form-horizontal">
+			<div class="form-group">
+			  <label class="col-md-4 control-label" for="checkboxes">Personal Data</label>
+			  <div class="col-md-6 col-md-offset-1">
+			  <div class="radio">
+			    <label for="checkboxes-0">
+			      <input type="radio" name="checkboxes" id="data-save" value="yes">
+			      Please <strong>keep</strong> my data for next year.
+			    </label>
+			  </div>
+			  <div class="radio">
+			    <label for="checkboxes-1">
+			      <input type="radio" name="checkboxes" id="data-delete" value="no">
+			      Please <strong>permanently remove</strong> my information from your database at the conclusion of the conference.
+			    </label>
+			  </div>
+			  </div>
+			  <div class="col-md-6 col-md-offset-5">
+			  
+			  </div>
+			</div>
+			<div class="col-md-2 col-md-offset-9">
+			<button class="btn btn-success pull-right" id="save-privacy-prefs"><i class="fa fa-check"></i> &nbsp; Save</button>
+			</div>
+			</form>
+			
 			  
 			<h3>Messages</h3>
 			<table class="table table-hover">
@@ -567,10 +320,10 @@ border: 0px solid transparent;
 			</tbody>
   			</table>
   			<div class="col-sm-2">
-  			<button class="btn btn-success" id="del-assignments-submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
+  			<a class="btn btn-success" id="del-assignments-submit" href="#"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</a>
   			</div>
   			<div class="col-sm-2">
-  			<button class="btn btn-primary" id="del-assignments-print"><i class="fa fa-print fa-inverse"></i>&nbsp;&nbsp; Print</button>
+  			<a class="btn btn-primary" id="del-assignments-print" href="#"><i class="fa fa-print fa-inverse"></i>&nbsp;&nbsp; Print</a>
   			</div>
 			</form>
 		</div><!-- /#delegates -->
@@ -597,45 +350,8 @@ border: 0px solid transparent;
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 		</div><!-- /.container -->
-<div class="footer">
-<div class="dark-footer">
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-8 col-xs-6">
-			<h2>Support</h2>
-			<p class="lead">We're here when you need us.</p>
-			<div class="col-sm-3 btn-vert-block">
-				<a href="#" class="btn btn-info"><i class="fa fa-phone fa-inverse"></i>&nbsp;&nbsp; (847) 786-5MUN</a>
-				<p>(847) 786-5686</p>
-			</div>
-			<div class="col-sm-2 col-sm-offset-1 btn-vert-block">
-			<a href="#" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; support@numun.org</a>
-			</div>
-
-			
-			</div><!-- /.col-lg-4-->
-			<div class="col-sm-4 col-xs-6">
-			<h2>NUMUN XII</h2>
-			<p class="lead">It's on.</p>
-			</div><!-- /.col-lg-8 -->
+<?php $this->html_includes->load_page("adviser_footer"); ?>
+<?php $this->html_includes->load_page("adviser_footerscripts"); ?>
 		
-		</div><!-- /.row -->
-		<div class="row">
-		<p>&nbsp;</p>
-		</div><!-- /.row -->
-	</div><!-- /.container -->
-</div><!-- /.dark-footer -->
-	<div class="light-footer">
-      <div class="container">
-        <p class="lead">&copy; 2014 Northwestern University Model United Nations
-        <span class="pull-right"><a href="#" class="light-footer">Back to Top&nbsp;&nbsp;<i class="fa fa-chevron-up"></i></a></span>
-        </p>
-      </div><!-- /.container -->
-	  </div><!-- /.light-footer -->
-    </div>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script src="https://dl.dropboxusercontent.com/s/a0vjlxe9507dezv/tooltip.js"></script>
-		<script src="https://dl.dropboxusercontent.com/s/i5sdei3w9rw68e4/popover.js"></script>
-		<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/vyw905x5bt4btyb/jquery.easing.1.3.js"></script>
 	</body>
 </html>

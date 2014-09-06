@@ -455,10 +455,7 @@ function results(){
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Staff <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
 	            <li><a href="#sec-all-staff" class="app-page">All Staff</a></li>
-	            <li><a href="#myCommitteePage" class="app-page">Public Web Page</a></li>
-	            <li><a href="#attendance" class="app-page">Roster</a></li>
-	            <li class="divider"></li>
-	            <li><a href="#tools" class="app-page">New Staff</a></li>
+	            <li><a href="#sec-add-staff" class="app-page">Add New Staff</a></li>
 	          </ul>
 	        </li>
 			<li id="emergency-link"> <a href="#emergency" class="app-page"><i class="fa fa-exclamation-triangle fa-inverse" id="emergency-link-icon"></i>&nbsp;&nbsp; Alert</a></li>
@@ -469,7 +466,7 @@ function results(){
 	          <ul class="dropdown-menu" role="menu">
 	            <li><a href="#user" class="app-page">Profile</a></li>
 	            <li class="divider"></li>
-	            <li><a href="#logout">Log Out</a></li>
+	            <li><a href="auth/logout">Log Out</a></li>
 	          </ul>
 	        </li>
           <form class="navbar-form navbar-right">

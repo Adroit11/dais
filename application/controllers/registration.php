@@ -11,7 +11,7 @@ class Registration extends CI_Controller {
 			//We don't want to re-direct and confuse. Let's give them a button to go to the page to edit prefs
 			$errorIcon = 'fa-exclamation-triangle';
 			$errorTitle = 'Already Logged In';
-			$errorMessage = 'It looks like you\'re already logged in to your account.';
+			$errorMessage = "It looks like you're already logged in to your account.";
 			$loggedInLink = '/welcome';
 			$loggedInLinkText = 'Your Account';
 			
@@ -46,7 +46,7 @@ class Registration extends CI_Controller {
 			$adviserID = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
 			//check for errors
 			if ($adviserID == false){
-			$errormessage = "Sorry, we couldn\'t complete the registration process because there was an error while creating an adviser account. Please email us at support@numun.org.";
+			$errormessage = "Sorry, we couldn't complete the registration process because there was an error while creating an adviser account. Please email us at support@numun.org.";
 			}else{
 			
 			/*---------------------------------------------
@@ -80,7 +80,7 @@ class Registration extends CI_Controller {
 			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $minDelSlots, $maxDelSlots, $delType, $crisis_pref, $press_pref, $country1, $country2, $country3);
 			if ($schoolID == false){
 				//error
-				$errormessage = "Sorry, we couldn\'t complete the registration process because there was an error while entering your school into our database. However, your adviser account was created. Please contact us at support@numun.org to continue registration.";	
+				$errormessage = "Sorry, we couldn't complete the registration process because there was an error while entering your school into our database. However, your adviser account was created. Please contact us at support@numun.org to continue registration.";	
 			}else{
 			
 			//we have the userid of the adviser account created above: $adviserID 
@@ -91,7 +91,7 @@ class Registration extends CI_Controller {
 			$newPrimary = $this->new_reg->newPrimaryAdviser($adviserID , $schoolID, $fullName, $phone);
 			if ($newPrimary == false){
 				//error
-				$errormessage = "Sorry, we couldn\'t complete the registration process because there was an error while entering your contact information into our database. However, your adviser account was created and your school preferences were saved. Please contact us at support@numun.org before logging in.";
+				$errormessage = "Sorry, we couldn't complete the registration process because there was an error while entering your contact information into our database. However, your adviser account was created and your school preferences were saved. Please contact us at support@numun.org before logging in.";
 			}else{
 			//secondary advisers need either unique userids or a different table see Issue #12
 			//get secondary adviser information, for each one:
@@ -137,7 +137,7 @@ class Registration extends CI_Controller {
 					}
 				$confirmVariables = array(
 					//success so send submitted variables
-					'errormessage' => 'What? Everything worked, apparently. Whoa!',
+					'errormessage' => 'Almost done! Your information has been saved and your account is now ready to activate. Please check your inbox for an activation email. Registration for your school is not complete until you activate your account.',
 					'type' => 'success',
 					'adviserEmail' => $email,
 					'adviserName' => $newPrimary,

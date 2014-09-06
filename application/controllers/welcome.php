@@ -10,6 +10,7 @@ class Welcome extends CI_Controller {
 		$this->load->model('reg_preferences');
 		$this->load->model('alerts_model');
 		$this->load->model('secretariat_func');
+		$this->load->model('html_includes');
 		$secretariat = array(1,2);
 		$staff = array(3);
 		$adviser = array(4);

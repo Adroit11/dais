@@ -244,6 +244,7 @@ border: 0px solid transparent;
 				$("#error-message").html(htmlErrorMessage);
 			}else{
 			$("#error-message").text(error);
+			$("#error-message").addClass("alert-" + type + "");
 			}
 			if(response.adviserName){
 				var adviserName = response.adviserName;
@@ -269,9 +270,10 @@ border: 0px solid transparent;
 				$('#confirmSecGenThanks').html(thankYou);
 				$('#secGenName').text(secGen);
 				$('#confirmNumerals').text(numerals);
+				$("#error-message").append('<a href="/" class="alert-link pull-right">Log In</a>');
 				
 			}
-			$("#error-message").addClass("alert-" + type + "");
+			
 			$("#waiting").hide();
 			$("#reg-progressbar").attr("aria-valuenow", "100");
 			$("#reg-progressbar").css("width", "100%");
@@ -399,8 +401,8 @@ border: 0px solid transparent;
 							 message: 'Your password should be different from your email address.'
 						 },
 						 stringLength: {
-							 min: 6,
-							 message: 'Your password should be at least 6 characters long.'
+							 min: 8,
+							 message: 'Your password should be at least 8 characters long.'
 						 },
 						 
 					 }

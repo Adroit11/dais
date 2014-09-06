@@ -388,7 +388,7 @@ function results(){
 	          <ul class="dropdown-menu" role="menu">
 	            <li><a href="#user" class="app-page">Profile</a></li>
 	            <li class="divider"></li>
-	            <li><a href="/logout">Log Out</a></li>
+	            <li><a href="auth/logout">Log Out</a></li>
 	          </ul>
 	        </li>
           <form class="navbar-form navbar-right">
@@ -425,13 +425,13 @@ function results(){
 		<div class="col-md-4 col-md-offset-1">
 		<h3 class="lead">Upcoming Meetings & Events</h3>
 		<ul class="event-list">
-		<li><strong>9/18</strong> <div class="pull-right">New Staff Introduction</div></li>
-		<li><strong>9/23</strong> <div class="pull-right">All-Staff Meeting & New Staff Sign-up</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
+		<li><strong>9/18</strong> <div class="pull-right">New Staff Introduction</div><div class="clearfix"></div></li>
+		<li><strong>9/23</strong> <div class="pull-right">All-Staff Meeting & New Staff Sign-up</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
 		</ul>
 		<h4 class="lead">Important Dates</h4>
 		<ul class="event-list">

@@ -23,5 +23,5 @@ class Register extends CI_Controller {
 	}
 }
 
-/* End of file login.php */
-/* Location: ./application/controllers/login.php */
+/* End of file register.php */
+/* Location: ./application/controllers/register.php */

@@ -307,5 +307,55 @@ class Nu_schools extends CI_Model
 		return 'No delegate slot specified.';
 	}
 	}
+	
+	public function get_phone($id){
+		if (!empty($id)){
+		$query = $this->db->query('SELECT phone FROM advisers WHERE userid='.$id.' LIMIT 1');
+		$row = $query->row();
+		if(isset($row)){
+			return $row->phone;
+		}
+		}else{
+			return 'No phone number found.';
+		}	
+	}
+	
+	public function get_phone_prefs($id){
+	//phone_prefs: 
+		// none (default) = We won't text you.
+		// text 		  = We will text number listed in "phone" column in a serious emergency.
+		// text-other 	  = We will text another phone (in phone_2 column). 
+	if (!empty($id)){
+		$query = $this->db->query('SELECT phone_2, phone_prefs FROM advisers WHERE userid='.$id.' LIMIT 1');
+		$row = $query->row();
+		//defaults
+		$phone_prefs = "none";
+		$phone_2 = "none";
+		if(isset($row)){
+		
+			if($row->phone_prefs == "none"){
+				$phone_prefs = "none";
+			}
+			if($row->phone_prefs == "text"){
+				$phone_prefs = "text";
+			}
+				if($row->phone_prefs == "text-other"){
+				$phone_prefs = "text-other";
+				$phone_2 = $row->phone_2;
+			}
+		$json_array = array(
+			'prefs' => $phone_prefs,
+			'phone' => $phone_2,
+		);
+		$json = json_encode($json_array);
+		return $json;
+		}
+		}else{
+			return 'No phone number found.';
+		}	
+	
+	}
+	
+	
 	}
 	
