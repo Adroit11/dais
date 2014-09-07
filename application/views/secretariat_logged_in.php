@@ -207,6 +207,12 @@ border: 0px solid transparent;
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
+    	
+    	checkAlerts();
+    	//check for new alerts every 2 minutes
+    	alertInterval = setInterval(checkAlerts, 1000 * 60 * 2);
+
+    	
     		$(window).on("ready scroll resize", function () {
 				handleScroll()
 			});
@@ -293,6 +299,114 @@ border: 0px solid transparent;
 			$(window).scrollTop(0);
 			return false;
 		});
+		/*$('#create-alert').click(function(e){
+			e.preventDefault();
+			//var formdata = $(".alert-form:input").serialize();
+			//console.log(formdata);
+			var title = $("#alert-title").val();
+			var message = $("#alert-message").val();
+			$.post( "/alerts/create", {'alert-title': title, 'alert-message': message}, function(data) {
+			var updates = $.parseJSON(data);
+			if(updates.error)
+			{
+				//there was an error
+				$(".alert-form").after('<div class="alert alert-danger"><h4><i class="fa fa-exclamation-triangle"></i> &nbsp; Error</h4>'+updates.error+'</div>');
+			}
+			else
+			{
+	        var id = updates.id;
+	        var title = updates.title;
+	        var desc = updates.desc;
+	        console.log('Alert ID:' + id);
+	        console.log('Title: '+title);
+	        console.log('Description: '+desc);
+	        $(".alert-table").append('<tr><td>'+id+'</td><td><strong>'+title+'</strong></td><td>'+desc+'</td><td><button class="btn btn-warning deactivate-alert" data-id="'+id+'">Deactivate</button></td></tr>');
+	        $("html, body").animate({ scrollTop: $('#alert-table').offset().top }, 1000);
+			}
+			}, "json");
+
+		});*/
+		$('#create-alert').click(function(e){
+			e.preventDefault();
+			var title = $("#alert-title").val();
+			var message = $("#alert-message").val();
+			$(this).html('<i class="fa fa-refresh fa-spin"></i>');
+			var thisButton = $(this);
+			$.ajax({
+			  type: "POST",
+			  url: "/alerts/create",
+			  data: {'alert-title': title, 'alert-message': message},
+			  success: function(response){
+			var updates = $.parseJSON(response);
+			if(updates.error)
+			{
+				//there was an error
+				$(".alert-form").after('<div class="alert alert-danger"><h4><i class="fa fa-exclamation-triangle"></i> &nbsp; Error</h4>'+updates.error+'</div>');
+			}
+			else
+			{
+	        var id = updates.id;
+	        var title = updates.title;
+	        var desc = updates.desc;
+	        console.log('Alert ID:' + id);
+	        console.log('Title: '+title);
+	        console.log('Description: '+desc);
+	        $("#alert-table").prepend('<tr><td>'+id+'</td><td><strong>'+title+'</strong></td><td>'+desc+'</td><td><button class="btn btn-danger deactivate-alert" data-id="'+id+'">Deactivate</button></td></tr>');
+	        $("html, body").animate({ scrollTop: $('#alert-table').offset().top-100 }, 1000);
+	        thisButton.html('Issue Alert');
+
+			  }
+			  },
+			  error: function(response){
+				  thisButton.html('Issue Alert');
+				  thisButton.after('<p><small>There was a problem creating this alert.</small></p>');
+			  }
+		});
+		});
+		$('.deactivate-alert').on("click", function(e){
+			e.preventDefault();
+			$(this).html('<i class="fa fa-refresh fa-spin"></i>');
+			var id = $(this).attr('data-id');
+			var thisButton = $(this);
+			$.ajax({
+			  type: "POST",
+			  url: "/alerts/deactivate",
+			  data: {'alert-id': id},
+			  success: function(response){
+				  thisButton.removeClass('btn-danger');
+				  thisButton.removeClass('deactivate-alert');
+				  thisButton.addClass('btn-success');
+				  thisButton.addClass('activate-alert');
+				  thisButton.html('Activate');
+			  },
+			  error: function(response){
+				  thisButton.html('Deactivate');
+				  thisButton.after('<p><small>There was a problem deactivating this alert.</small></p>');
+			  }
+			});
+		});
+		$('.activate-alert').on("click", function(e){
+			e.preventDefault();
+			$(this).html('<i class="fa fa-refresh fa-spin"></i>');
+			var id = $(this).attr('data-id');
+			var thisButton = $(this);
+			$.ajax({
+			  type: "POST",
+			  url: "/alerts/activate",
+			  data: {'alert-id': id},
+			  success: function(response){
+				  thisButton.removeClass('btn-success');
+				  thisButton.removeClass('activate-alert');
+				  thisButton.addClass('btn-danger');
+				  thisButton.addClass('deactivate-alert');
+				  thisButton.html('Deactivate');
+			  },
+			  error: function(response){
+				  thisButton.html('Activate');
+				  thisButton.after('<p><small>There was a problem activating this alert.</small></p>');
+			  }
+			});
+		});
 		$("#vbYes").click(function(){
 		var yesCounter = $("#vbYesCounter").text();
 		yesCounter++;
@@ -356,6 +470,30 @@ border: 0px solid transparent;
 			}
 		});
 	});
+		function checkAlerts(){
+		$.ajax({
+		type: "GET",
+		url: '/alerts',
+		async: 'false',
+		success: function(response){
+			if(response == "ok")
+			{
+				//There are no active alerts. Do nothing,
+			}
+			else
+			{
+			//active alert
+			var response = $.parseJSON(response);
+			var title = response.title;
+			var desc = response.description;
+			$("#emergency-title").text(title);
+			$("#emergency-message").text(desc);
+			$("#emergency").slideDown();
+			//stop the timer, since we have an alert already
+			clearInterval(alertInterval);
+			}
+		}});
+	}
 		function nextVoter(){
 		var nextToVote = $(".voter-list li:first-child");
 		var newCurrentVoter = $(nextToVote).text();
@@ -383,12 +521,14 @@ function results(){
                     $(".navbar-brand").hide();
                     $('#main-nav-content').removeClass('compact');
                     $(".navbar-header").show();
+                    $("#sys-title").text("XII");
                 }
                 else
                 {
                     $('#main-nav-content').addClass('compact');
                     $(".navbar-header").hide();
                     $(".navbar-brand").hide();
+                    $("#sys-title").text("Secretariat");
                 }
             }
    function populateConfirmation(){
@@ -419,7 +559,7 @@ function results(){
         </div>
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
-          	<li class="lead"><a href="#welcome" class="welcome-page">SECRETARIAT</a></li>
+          	<li class="lead"><a href="#welcome" class="welcome-page" id="sys-title">SECRETARIAT</a></li>
           	<li class="dropdown">
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Conference <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
@@ -482,8 +622,8 @@ function results(){
 		<div class="container main-container">
 		<div class="row hidden-helcome" id="emergency">
 			<h1 class="emergency-head">EMERGENCY</h1>
-			<h2 class="emergency-message"><i class="fa fa-exclamation-triangle" id="emergency-icon"></i>This is a test. There is currently no emergency.</h2>
-			<p>This area will be used to display urgent messages in case of an emergency. This is a test. <strong>There is 				currently no emergency.</strong></p>
+			<h2 id="emergency-title"></h2>
+			<p class="lead" id="emergency-message"></p>
 		</div><!-- /#emergency -->
 		<div class="row" id="welcome">
 		<div class="col-md-7">
@@ -567,29 +707,30 @@ function results(){
 			if(isset($alerts)){
 			echo '<table class="table">';
 			echo '<thead><tr><th>#</th><th class="col-sm-3">Title</th><th>Message</th><th>Status</th></tr></thead>';
-			echo '<tbody>';
+			echo '<tbody id="alert-table">';
 			echo $alerts;
 			}
 			?>
 			<h3>New Alert</h3>
 			<p class="lead">Quickly post emergency information to conference websites</p>
-			<p>Your alert will immediately be posted to the main NUMUN website as well as all pages within the portal and the Press Corps website.</p>
-			<form role="form" class="form-horizontal">
+			<p>Your alert will be posted to the main NUMUN website as well as all pages within the portal and the Press Corps website.</p>
+			<p><small>It may take up to two minutes to appear on all pages.</small></p>
+			<form role="form" class="form-horizontal alert-form">
 			<div class="form-group">
 					<label for="alert-title" class="col-md-2 control-label">Alert Title</label>
 					<div class="col-md-6">
-						<input type="text" class="form-control" id="alert-title" placeholder="e.g., Fire Alarm" />
+						<input type="text" class="form-control" id="alert-title" name="alert-title" placeholder="e.g., Fire Alarm" />
 					</div>
 			</div>
 			<div class="form-group">
 					<label for="alert-title" class="col-md-2 control-label">Message</label>
 					<div class="col-md-6">
-						<textarea class="form-control" id="alert-message" placeholder="Type a concise, yet informative message."></textarea>
+						<textarea class="form-control" id="alert-message" name="alert-message" placeholder="Type a concise, yet informative message."></textarea>
 					</div>
 			</div>
 			<div class="form-group">
 			<div class="col-sm-3 col-sm-offset-5">
-			<button class="btn btn-warning pull-right">Issue Alert</button>
+			<button class="btn btn-warning pull-right" id="create-alert">Issue Alert</button>
 			</div>
 			</div>
 			</form>

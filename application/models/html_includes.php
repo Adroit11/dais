@@ -11,7 +11,7 @@ class Html_includes extends CI_Model
 	}
 	public function load_page($part){
 	if (isset($part)){
-		$path = "/home/public/application/parts/".$part.".php";
+		$path = "/home/public/application/templates/".$part.".php";
 		$content = include_once($path);
 		return $content;
 	}

@@ -12,7 +12,7 @@ class Alerts_model extends CI_Model
 	}	
 	public function get_alerts(){
 		//check if there are any active (status = 1) alerts at all
-		$alerts = $this->db->query('SELECT * FROM alerts WHERE status = 1 LIMIT 1');
+		$alerts = $this->db->query('SELECT * FROM alerts WHERE status = 1 ORDER BY id DESC');
 		//there will only be one alert at a time
 		return $alerts;
 		 
@@ -29,11 +29,11 @@ class Alerts_model extends CI_Model
 				$all_alerts .= '<tr>';
 				$all_alerts .= '<td>' . $row->id . '</td>';
 				$all_alerts .= '<td><strong>' . $row->title . '</strong></td>';
-				$all_alerts .= '<td>' . $row->desc . '</td>';
+				$all_alerts .= '<td>' . $row->description . '</td>';
 				if($row->status == 1){
-				$all_alerts .= '<td><button class="btn btn-danger">Deactivate</button></td>';
+				$all_alerts .= '<td><button class="btn btn-danger deactivate-alert" data-id="'.$row->id.'">Deactivate</button></td>';
 				}elseif($row->status == 0){
-				$all_alerts .= '<td><button class="btn btn-success">Activate</button></td>';
+				$all_alerts .= '<td><button class="btn btn-success activate-alert" data-id="'.$row->id.'">Activate</button></td>';
 				}
 				$all_alerts .= '</tr>';
 			}
@@ -51,15 +51,48 @@ class Alerts_model extends CI_Model
 		}
 				 
 	}
-	public function create_alert(){
-		$this->db->query('INSERT INTO alerts');
+	public function create_alert($title, $desc){
+		//status of new alerts should be active
+		$status = 1;
 		
+		$data = array(
+		   'title' => $title ,
+		   'description' => $desc ,
+		   'status' => $status
+		);
+		//insert new alert into database
+		$this->db->insert('alerts', $data);
+		
+		//verify that the alert was inserted
+		$createdid = $this->db->insert_id();
+		$query = $this->db->query('SELECT * FROM alerts WHERE id='.$createdid);
+		$row = $query->row();
+		if ($query->num_rows() > 0){
+			$response = array(
+			'id' => $row->id,
+			'title' => $row->title,
+			'desc' => $row->description
+			);
+			$jsonresponse = json_encode($response);
+			return $jsonresponse;
+		}else{
+			//no data inserted
+			$error = array(
+			'error' => "There was a problem creating the alert titled: \"".$title."\".",
+			);
+			$jsonerror = json_encode($error);
+			return $jsonerror;
+		}
 	}
 	public function activate_alert($id){
-		$this->db->query('UPDATE alerts SET status=1 WHERE id=$id');
+		$query = $this->db->query('UPDATE alerts SET status=1 WHERE id='.$id);
+		
 	}
-		public function deactivate_alert($id){
-		$this->db->query('UPDATE alerts SET status=0 WHERE id=$id');
+	public function deactivate_alert($id){
+		$query = $this->db->query('UPDATE alerts SET status=0 WHERE id='.$id);
+	}
+	public function deactivate_all_alerts(){
+		$query = $this->db->query('UPDATE alerts SET status=0 WHERE status=1');
 	}
 }
 	

@@ -308,8 +308,8 @@
 		</div><!-- /#profile -->
 		<div class="row hidden-welcome" id="delegates">
 			<h1 class="default-head">Delegates</h1>
-			<p class="lead">Assign your organization's delegate positions to individual students below.</p>
-			<p>Your assignments can be changed at any time before <strong>February 28, 2015</strong> at <strong>11:59 pm</strong> CST.</p>
+			<p class="lead hide-print">Assign your organization's delegate positions to individual students below.</p>
+			<p class="hide-print">Your assignments can be changed at any time before <strong>February 28, 2015</strong> at <strong>11:59 pm</strong> CST.</p>
 			<form role="form" class="del-assignments">
 			<table class="table table-hover">
 			<thead>
@@ -323,7 +323,7 @@
   			<a class="btn btn-success" id="del-assignments-submit" href="#"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</a>
   			</div>
   			<div class="col-sm-2">
-  			<a class="btn btn-primary" id="del-assignments-print" href="#"><i class="fa fa-print fa-inverse"></i>&nbsp;&nbsp; Print</a>
+  			<a class="btn btn-primary" id="del-assignments-print" href="#" onclick="window.print()"><i class="fa fa-print fa-inverse"></i>&nbsp;&nbsp; Print</a>
   			</div>
 			</form>
 		</div><!-- /#delegates -->

@@ -189,6 +189,10 @@ border: 0px solid transparent;
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
+    	
+    	checkAlerts();
+    	alertInterval = setInterval(checkAlerts, 1000 * 60 * 2);
+    	
     		$(window).on("ready scroll resize", function () {
 				handleScroll()
 			});
@@ -303,6 +307,31 @@ border: 0px solid transparent;
 		});
 
 	});
+	
+		function checkAlerts(){
+		$.ajax({
+		type: "GET",
+		url: '/alerts',
+		async: 'false',
+		success: function(response){
+			if(response == "ok")
+			{
+				//There are no active alerts. Do nothing,
+			}
+			else
+			{
+			//active alert
+			var response = $.parseJSON(response);
+			var title = response.title;
+			var desc = response.description;
+			$("#emergency-title").text(title);
+			$("#emergency-message").text(desc);
+			$("#emergency").slideDown();
+			//stop the timer, since we have an alert already
+			clearInterval(alertInterval);
+			}
+		}});
+	}
 		function nextVoter(){
 		var nextToVote = $(".voter-list li:first-child");
 		var newCurrentVoter = $(nextToVote).text();
