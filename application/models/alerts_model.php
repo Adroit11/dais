@@ -74,6 +74,7 @@ class Alerts_model extends CI_Model
 			'desc' => $row->description
 			);
 			$jsonresponse = json_encode($response);
+			//$this->text_alert($row->id);
 			return $jsonresponse;
 		}else{
 			//no data inserted
@@ -93,6 +94,35 @@ class Alerts_model extends CI_Model
 	}
 	public function deactivate_all_alerts(){
 		$query = $this->db->query('UPDATE alerts SET status=0 WHERE status=1');
+	}
+	public function text_alert($id){
+		$this->load->library('email');
+		$query = $this->db->query('SELECT * FROM alerts WHERE id='.$id);
+		$row = $query->row();
+		$title = $row->title;
+		$message = $row->description;
+		$carrier = "Sprint";
+		$number = "7736161658";
+		switch ($carrier) {
+		  case "Sprint":
+		    $email = "messaging.sprintpcs.com";
+		    break;
+		  case "AT&T":
+		    $email = "txt.att.net";
+		    break;
+		  case "Verizon":
+		    $email = "vtext.com";
+		    break;
+		  case "T-Mobile":
+		  	$email = "tmomail.net";
+		  	break;
+		}
+		
+		$this->email->from('alert@numun.org', 'NUMUN Alert');
+		$this->email->to($number.'@'.$email); 
+		$this->email->subject('NUMUN Alert');
+		$this->email->message($title.": ".$message);	
+		$this->email->send();
 	}
 }
 	

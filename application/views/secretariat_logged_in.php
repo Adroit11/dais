@@ -289,6 +289,16 @@ border: 0px solid transparent;
 			$(window).scrollTop(0);
 			return false;
 		});
+		$('#alert-message').keyup(function () {
+		  var max = 140;
+		  var len = $(this).val().length;
+		  if (len >= max) {
+		    $('#charNum').text('Limit alerts to '+max+' characters.');
+		  } else {
+		    var char = max - len;
+		    $('#charNum').text(char + ' characters left. (Out of 140)');
+		  }
+		});
 		$(".welcome-page").click(function(){
 			$(".hidden-welcome:visible").hide();
 			$("#welcome").fadeIn("fast");
@@ -726,6 +736,7 @@ function results(){
 					<label for="alert-title" class="col-md-2 control-label">Message</label>
 					<div class="col-md-6">
 						<textarea class="form-control" id="alert-message" name="alert-message" placeholder="Type a concise, yet informative message."></textarea>
+						<span id="charNum"></span>
 					</div>
 			</div>
 			<div class="form-group">
