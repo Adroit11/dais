@@ -8,7 +8,10 @@
 	$all_schools = $this->secretariat_func->get_all_schools();
 	$status_alert = $this->secretariat_func->conference_status('alert');
 	$status_panel = $this->secretariat_func->conference_status('panel');
-	$current_conference = $this->secretariat_func->current_conference();
+	$current_conference = 'NUMUN ' . $this->secretariat_func->current_conference('numerals');
+	$current_sec_gen = $this->secretariat_func->current_conference('sec-gen');
+	$registration_message = $this->secretariat_func->current_conference('reg-message');
+	$all_invoices = $this->invoice->get_approved_invoices();
 ?>
 <!doctype html>
 <html>
@@ -289,6 +292,16 @@ border: 0px solid transparent;
 			$(window).scrollTop(0);
 			return false;
 		});
+		$('#alert-message').keyup(function () {
+		  var max = 140;
+		  var len = $(this).val().length;
+		  if (len >= max) {
+		    $('#charNum').text('Limit alerts to '+max+' characters.');
+		  } else {
+		    var char = max - len;
+		    $('#charNum').text(char + ' characters left. (Out of 140)');
+		  }
+		});
 		$(".welcome-page").click(function(){
 			$(".hidden-welcome:visible").hide();
 			$("#welcome").fadeIn("fast");
@@ -352,6 +365,7 @@ border: 0px solid transparent;
 	        console.log('Title: '+title);
 	        console.log('Description: '+desc);
 	        $("#alert-table").prepend('<tr><td>'+id+'</td><td><strong>'+title+'</strong></td><td>'+desc+'</td><td><button class="btn btn-danger deactivate-alert" data-id="'+id+'">Deactivate</button></td></tr>');
+	        $(".spacious:visible").slideUp();
 	        $("html, body").animate({ scrollTop: $('#alert-table').offset().top-100 }, 1000);
 	        thisButton.html('Issue Alert');
 
@@ -363,7 +377,7 @@ border: 0px solid transparent;
 			  }
 		});
 		});
-		$('.deactivate-alert').on("click", function(e){
+		$("body").on("click", ".deactivate-alert", function(e){
 			e.preventDefault();
 			$(this).html('<i class="fa fa-refresh fa-spin"></i>');
 			var id = $(this).attr('data-id');
@@ -385,7 +399,7 @@ border: 0px solid transparent;
 			  }
 			});
 		});
-		$('.activate-alert').on("click", function(e){
+		$("body").on("click", ".activate-alert", function(e){
 			e.preventDefault();
 			$(this).html('<i class="fa fa-refresh fa-spin"></i>');
 			var id = $(this).attr('data-id');
@@ -469,6 +483,52 @@ border: 0px solid transparent;
 			$("#checkin-search-results2").html("");
 			}
 		});
+		
+		$("#customer-number").keyup(function(){
+			var thisField = $(this).parents(".form-group");
+			thisField.children(".form-control-feedback").remove();
+			thisField.removeClass("has-warning has-success has-error has-feedback");
+			if($(this).val().length > 3){
+			thisField.children(".form-control").after('<span class="fa fa-refresh fa-spin form-control-feedback"></span>');
+			thisField.addClass("has-warning has-feedback");
+			var customer = $("#customer-number").val();
+			$.ajax({
+			  type: "POST",
+			  url: "/sec_ajax/customernum",
+			  data: {'customer-number': customer},
+			  success: function(response){
+			  	var feedback = $.parseJSON(response);
+			  	if(feedback.error){
+			  	  $("#customer-result").html("");
+			  	  thisField.children(".form-control-feedback").remove();
+				  thisField.removeClass('has-warning');
+				  thisField.addClass('has-error');
+				  thisField.children(".form-control").append('<span class="fa fa-times form-control-feedback"></span>');
+			  	}else{
+			  	  $("#customer-result").html("");
+			  	  thisField.children(".form-control-feedback").remove();
+				  thisField.removeClass('has-warning');
+				  thisField.addClass('has-success');
+				  thisField.children(".form-control").append('<span class="fa fa-check form-control-feedback"></span>');
+				  $("#customer-result").hide().html('<p class="lead">'+feedback.name+'</p>').fadeIn();
+				  $('#school-id').val(feedback.id);
+				 }
+				  
+			  },
+			  error: function(response){
+				  thisField.removeClass('has-warning');
+				  thisField.addClass('has-error');
+				  thisField.append('<span class="fa fa-times form-control-feedback"></span>');
+			  }
+			});
+			
+			}
+		});
+		$("#payment-submit").click(function(e){
+			e.preventDefault();
+			// submit payment
+		});
+		
 	});
 		function checkAlerts(){
 		$.ajax({
@@ -651,13 +711,13 @@ function results(){
 		
 		<h3 class="lead">Upcoming Meetings & Events</h3>
 		<ul class="event-list">
-		<li><strong>9/18</strong> <div class="pull-right">New Staff Introduction</div></li>
-		<li><strong>9/23</strong> <div class="pull-right">All-Staff Meeting & New Staff Sign-up</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
-		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div></li>
+		<li><strong>9/18</strong> <div class="pull-right">New Staff Introduction</div><div class="clearfix"></div></li>
+		<li><strong>9/23</strong> <div class="pull-right">All-Staff Meeting & New Staff Sign-up</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
+		<li><strong>12/1</strong> <div class="pull-right">All-Staff Meeting</div><div class="clearfix"></div></li>
 		</ul>
 		<div class="col-xs-5">
 		<button class="btn btn-success btn-block">
@@ -678,16 +738,49 @@ function results(){
 		</div><!-- /#welcome -->
 		<div class="row hidden-welcome" id="sec-conf-settings">
 			<h1 class="default-head">Conference Setup</h1>
-			<h3><?php echo $current_conference; ?></h3>
-			<p class="lead">Name</p>
-			<p class="lead">Secretary-General</p>
-			
-			<p class="lead">Registration Status</p>
+			<h3><?php echo $current_conference; ?> <button class="btn btn-success pull-right" id="new-conference"><i class="fa fa-plus"></i>&nbsp; Create New Conference</button></h3>
+			<div class="clearfix"></div>
+			<p>&nbsp;</p>
 			<form class="form-horizontal">
-				<select id="reg-status" class="form-control"><option>Select a Status...</option><option>Closed</option><option>Open</option><option>Waitlist</option></select>
+			<div class="form-group">
+					<label for="conference-numerals" class="col-md-3 control-label">Conference Year</label>
+					<div class="col-md-6">
+						<p class="form-control-static"><?php echo $current_conference; ?></p>
+						<!--<input type="text" class="form-control" id="conference-numerals" name="conference-numerals" placeholder="XII" />-->
+					</div>
+			</div>
+			<div class="form-group">
+					<label for="conference-secgen" class="col-md-3 control-label">Secretary-General</label>
+					<div class="col-md-6">
+						<p class="form-control-static"><?php echo $current_sec_gen; ?></p>
+						<!--<input type="text" class="form-control" id="conference-secgen" name="conference-secgen" placeholder="Evie Atwater" />-->
+					</div>
+			</div>
+			<div class="form-group">
+					<label for="conference-reg-status" class="col-md-3 control-label">Registration Status</label>
+					<div class="col-md-6">
+						<select id="conference-reg-status" class="form-control">
+						<option>Select a Status...</option>
+						<option name="closed">Closed</option>
+						<option name="open">Open</option>
+						<option name="waitlist">Waitlist</option>
+						</select>
+					</div>
+			</div>
+			<div class="form-group">
+				<label for="conference-reg-message" class="col-md-3 control-label">Registration Message</label>
+				<div class="col-md-6">
+					<textarea class="form-control" id="conference-reg-message" name="conference-reg-message" placeholder="A short message on the registration confirmation page."><?php echo $registration_message; ?></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+			<div class="col-md-9">
+			<button class="btn btn-success pull-right">Save</button>
+			</div>
+			</div>
 			</form>
-			<p class="lead">Registration Message</p>
-			<h3>Past Conferences</h3>
+
+			
 		</div>
 		<div class="row hidden-welcome" id="user">
 			<h1 class="default-head">Profile</h1>
@@ -726,6 +819,7 @@ function results(){
 					<label for="alert-title" class="col-md-2 control-label">Message</label>
 					<div class="col-md-6">
 						<textarea class="form-control" id="alert-message" name="alert-message" placeholder="Type a concise, yet informative message."></textarea>
+						<span id="charNum"></span>
 					</div>
 			</div>
 			<div class="form-group">
@@ -796,67 +890,62 @@ function results(){
 				echo $all_schools;
 				?>
 
-			<br><hr><br>
+ </div>
+		<div class="row hidden-welcome" id="sec-invoices">
+			<h1 class="default-head">Invoices</h1>
+			<p class="lead">Edit, approve, and send invoices.</p>
 			
-			<table class="table table-hover table-bordered">
-				<tr><th class="col-md-4">School</th><th>Primary Adviser</th><th>Address</th><th># of Advisers</th><th>Delegates</th><th>Preferences</th></tr>
-<tr id="row001" class="collapse in"><td><div class="col-md-6"><strong>Seven Hills School</strong><br /> Cincinnati, OH</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show001">Show</button></div></td></tr>
-<tr id="school001" class="collapse out">
-	<td>Seven Hills School<br /><br /><button type="button" class="btn btn-primary school-table" id="hide001">Hide</button></td>
-    <td><strong>Brian Wabler</strong><br />brian.wabler@7hills.org<br />(513) 232-498</td>
-    <td>5400 Red Bank Rd<br />Cincinnati, OH 45227</td>
-    <td>2</td>
-    <td>12</td>
-    <td><ol><li>Nigeria</li> <li>Kuwait</li> <li>Italy</li></ol></td>
-</tr>
-<tr id="row002" class="collapse in"><td><div class="col-md-6"><strong>University School of Milwaukee</strong><br />Milwaukee, WI</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show002">Show</button></div></td></tr>
-<tr id="school002" class="collapse out">
-	<td>University School of Milwaukee<br /><br /><button type="button" class="btn btn-primary school-table" id="hide002">Hide</button></td>
-    <td><strong>Ben Zarwell</strong>
-    <br />bzarwell@usmk12.org<br />
-    (414) 540-3468</td>
-    <td>2100 W. Fairy Chasm Rd. <br />Milwaukee, WI 53217</td>
-    <td>2</td>
-    <td>12</td>
-    <td><ol><li>France</li>
-    <li>Denmark</li>
-    <li>Spain</li></ol></td>
-</tr>
-<tr id="row003" class="collapse in"><td><div class="col-md-6"><strong>Middleton High School</strong><br /> Middleton, WI</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show003">Show</button></div></td></tr>
-<tr id="school003" class="collapse out">
-	<td>Middleton High School<br /><br /><button type="button" class="btn btn-primary school-table" id="hide003">Hide</button></td>
-    <td><strong>David A Piovanetti</strong><br />
-    DPiovanetti@mcpasd.k12.wi.us<br />
-    (608) 213-7383</td>
-    <td>2100 Bristol St<br />
-    Middleton, WI 53562</td>
-    <td>2</td>
-    <td>20</td>
-    <td><ol><li>Pakistan</li><li>Korea, Republic of</li><li>Russian Federation</li></ol></td>
-</tr>
-<tr id="row004" class="collapse in"><td><div class="col-md-6"><strong>Walter Payton College Prep</strong><br />Chicago</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show004">Show</button></div></td></tr>
-<tr id="school004" class="collapse out">
-	<td>Walter Payton College Prep<br /><br /><button type="button" class="btn btn-primary school-table" id="hide004">Hide</button></td>
-    <td><strong>Aaron Weiss</strong><br /> amweiss@cps.edu<br />(773) 304-7791</td>
-    <td>1034 N. Wells St.<br />
-    Chicago, IL 60610</td>
-    <td>2</td>
-    <td>20</td>
-    <td><ol><li>India</li>
-    <li>Syrian Arab Republic</li>
-    <li>Republic of China</li></ol></td>
-</tr>
-<tr id="row005" class="collapse in"><td><div class="col-md-6"><strong>Niles Township High School</strong><br />Niles, IL</div><div class="col-md-6"><button type="button" class="btn btn-primary school-table" id="show005">Show</button></div></td></tr>
-<tr id="school005" class="collapse out">
-	<td>Niles Township High School<br /><br /><button type="button" class="btn btn-primary school-table" id="hide005">Hide</button></td>
-    <td><strong>Matt Wiemer</strong><br />matwie@d219.org<br />(847) 626-2867</td>
-    <td>5701 Oakton<br /> Skokie, IL 60077</td>
-    <td>2</td>
-    <td>24</td>
-    <td><ol><li>Canada</li><li>PR China</li>
-    <li>India</li></ol></td>
-</tr>			
-  			</table>
+			<table class="table table-hover">
+				<thead>
+				<tr><th>#</th><th>School</th><th>Deposit</th><th>Current Balance</th><th>Overdue</th><th>View Invoice</th></tr>
+				</thead>
+				<tbody>
+				<?php
+				echo $all_invoices;
+				?>
+				
+			<p>&nbsp;</p>
+			<h2>Payments</h2>
+			<p class="lead">Log payments from schools</p>
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+				<label for="customer-number" class="col-md-3 control-label">Customer #</label>
+				<div class="col-md-3">
+				<input type="text" class="form-control" id="customer-number" name="customer-number" placeholder="0000" />
+				<input type="hidden" id="school-id" name="school-id" />
+				</div>
+				<div class="col-md-3" id="customer-result"></div>
+				</div>
+				<div class="form-group">
+				<label for="payment-amount" class="col-md-3 control-label">Amount & Type</label>
+				<div class="col-md-3">
+				<input type="text" class="form-control" id="payment-amount" name="payment-amount" placeholder="00.00" />
+				</div>
+				<div class="col-md-2">
+				<select name="payment-type" id="payment-type" class="form-control">
+					<option value="deposit">Deposit</option>
+					<option value="balance">Balance</option>
+					<option value="other">Other</option>
+				</select>
+				</div>
+				</div>
+				<div class="form-group">
+				<label for="check-number" class="col-md-3 control-label">Check #</label>
+				<div class="col-md-3">
+				<input type="text" class="form-control" id="check-number" name="check-number" placeholder="1234" />
+				</div>
+				</div>
+				<div class="form-group">
+				<label for="payment-notes" class="col-md-3 control-label">Notes</label>
+				<div class="col-md-5">
+				<textarea class="form-control" id="payment-notes" name="payment-notes" rows="2"></textarea>
+				</div>
+				</div>
+				<div class="col-md-4 col-md-offset-3">
+				<button class="btn btn-success" id="payment-submit">Credit Account</button>
+				</div>
+			</form>
+
 		</div>
 		<div class="row hidden-welcome" id="sec-adviser-lookup">
 			<h1 class="default-head">Adviser/School Lookup</h1>

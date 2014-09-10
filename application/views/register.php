@@ -177,28 +177,16 @@ border: 0px solid transparent;
 				handleScroll()
 			});
 		$(".track-progress").blur(function(){
-			console.log("Form element entered");
 			var elementNumber = $(".track-progress").index(this);
 			var totalElements = $(".track-progress").length;
 			var progressLevel = ((elementNumber + 1) / totalElements) * 100;
 			var progressPrcnt = Math.round(progressLevel);
-			console.log(progressPrcnt);
 			$("#reg-progressbar").attr("aria-valuenow", progressPrcnt);
 			$("#reg-progressbar").css("width", progressPrcnt + "%");
 			$("#reg-progressbar-sr").html(progressPrcnt + "% Complete");
-			
-			if($(this).val == null || ""){
-				$(this).parent().addClass("has-error");
-				console.log("form error");
-			}
-			if($(this).val != "" || null){
-				$(this).parent().removeClass("has-error");
-				console.log("form error corrected"); 
-			}
-		});
+			});
 		$(".form-control.last").blur(function(){
 			var formContainerParent = $(this).parents(".reg-container");
-			console.log(formContainerParent);
 		});
     	$("#submit-reg-1").click(function(){
 		 history.pushState({

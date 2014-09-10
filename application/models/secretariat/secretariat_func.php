@@ -42,18 +42,35 @@ class Secretariat_func extends CI_Model
 		   }
 		
 	}
-	public function current_conference(){
-		$query = $this->db->query('SELECT numerals FROM conference WHERE current=1');
-		foreach ($query->result_array() as $array){
-		$numerals = $array['numerals'];
-		}
-		if ($query->num_rows() > 0){
-		$conference_name = "NUMUN " . $numerals;
-		return $conference_name;
+
+	public function current_conference($request){
+		if(!isset($request)){
+		return false;
 		}else{
+		$query = $this->db->query('SELECT * FROM conference WHERE current=1');
+		if ($query->num_rows() > 0){
+		if ($query->num_rows() > 1){
+			//multiple conferences, throw error
 			return false;
+		}elseif($query->num_rows() == 1){
+		$row = $query->row(); 
+		$thankYou = $row->reg_thank_you;
+		$secGen = $row->sec_gen;
+		$status = $row->status;
+		$numerals = $row->numerals;
+		if($request == 'sec-gen'){
+			return $secGen;	
+			}
+		if($request == 'reg-message'){
+			return $thankYou;	
+			}
+		if($request == 'numerals'){
+			return $numerals;	
+			}
+
 		}
-		
+		}
+		}
 	}
 	public function conference_status($type){
 	//type = text, alert, panel(see sec registered schools page) or single-word
@@ -201,6 +218,11 @@ class Secretariat_func extends CI_Model
 			return $empty_response;   
 		   }
 	}
+	
+	/*public function email_adviser($schoolid, $message){
+	
+		
+	}*/
 		
 }
 	

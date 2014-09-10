@@ -7,9 +7,7 @@ class Welcome extends CI_Controller {
 		$this->load->library('ion_auth');
 		$this->load->helper('url');
 		$this->load->model('nu_schools');
-		$this->load->model('reg_preferences');
 		$this->load->model('alerts_model');
-		$this->load->model('secretariat_func');
 		$this->load->model('html_includes');
 		$secretariat = array(1,2);
 		$staff = array(3);
@@ -19,10 +17,15 @@ class Welcome extends CI_Controller {
 		{
 			redirect('/login');
 		}elseif ($this->ion_auth->in_group($secretariat)){
+		$this->load->model('secretariat/secretariat_func');
+		$this->load->model('secretariat/invoice');
 		$this->load->view('secretariat_logged_in');
+		
 		}elseif ($this->ion_auth->in_group($staff)){
 		$this->load->view('staff_logged_in');
 		}elseif ($this->ion_auth->in_group($adviser)){
+		$this->load->model('advisers/reg_preferences');
+		$this->load->model('advisers/invoice');
 		$this->load->view('adviser_logged_in');				
 		}else{
 		//User is logged in but not in one of the groups?

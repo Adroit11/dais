@@ -101,6 +101,9 @@ border: 0px solid transparent;
 	.hidden-welcome{
 	    display: none;
     }
+    .hidden-emergency{
+	    display: none;
+    }
 	.header{
 		color:#f0f0f0;
 		font-family: 'Raleway', sans-serif;
@@ -165,11 +168,18 @@ border: 0px solid transparent;
 	.print-header{
 		display: none;
 	}
+	.logo-font{
+		font-family: "Century Gothic", "Futura Medium", sans-serif;
+		font-weight: normal;
+	}
 	.spacious{
 	background-color: #f0f0f0;
 	padding: 30px 0px;
 	margin-top:-21px;
 	margin-bottom: 40px;
+	}
+	.print-only{
+		display: none;
 	}
 	/*---Stack buttons---*/
 	@media (max-width: 767px) {
@@ -183,7 +193,6 @@ border: 0px solid transparent;
 	}
 	.print-header{
 		display: block;
-		width: 300px;
 	}
 	.default-head{
 		font-size: 2em;
@@ -194,12 +203,24 @@ border: 0px solid transparent;
 	.footer{
 		display: none;
 	}
+	.print-only{
+		display: block;
+	}
 	.hide-print{
 		display: none;
 	}
 	tr.double-del {
 	border-left: none;
 	}
+	table{
+		page-break-inside: avoid;
+		font-size: 11pt;
+	}
+	
+	.table-hover>thead>tr>th, .table-hover>tbody>tr>td{
+		padding: 2px !important;
+	}
+	
   /*[class*="col-sm-"] {
     float: left;
   }*/

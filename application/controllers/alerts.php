@@ -15,7 +15,7 @@ class Alerts extends CI_Controller {
 			echo "ok";
 			}
 	}
-	public function create(){
+	function create(){
 		$this->load->library('ion_auth');
 		$this->load->model('alerts_model');
 		$secretariat = array(1,2);

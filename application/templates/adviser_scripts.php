@@ -45,7 +45,7 @@
 			$("#editing-close").children().removeClass("fa-times").addClass("fa-refresh fa-spin");
 			var del_formdata = $(".delegate-assign:input").serialize();
 			console.log(del_formdata);
-			$.post( "/assign_delegates/submit", del_formdata, function(data) {
+			$.post( "/adviser_preferences/assign_delegates", del_formdata, function(data) {
 			var updates = jQuery.parseJSON(data);
 			for ( var i in updates) {
 	        var id = updates[i].id;
@@ -58,9 +58,9 @@
 			$('.currently:visible').detach();
 			});
 		$(".double-del").tooltip();
-		$(".edit-slot").on("click", function(e){
+		$(window).on("click", ".edit-slot", function(e){
 			e.preventDefault();
-			$(this).after('<a href="#" class="btn btn-danger btn-sm pull-right undo-edit" id="editing-close"><i class="fa fa-times fa-inverse"></i></a>');
+			$(this).after('<a href="#" class="btn btn-danger btn-sm pull-right undo-edit-delegates" id="editing-close"><i class="fa fa-times fa-inverse"></i></a>');
 			$(this).hide();
 			$(this).parent().prepend('<span class="currently" style="font-weight: bold;">Currently:&nbsp;</span>');
 			$(this).find(".del-name-exists").wrapInner('<p class="editing_slot"></p>');
@@ -69,10 +69,8 @@
 			console.log(slot);
 			$(this).after('<br /><div class="form-group col-sm-8"><input type="text" class="form-control delegate-assign" name="' + slot + '" id="' + slot + '" placeholder="New Delegate"></div>');
 		});
-		$(document).on("click", ".undo-edit", function(e){
-			console.log('fired');
+		$(document).on("click", ".undo-edit-delegates", function(e){
 			e.preventDefault();
-			console.log('fired');
 			$(this).parent().find(".currently").detach();
 			$(this).parent().find(".form-group").detach();
 			$(this).parent().find(".edit-slot:hidden").show();
@@ -80,9 +78,14 @@
 		});
 		$("#edit-delegate-numbers").click(function(e){
 			e.preventDefault();
-			$(this).after('<a href="#" class="btn btn-danger btn-sm pull-right undo-edit"><i class="fa fa-times fa-inverse"></i></a>');
-			$(this).hide();
+			$(this).after('<button class="btn btn-danger btn-sm undo-edit"><i class="fa fa-times fa-inverse"></i></button>');
+			$(this).fadeOut();
 			
+			
+			
+		});
+		$("#edit-countries").click(function(e){
+			e.preventDefault();
 			
 		});
 		
@@ -112,7 +115,7 @@
 		success: function(response){
 			if(response == "ok")
 			{
-				//There are no active alerts. Do nothing,
+				//There are no active alerts. Do nothing.
 			}
 			else
 			{
@@ -123,6 +126,8 @@
 			$("#emergency-title").text(title);
 			$("#emergency-message").text(desc);
 			$("#emergency").slideDown();
+			var beep = new Audio('https://dl.dropboxusercontent.com/s/8a3y7cgxckd6iim/announcement.mp3');
+			beep.play();
 			//stop the timer, since we have an alert already
 			clearInterval(alertInterval);
 			}

@@ -178,6 +178,7 @@ border: 0px solid transparent;
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
+    	
     	checkAlerts();
     	alertInterval = setInterval(checkAlerts, 1000 * 60 * 2);
     		$(window).on("ready scroll resize", function () {
@@ -203,6 +204,9 @@ border: 0px solid transparent;
 			$("#emergency-title").text(title);
 			$("#emergency-message").text(desc);
 			$("#emergency").slideDown();
+			var beep = new Audio('https://dl.dropboxusercontent.com/s/8a3y7cgxckd6iim/announcement.mp3');
+			beep.play();
+			
 			//stop the timer, since we have an alert already
 			clearInterval(alertInterval);
 			}

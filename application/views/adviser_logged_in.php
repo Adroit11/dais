@@ -10,12 +10,9 @@
 	$school_advisers = $this->reg_preferences->additionalAdvisers($school_id);
 	$delegate_slots = $this->nu_schools->get_delegate_slots($school_id);
 	$phone = $this->nu_schools->get_phone($userid);
-	$last2 = substr($school_zip, -2);
-	if (strlen($school_id) < 2){
-		$customer_number = '0'.$school_id.$last2;
-	}else{
-		$customer_number = $school_id.$last2;
-	}
+	$invoice = $this->invoice->get_invoice($school_id);
+	$customer_number = $this->invoice->get_customer_number($school_id);
+	
 ?>
 
 <?php $this->html_includes->load_page("adviser_head"); ?>
@@ -66,11 +63,15 @@
     </div><!-- /#navbar-main -->
 
 		<div class="container main-container">
-		<img class="print-header" alt="Northwestern University Model United Nations" src="https://dl.dropboxusercontent.com/s/dtb8j3mpysi3qfv/numun-account.png"/>
-		<div class="row hidden-welcome" id="emergency">
+		<div class="print-only">
+			<div class="col-xs-6">
+			<h2 class="logo-font">NUMUN XII</h2>
+			</div>
+		</div>
+		<div class="row hidden-emergency" id="emergency">
 			<h1 class="emergency-head">EMERGENCY</h1>
-			<h2 class="emergency-message"><i class="fa fa-exclamation-triangle" id="emergency-icon"></i>This is a test. There is currently no emergency.</h2>
-			<p>This area will be used to display urgent messages in case of an emergency. This is a test. <strong>There is currently no emergency.</strong></p>
+			<h2 id="emergency-title"></h2>
+			<p class="lead" id="emergency-message"></p>
 		</div><!-- /#emergency -->
 		<div class="row" id="welcome">
 		<div class="col-md-7">
@@ -104,74 +105,85 @@
 		<div class="row">
 			<h3>Delegates</h3>
 			<?php echo $school_del_reg; ?>
-			<div class="col-sm-4">
-				<button class="btn btn-warning" id="edit-delegate-numbers" disabled="disabled">Edit</button>
-			</div>
+			
 		</div>
 		<div class="row">
-		<h3>Country Preferences</h3>
-		<div class="col-sm-6">
-		<?php echo $school_country_prefs; ?>
-		</div>
-		<div class="col-sm-4">
-			<button class="btn btn-warning" id="edit-countries" disabled="disabled">Edit</button>
-		</div>
+			<h3>Country Preferences</h3>
+			<?php echo $school_country_prefs; ?>
 		</div>
 		<div class="row">
-		<h3>Additional Advisers</h3>
-		<?php echo $school_advisers; ?>
+			<h3>Additional Advisers</h3>
+			<?php echo $school_advisers; ?>
 		</div>
 		</form>
 		</div>
   		<div class="col-sm-6">
   			<p>&nbsp;</p>
   			<button class="btn btn-success" id="school-prefs-save" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
-  			</div>
+  		</div>
 
 		</div><!-- /#register -->
 		<div class="row hidden-welcome" id="invoice">
+			<div class="hide-print">
 			<h1 class="default-head">Invoice</h1>
-			<div class="col-sm-2">
+			</div>
+			<?php
+			if($invoice != false){
+			?>
+			<div class="col-xs-5 col-xs-offset-1 pull-right">
+			<p class="lead text-right">INVOICE <strong>#</strong><?php echo $customer_number; ?><br />
+			<strong>Due</strong> <?php echo $invoice['date']; ?></p>
+			</div>
+			<div class="col-xs-2">
 			<h5>Bill to:</h5>
 			</div>
-			<div class="col-sm-8">
+			<div class="col-xs-6">
 			<strong><?php echo $school; ?></strong>
 			<p><?php echo $school_address; ?></p>
 			</div>
-			<div class="col-sm-2 pull-right">
-			<h4>&#8470; &nbsp;<?php echo $customer_number; ?></h4>
-			<h5>8/1/2014</h5>
-			</div>
+			<div class="clearfix"></div>
 			<table class="table table-hover">
 				<tr>
 					<th>Description</th>
-					<th class="col-sm-2">Quantity</th>
+					<th class="col-sm-2" style="text-align:right; padding-right:2em;">Quantity</th>
 					<th>Price</th>
 					<th>Cost</th>
 				</tr>
 				<tr>
-					<td>Delegation Fee</td>
-					<td class="text-right">3 &nbsp;&nbsp; &times;</td>
-					<td>$100</td>
-					<td><strong>$300</strong></td>
-				</tr>
-				<tr>
-					<td>Per-Delegate Fee</td>
-					<td class="text-right">60 &nbsp;&nbsp; &times;</td>
-					<td>$90</td>
-					<td><strong>$5400</strong></td>
+					<td>Delegate Fee</td>
+					<td class="text-right"><?php echo $invoice['delegate_q']; ?> &nbsp;&nbsp; &times;</td>
+					<td>$<?php echo $invoice['delegate_fee']; ?></td>
+					<td><strong>$<?php echo $invoice['delegates']; ?></strong></td>
 				</tr>
 				<tr>
 					<td>Adviser Fee</td>
-					<td class="text-right">2 &nbsp;&nbsp; &times;</td>
-					<td>$50</td>
-					<td><strong>$100</strong></td>
+					<td class="text-right"><?php echo $invoice['adviser_q']; ?> &nbsp;&nbsp; &times;</td>
+					<td>$<?php echo $invoice['adviser_fee']; ?></td>
+					<td><strong>$<?php echo $invoice['advisers']; ?></strong></td>
+				</tr>
+				<tr>
+					<td>1st Country Assignment</td>
+					<td class="text-right">1 &nbsp;&nbsp; &times;</td>
+					<td>$<?php echo $invoice['country1_fee']; ?></td>
+					<td><strong>$<?php echo $invoice['first']; ?></strong></td>
+				</tr>
+				<tr>
+					<td>2nd Country Assignment</td>
+					<td class="text-right"><?php echo $invoice['multi']; ?> &nbsp;&nbsp; &times;</td>
+					<td>$<?php echo $invoice['country2_fee']; ?></td>
+					<td><strong>$<?php echo $invoice['second']; ?></strong></td>
+				</tr>
+				<tr>
+					<td>Additional Countries</td>
+					<td class="text-right"><?php echo $invoice['additional']; ?> &nbsp;&nbsp; &times;</td>
+					<td><em>Free</em></td>
+					<td><strong><em>Free</em></strong></td>
 				</tr>
 				<tr id="total-row">
 					<td></td>
 					<td></td>
 					<td><strong>Total</strong></td>
-					<td><strong>$5800</strong></td>
+					<td><strong>$<?php echo $invoice['grand_total']; ?></strong></td>
 				</tr>
 			</table>
 			<div class="col-sm-1">
@@ -183,6 +195,69 @@
 			<div class="col-sm-2 pull-right">
 			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#paymentInfo">How to Pay</button>
 			</div>
+			<div class="clearfix"></div>
+			<!--------  Print-Only ------------->
+			<div class="print-only">
+			<div class="col-xs-6">
+			<h5>Thank you!</h5>
+			</div>
+			<div class="col-xs-6">
+				<p class="lead">
+					<strong>Joshua Kaplan</strong>
+					<br />Undersecretary-General of Finance 
+				</p>
+			</div>
+			<div class="clearfix"></div>
+			<hr />
+				<div class="col-xs-5">
+					<p class="lead">Please remit payment with this portion to:</p>
+				</div>
+				<div class="col-xs-7">
+					<p>
+						<strong>Northwestern University Model United Nations</strong>
+						<br />Norris University Center
+						<br />1999 Campus Drive, Box 24
+						<br />Evanston, IL 60208
+					</p>
+				</div>
+				<p>&nbsp;</p>
+				<table class="table table-bordered">
+				    <thead>
+				        <th>ID #</th>
+				        <th>Organization</th>
+				        <th>Amount Due</th>
+				        <th>Date Due</th>
+				    </thead>
+				    <tbody>
+				        <tr>
+				            <td><?php echo $customer_number; ?></td>
+				            <td><?php echo $school; ?></td>
+				            <td>$ 1,210</td>
+				            <td><?php echo $invoice['date']; ?></td>
+				        </tr>
+				        <tr>
+				            <th colspan="4" class="text-center">Office Use</th>
+				        </tr>
+				        <tr>
+				            <td colspan="4">Check #</td>
+				        </tr>
+				        <tr>
+				            <td colspan="4">Processed on:</td>
+				        </tr>
+				    </tbody>
+				</table>
+					
+			</div>
+			<!-- / Print-Only -->
+			
+			<?php	
+			}else{
+				//invoice not approved or doesn't exist	
+			?>
+			<div class="spacious col-md-12"><div class="col-md-12 text-center"><h2><i class="fa fa-exclamation-circle"></i></h2><p class="lead"><strong>Your invoice is not ready.</strong></p><p>An invoice will be ready when your delegate and adviser quantities are finalized and our Undersecretary General of Finance has approved the charges.</p></div></div>
+			<?php
+			}
+			?>
 			<p>&nbsp;</p>
 			
 			
@@ -326,6 +401,7 @@
   			<a class="btn btn-primary" id="del-assignments-print" href="#" onclick="window.print()"><i class="fa fa-print fa-inverse"></i>&nbsp;&nbsp; Print</a>
   			</div>
 			</form>
+			
 		</div><!-- /#delegates -->
 <div class="modal fade" id="paymentInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -335,13 +411,16 @@
         <h4 class="modal-title">Payment</h4>
       </div>
       <div class="modal-body">
-      <p>For security reasons, NUMUN does not accept payments online. Please send a check payable to <strong>Northwestern University Model United Nations</strong> to the following address:
+      <p>For security reasons, NUMUN does not accept payments online.
+      <br/>Please print your invoice and send the bottom portion along with a check payable to <strong>Northwestern University Model United Nations</strong> to the following address:
       </p>
       <p>
 		<strong>Northwestern University Model United Nations</strong>
-		<br />1999 Campus Drive<br />Evanston, IL 60208
+		<br />Norris University Center
+		<br />1999 Campus Drive, Box 24
+		<br />Evanston, IL 60208
 		</p>
-		<h5>Thank You</h5>
+		<h5>Thank you</h5>
 		</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -349,7 +428,7 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-		</div><!-- /.container -->
+</div><!-- /.container -->
 <?php $this->html_includes->load_page("adviser_footer"); ?>
 <?php $this->html_includes->load_page("adviser_footerscripts"); ?>
 		
