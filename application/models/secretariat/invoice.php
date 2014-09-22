@@ -219,13 +219,13 @@ class Invoice extends CI_Model
 		}
 	}
 	
-	public function get_deposit_status($schoolid){
+/*	public function get_deposit_status($schoolid){
 		$payments = $this->get_school_payments($schoolid);
 		if($format = "pretty"){
 			$response = '<span class="label label-warning">Due ' .$this->get_deposit_deadline(). '</span>';
 		}
 		
-	}
+	}*/
 	public function get_deposit_deadline(){
 		$query = $this->db->get_where('conference', array('current' => 1));
 		$row = $query->row();

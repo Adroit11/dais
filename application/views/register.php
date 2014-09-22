@@ -668,9 +668,10 @@ border: 0px solid transparent;
 			    </div>
 			  </div>
 			  <div class="form-group">
-			    <label for="passwordCreate" class="col-sm-4 control-label">Password</label>
+			    <label for="passwordCreate" class="col-sm-4 control-label">Create a Password</label>
 			    <div class="col-sm-8">
-			    <input type="password" class="form-control track-progress" id="passwordCreate" name="accountPassword" placeholder="Password">
+			    <input type="password" class="form-control track-progress" id="passwordCreate" name="accountPassword" placeholder="A strong password">
+			    <p class="help-block">You will need to remember your password to log in to your account.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
@@ -800,13 +801,13 @@ border: 0px solid transparent;
 			    <div class="col-sm-8">
 			    <div class="checkbox">
 		        <label class="radio-inline">
-		          <input type="radio" name="delType" class="track-progress" id="singleDel" name="delType" value="single" /> Single delegation
+		          <input type="radio" name="delType" class="track-progress" id="singleDel" name="delType" value="single" /> Single delegation ($60 fee)
 		        </label>
 		        <label class="radio-inline">
-		          <input type="radio" name="delType" class="track-progress" id="multiDel" name="delType" value="multiple" /> Multiple delegations
+		          <input type="radio" name="delType" class="track-progress" id="multiDel" name="delType" value="multiple" /> Multiple delegations ($100 fee)
 		        </label>
 		      </div>
-			    <p class="help-block">Each delegation represents one country. We recommend multiple delegations (i.e., multiple country assignments) for organizations with more than x delegates.</p>
+			    <p class="help-block">Each delegation represents one country. If you register <strong>15</strong> or more delegates, you are required to register as a Multiple Delegations school.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
@@ -824,7 +825,7 @@ border: 0px solid transparent;
 			    <div class="col-sm-8">
 			    	<div class="checkbox">
 			    		<label>
-			    			<input type="checkbox" class="track-progress" id="pressCheck" name="press" /> Yes, one of my delegates would like to be part of the Press Corps.
+			    			<input type="checkbox" class="track-progress" id="pressCheck" name="press" /> Yes, some of my delegates would like to be part of the Press Corps.
 			    		</label> 
 			    	</div>
 			    	<p class="help-block">The Press Corps is a small committee that produces news in print and online for the conference. No media or journalism experience is required.</p>

@@ -45,10 +45,33 @@ class Invoice extends CI_Model
 			$multi = array('multi' => $multiple_countries);
 			$grand_total = array('grand_total' => $totals['delegates'] + $totals['advisers'] + $totals['first'] + $totals['second']);
 			
+			$payments = array('payments' => $this->get_payments($schoolid));
+			if($payments['payments'] < ($grand_total['grand_total']/2)){
+			//deposit not paid or partially paid
+			//pay now: deposit - payments, pay later: balance
+				$deposit = array('deposit' => ($grand_total['grand_total']/2) - $payments['payments'], 
+								 'pay_later' => ($grand_total['grand_total']/2));
+				
+			}elseif($payments['payments'] == ($grand_total['grand_total']/2)){
+			//deposit paid
+			//pay now: 0
+			//pay later: remaining = deposit_amt
+			$deposit = array('deposit' => 0, 
+							 'pay_later' => ($grand_total['grand_total']/2));
+			
+				
+			}elseif($payments['payments'] > ($grand_total['grand_total']/2)){
+			//deposit and part of balane paid
+			//pay now: 0
+			//pay later: remaining is total - payments 
+			$deposit = array('deposit' => 0, 
+						     'pay_later' => $grand_total['grand_total'] - $payments['payments']);
+			}
+			
 			//check for payments/transactions and apply below grand total with "due now/10/1/2014" (amt up to deposit) and "due at conference"
 			
 			
-			$response = array_merge($billed_quantities, $billed_prices, $totals, $grand_total, $date, $multi);
+			$response = array_merge($billed_quantities, $billed_prices, $totals, $grand_total, $date, $multi, $payments, $deposit);
 			return $response;
 		}elseif($row->approved == 0){
 			//invoice not approved
@@ -106,4 +129,41 @@ class Invoice extends CI_Model
 	public function get_pdf($schoolid){
 		//pass variables to be filled-in on template PDF
 	}
+	public function get_payments($schoolid){
+		$query = $this->db->query('SELECT acctid, SUM(`amount`) `amount` FROM transactions WHERE `acctid` = '.$schoolid.' GROUP BY acctid');
+		$row = $query->row();
+		return $row->amount;
+	}
+	
+	/*public function get_account_status($schoolid){
+		$paid_amount = $this->get_payments($schoolid);
+		$deposit = 
+		$total_raw =
+		
+		
+	}
+	/*
+	$deposit = $this->get_invoice($schoolid);
+		   if($paid_amount > 0){
+		    	if($paid_amount < $deposit){
+		    	//deposit not fully paid
+		    	$pay_now = $deposit - $paid_amount;
+		    	$result .= '<td>$ '.number_format($pay_now).'<br /><span class="label label-warning">Due '.$this->get_deposit_deadline().'</span></td><td>$ '.$deposit.'<br /><span class="label label-success">Due '.$this->get_balance_deadline().'</span></td>';
+		    	}elseif($paid_amount == $deposit){
+			    //deposit paid
+			    $pay_later = $total_raw - $paid_amount;
+			    $result .= '<td>$ 0.00</td><td>$ '.number_format($pay_later).'<br /><span class="label label-success">Due '.$this->get_balance_deadline().'</span></td>';
+			    }elseif($paid_amount > $deposit){
+			     $pay_later = $total_raw - $paid_amount;
+			    $result .= '<td>$ 0.00</td><td>$ '.number_format($pay_later).'<br /><span class="label label-success">Due '.$this->get_balance_deadline().'</span></td>';
+		    	}elseif($paid_amount == $total_raw){
+		    	$result .= '<td><h4><span class="label label-success">Paid <i class="fa fa-check"></i></span></h4></td>';
+				
+		   }
+		   }else{
+			   $deposit = $this->get_deposit_amount($row->id, 'raw');
+			   $result .= '<td>$ '.number_format($deposit).'<br /><span class="label label-warning">Due '.$this->get_deposit_deadline().'</span></td>';
+			   
+		   }*/
+
 }

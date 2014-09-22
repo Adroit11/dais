@@ -1,9 +1,9 @@
 <?php
 	$user = $this->ion_auth->user()->row();
 	$alerts = $this->alerts_model->get_all_alerts();
-	$committees_all = $this->nu_schools->get_all_committees();
-	$committees_crisis = $this->nu_schools->get_crisis_committees();
-	$committees_non_crisis = $this->nu_schools->get_non_crisis_committees();
+	$committees_all = $this->committees_model->get_all_committees();
+	$committees_crisis = $this->committees_model->get_crisis_committees();
+	$committees_non_crisis = $this->committees_model->get_non_crisis_committees();
 	$all_staff = $this->secretariat_func->get_all_staff();
 	$all_schools = $this->secretariat_func->get_all_schools();
 	$status_alert = $this->secretariat_func->conference_status('alert');
@@ -11,7 +11,7 @@
 	$current_conference = 'NUMUN ' . $this->secretariat_func->current_conference('numerals');
 	$current_sec_gen = $this->secretariat_func->current_conference('sec-gen');
 	$registration_message = $this->secretariat_func->current_conference('reg-message');
-	$all_invoices = $this->invoice->get_approved_invoices();
+	
 ?>
 <!doctype html>
 <html>
@@ -210,7 +210,7 @@ border: 0px solid transparent;
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
-    	
+    	loadInvoices();
     	checkAlerts();
     	//check for new alerts every 2 minutes
     	alertInterval = setInterval(checkAlerts, 1000 * 60 * 2);
@@ -500,6 +500,7 @@ border: 0px solid transparent;
 			  	var feedback = $.parseJSON(response);
 			  	if(feedback.error){
 			  	  $("#customer-result").html("");
+			  	  ('#school-id').val("");
 			  	  thisField.children(".form-control-feedback").remove();
 				  thisField.removeClass('has-warning');
 				  thisField.addClass('has-error');
@@ -526,7 +527,42 @@ border: 0px solid transparent;
 		});
 		$("#payment-submit").click(function(e){
 			e.preventDefault();
+			$(this).html('<i class="fa fa-refresh fa-spin"></i>');
+			thisButton = $(this);
+			var customer = $("#customer-number").val();
+			var schoolid = $("#school-id").val();
+			var amount = $("#payment-amount").val();
+			var type = $("#payment-type").val();
+			var check = $("#check-number").val();
+			var notes = $("#payment-notes").val();
+			
 			// submit payment
+			$.ajax({
+			  type: "POST",
+			  url: "/sec_ajax/payment",
+			  data: {'customer-number': customer, 'school-id': schoolid, 'amount': amount, 'type': type, 'check-number': check, 'notes': notes},
+			  success: function(response){
+			  thisButton.html("Credit Account");
+			  if(response.error){
+				  //problem detected
+				  //clear inputs
+			  $("#payments").children().find("input[type=text], input[type=hidden], textarea").val("");
+			  thisButton.after("<p>Error while processing payment for #"+customer+": "+response.error+"</p>");
+			  }else{
+			  //all good
+			  //clear inputs
+			  $("#payments").children().find("input[type=text], input[type=hidden], textarea").val("");
+			  thisButton.after("<p>Payment processed for #"+customer+"</p>");
+			  loadInvoices();
+			  }	  
+			  },
+			  error: function(response){
+			  thisButton.html("Credit Account");
+			  //clear inputs
+			  $("#payments").children().find("input[type=text], input[type=hidden], textarea").val("");
+			  thisButton.after("<p>Error while processing payment for #"+customer+"</p>");
+			  }
+			  });
 		});
 		
 	});
@@ -590,13 +626,19 @@ function results(){
                     $(".navbar-brand").hide();
                     $("#sys-title").text("Secretariat");
                 }
-            }
-   function populateConfirmation(){
-	   console.log("Submit reg form");
-	   
-   }         
-   
-
+            }         
+   function loadInvoices(){
+   	   $("#all-invoices").html('<div class="text-center"><i class="fa fa-refresh fa-3x fa-spin"></i></div>');
+	   $.ajax({
+		type: "GET",
+		url: '/sec_ajax/invoices',
+		success: function(response){
+			$("#all-invoices").hide()
+			$("#all-invoices").html(response);
+			$("#all-invoices").fadeIn();
+		}
+		});
+		}
 	</script>
 	</head>
 	<body data-spy="scroll" data-offset="0" data-target="#navbar-main">
@@ -895,19 +937,21 @@ function results(){
 			<h1 class="default-head">Invoices</h1>
 			<p class="lead">Edit, approve, and send invoices.</p>
 			
-			<table class="table table-hover">
+			<div id="all-invoices"></div>
+			
+			<!--<table class="table table-hover">
 				<thead>
-				<tr><th>#</th><th>School</th><th>Deposit</th><th>Current Balance</th><th>Overdue</th><th>View Invoice</th></tr>
+				<tr><th>#</th><th>School</th><th>Total Fees</th><th>Total Payments</th><th>Balance Now</th><th>Balance Due Later</th><th>View Details</th></tr>
 				</thead>
-				<tbody>
-				<?php
-				echo $all_invoices;
-				?>
+				<tbody>-->
+				
+			<!--	</tbody>
+			</table>-->
 				
 			<p>&nbsp;</p>
 			<h2>Payments</h2>
 			<p class="lead">Log payments from schools</p>
-			<form class="form-horizontal" role="form">
+			<form class="form-horizontal" role="form" id="payments">
 				<div class="form-group">
 				<label for="customer-number" class="col-md-3 control-label">Customer #</label>
 				<div class="col-md-3">

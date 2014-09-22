@@ -11,6 +11,7 @@
 	$delegate_slots = $this->nu_schools->get_delegate_slots($school_id);
 	$phone = $this->nu_schools->get_phone($userid);
 	$invoice = $this->invoice->get_invoice($school_id);
+	$payments = $this->invoice->get_payments($school_id);
 	$customer_number = $this->invoice->get_customer_number($school_id);
 	
 ?>
@@ -153,25 +154,25 @@
 					<td>Delegate Fee</td>
 					<td class="text-right"><?php echo $invoice['delegate_q']; ?> &nbsp;&nbsp; &times;</td>
 					<td>$<?php echo $invoice['delegate_fee']; ?></td>
-					<td><strong>$<?php echo $invoice['delegates']; ?></strong></td>
+					<td><strong>$ <?php echo $invoice['delegates']; ?></strong></td>
 				</tr>
 				<tr>
 					<td>Adviser Fee</td>
 					<td class="text-right"><?php echo $invoice['adviser_q']; ?> &nbsp;&nbsp; &times;</td>
 					<td>$<?php echo $invoice['adviser_fee']; ?></td>
-					<td><strong>$<?php echo $invoice['advisers']; ?></strong></td>
+					<td><strong>$ <?php echo $invoice['advisers']; ?></strong></td>
 				</tr>
 				<tr>
 					<td>1st Country Assignment</td>
 					<td class="text-right">1 &nbsp;&nbsp; &times;</td>
 					<td>$<?php echo $invoice['country1_fee']; ?></td>
-					<td><strong>$<?php echo $invoice['first']; ?></strong></td>
+					<td><strong>$ <?php echo $invoice['first']; ?></strong></td>
 				</tr>
 				<tr>
 					<td>2nd Country Assignment</td>
 					<td class="text-right"><?php echo $invoice['multi']; ?> &nbsp;&nbsp; &times;</td>
 					<td>$<?php echo $invoice['country2_fee']; ?></td>
-					<td><strong>$<?php echo $invoice['second']; ?></strong></td>
+					<td><strong>$ <?php echo $invoice['second']; ?></strong></td>
 				</tr>
 				<tr>
 					<td>Additional Countries</td>
@@ -183,9 +184,25 @@
 					<td></td>
 					<td></td>
 					<td><strong>Total</strong></td>
-					<td><strong>$<?php echo $invoice['grand_total']; ?></strong></td>
+					<td><strong>$ <?php echo $invoice['grand_total']; ?></strong></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td><strong>Payments</strong></td>
+					<td><strong>$ <?php echo $invoice['payments']; ?></strong></td>
 				</tr>
 			</table>
+			<div class="col-sm-3">
+			<h5>Deposit <span class="label label-warning">Due 10/1/2014</span></h5>
+			<p class="lead">$ <?php echo $invoice['deposit']; ?></p>
+			</div>
+			<div class="col-sm-3">
+			<h5>Balance</h5>
+			<p class="lead">$ <?php echo $invoice['pay_later']; ?></p>
+			</div>
+			<div class="col-sm-6">
+			</div>
 			<div class="col-sm-1">
 			<button type="button" class="btn btn-primary" onclick="window.print()">Print&nbsp;&nbsp;<i class="fa fa-print fa-inverse"></i></button>
 			</div>
