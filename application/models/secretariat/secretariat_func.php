@@ -58,6 +58,7 @@ class Secretariat_func extends CI_Model
 		$secGen = $row->sec_gen;
 		$status = $row->status;
 		$numerals = $row->numerals;
+		$confid = $row->id;
 		if($request == 'sec-gen'){
 			return $secGen;	
 			}
@@ -66,6 +67,9 @@ class Secretariat_func extends CI_Model
 			}
 		if($request == 'numerals'){
 			return $numerals;	
+			}
+		if($request == 'id'){
+			return $confid;
 			}
 
 		}

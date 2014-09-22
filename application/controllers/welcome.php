@@ -19,6 +19,7 @@ class Welcome extends CI_Controller {
 		}elseif ($this->ion_auth->in_group($secretariat)){
 		$this->load->model('secretariat/secretariat_func');
 		$this->load->model('secretariat/invoice');
+		$this->load->model('committees_model');
 		$this->load->view('secretariat_logged_in');
 		
 		}elseif ($this->ion_auth->in_group($staff)){

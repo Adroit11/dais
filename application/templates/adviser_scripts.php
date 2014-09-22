@@ -15,14 +15,22 @@
 				handleScroll()
 			});
 		$(".app-page").click(function(){
-			var showID = $(this).attr("href");
 			$("#welcome").hide();
-			$(".hidden-welcome:visible").hide();
-			$(showID + ":hidden").fadeIn("fast");
-			if ($(".dropdown-menu:visible").index > -1)
-			{
-				$(".dropdown-menu:visible").hide();	
-			}
+			var showID = $(this).attr("href");
+			var page = showID.substring(1)
+			history.pushState({
+			 id: page,
+			 page: page 
+		 }, null, "#"+page);
+			getPage(page);
+			//$("#welcome").hide();
+			//$(".hidden-welcome:visible").hide();
+			//$(showID + ":hidden").fadeIn("fast");
+			
+			//if ($(".dropdown-menu:visible").index > -1)
+			//{
+				$(".dropdown-menu:visible").detach();	
+			//}
 			$(window).scrollTop(0);
 			return false;
 		});
@@ -58,7 +66,7 @@
 			$('.currently:visible').detach();
 			});
 		$(".double-del").tooltip();
-		$(window).on("click", ".edit-slot", function(e){
+		$(document).on("click", ".edit-slot", function(e){
 			e.preventDefault();
 			$(this).after('<a href="#" class="btn btn-danger btn-sm pull-right undo-edit-delegates" id="editing-close"><i class="fa fa-times fa-inverse"></i></a>');
 			$(this).hide();
@@ -107,6 +115,10 @@
 		}
 
 	});
+	function getPage(pageid){
+		 $(".hidden-welcome:visible").hide();
+		 $("#" + pageid).fadeIn();
+	}
 	function checkAlerts(){
 		$.ajax({
 		type: "GET",

@@ -44,6 +44,23 @@ class Sec_ajax extends CI_Controller {
 		}
 		echo json_encode($response);	
 	}
+	public function payment(){
+		$customer = $this->input->post('customer-number');
+		$schoolid = $this->input->post('school-id');
+		$amount = $this->input->post('amount');
+		$type = $this->input->post('type');
+		$check = $this->input->post('check-number');
+		$notes = $this->input->post('notes');
+		$response = $this->invoice->make_payment($customer, $schoolid, $amount, $type, $check, $notes);
+		if($response == false){
+			echo json_encode(array('error' => 'Database error'));
+		}
+		
+	}
+	public function invoices(){
+		$all_invoices = $this->invoice->get_approved_invoices();
+		echo $all_invoices;
+	}
 	
 	
 
