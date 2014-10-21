@@ -11,7 +11,7 @@ class New_reg extends CI_Model
 		$this->load->database();
 	}
 	
-	public function newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $minDelSlots, $maxDelSlots, $delType, $crisis, $press, $country1, $country2, $country3){
+	public function newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $delSlots, $delType, $crisis, $press, $country1, $country2, $country3){
 	//Use CI's active record. It's clearer than SQL statements and auto escapes data.
 	$school = array(
 	   'name' => $schoolName ,
@@ -19,8 +19,7 @@ class New_reg extends CI_Model
 	   'city' => $schoolCity,
 	   'state' => $schoolState,
 	   'zipcode' => $schoolZIP,
-	   'min_del_slots' => $minDelSlots ,
-	   'max_del_slots' => $maxDelSlots ,
+	   'req_del_slots' => $delSlots ,
 	   'del_type' => $delType,
 	   'crisis' => $crisis, 
 	   'press' => $press, 
@@ -77,18 +76,17 @@ class New_reg extends CI_Model
 
 		
 	}
-	public function newSecondaryAdviser($userid, $schoolid, $fullName, $phone){
+	public function newSecondaryAdviser($schoolid, $fullName, $phone){
 	//Use CI's active record. It's clearer than SQL statements and auto escapes data.
 	$type = 'secondary';
 	$adviser = array(
-	   'userid' => $userid ,
 	   'schoolid' => $schoolid ,
 	   'name' => $fullName,
 	   'phone' => $phone,
 	   'type' => $type
 	);
 	
-	$this->db->insert('advisers', $adviser); 
+	$this->db->insert('add_advisers', $adviser); 
 			
 	}
 	

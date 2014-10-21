@@ -4,10 +4,11 @@ class Committees extends CI_Controller {
 
 	public function index()
 	{
-	$this->load->helper('url');
-	$this->load->model('nu_schools');
-	$this->load->model('alerts_model');
-	$this->load->view('committees');
+		$this->load->helper('url');
+		$this->load->model('committees_page');
+		$this->load->model('conference');
+		$this->load->model('alerts_model');
+		$this->load->view('committees');
 	}
 	
 	public function conference($year){

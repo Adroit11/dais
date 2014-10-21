@@ -1,3 +1,6 @@
+<?php
+$reg_button = $this->conference->create_reg_button();
+?>
 <!doctype html>
 <html>
 	<head>
@@ -184,6 +187,10 @@ border: 0px solid transparent;
     		$(window).on("ready scroll resize", function () {
 				handleScroll()
 			});
+		/*if(!getUrlVars()['unlock']){
+			$("#lock-page").modal({backdrop: 'static'});
+			
+		}*/
 	});
 	function checkAlerts(){
 		$.ajax({
@@ -204,8 +211,8 @@ border: 0px solid transparent;
 			$("#emergency-title").text(title);
 			$("#emergency-message").text(desc);
 			$("#emergency").slideDown();
-			var beep = new Audio('https://dl.dropboxusercontent.com/s/8a3y7cgxckd6iim/announcement.mp3');
-			beep.play();
+			//var beep = new Audio('https://dl.dropboxusercontent.com/s/8a3y7cgxckd6iim/announcement.mp3');
+			//beep.play();
 			
 			//stop the timer, since we have an alert already
 			clearInterval(alertInterval);
@@ -220,7 +227,7 @@ border: 0px solid transparent;
                     $('#main-nav-content').removeClass('compact');
                     $("#navbar-quick-login").show();
                     $(".navbar-header").show();
-                    $("#sys-title").text("ACCESS");
+                    $("#sys-title").text("");
                 }
                 else
                 {
@@ -228,9 +235,17 @@ border: 0px solid transparent;
                     $("#navbar-quick-login").hide();
                     $(".navbar-header").hide();
                     $(".navbar-brand").hide();
-                    $("#sys-title").text("NUMUN Access");
+                    $("#sys-title").text("NUMUN");
                 }
-            }     
+            }  
+   /* function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}*/
+   
 	</script>
 	</head>
 	<body>
@@ -253,7 +268,7 @@ border: 0px solid transparent;
         </div>
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
-            <li class="lead"><a href="#reg-container-0" class="welcome-page" id="sys-title">ACCESS</a></li>
+            <li class="lead"><a href="#reg-container-0" class="welcome-page" id="sys-title"></a></li>
 			<li> <a href="#">Login</a></li>
 			<li id="emergency-link"> <a href="#emergency" class="smoothScroll"><i class="fa fa-exclamation-triangle fa-inverse" id="emergency-link-icon"></i>&nbsp;&nbsp; Alert</a></li>
           </ul>
@@ -290,23 +305,23 @@ border: 0px solid transparent;
 		  	  <div class="form-group">
 		  	
 		  	  
-			    <label for="emailAddress" class="col-sm-4 control-label">Email Address</label>
+			    <label for="emailAddress" class="col-sm-3 control-label">Email Address</label>
 			    <div class="col-sm-6">
 			    <input type="email" class="form-control" name="identity" id="identity" placeholder="Enter email" />
 				</div>
 			</div><!-- /.form-group --> 
 			  <div class="form-group">
 			  	
-			    <label for="passwordLogin" class="col-sm-4 control-label">Password</label>
+			    <label for="passwordLogin" class="col-sm-3 control-label">Password</label>
 			    <div class="col-sm-6">
 			    <input type="password" class="form-control" name="password" id="password" placeholder="Password">
 			    </div>
-			     <div class="col-sm-2 btn-vert-block">
-			    	<a href="/register" class="btn btn-primary" id="reg-button">I want to Register</a>
+			     <div class="col-sm-3 btn-vert-block">
+			    	<?php echo $reg_button; ?>
 			    </div>
 			  </div><!-- /.form-group -->
 			  <div class="form-group">
-			  	<div class="col-sm-2 col-sm-offset-4 btn-vert-block">
+			  	<div class="col-sm-2 col-sm-offset-3 btn-vert-block">
 			  			<input type="submit" class="btn btn-success" id="quick-login2" value="Login" />&nbsp;&nbsp;
 			  	</div>
 			  	<div class="col-sm-2 btn-vert-block">
@@ -318,6 +333,18 @@ border: 0px solid transparent;
 		  	</div>
 		  </div>
 		</div><!-- /.container -->
+<div class="modal fade" id="lock-page" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    	<div class="modal-header">
+    	<h4 class="modal-title" id="myModalLabel"><i class="fa fa-lock"></i> &nbsp; Unauthorized Access</h4>
+    	</div>
+    	<div class="modal-body">
+			You do not have access to this page.
+    	</div>
+    </div>
+  </div>
+</div>
 <div class="footer">
 <div class="dark-footer">
 	<div class="container">
@@ -326,9 +353,6 @@ border: 0px solid transparent;
 			<h2>Support</h2>
 			<p class="lead">We're here when you need us.</p>
 			<div class="col-sm-2 btn-vert-block">
-				<a href="#" class="btn btn-info"><i class="fa fa-phone fa-inverse"></i>&nbsp;&nbsp; (847) 500-1234</a>
-			</div>
-			<div class="col-sm-2 col-sm-offset-2 btn-vert-block">
 			<a href="#" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; support@numun.org</a>
 			</div>
 

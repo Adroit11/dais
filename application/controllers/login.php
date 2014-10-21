@@ -19,6 +19,7 @@ class Login extends CI_Controller {
 	 */
 	public function index()
 	{
+		$this->load->model('conference');
 		$this->load->view('login');
 	}
 }

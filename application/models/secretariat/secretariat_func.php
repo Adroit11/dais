@@ -114,7 +114,7 @@ class Secretariat_func extends CI_Model
 				return $errormessage;
 			}elseif($status == 2){
 				//registration waitlisted
-				$errormessage = "New school registration is currently in a waiting list.";
+				$errormessage = "New school registration is currently on a waiting list.";
 				return $errormessage;
 			}
 		}else{

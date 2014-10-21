@@ -242,8 +242,8 @@ border: 0px solid transparent;
 				var phone = response.phone
 				var school = response.school;
 				var address = response.address;
-				var delMin = response.delMin;
-				var delMax = response.delMax;
+				var delSlots = response.delSlots;
+				//var delMax = response.delMax;
 				var thankYou = response.thankYou;
 				var secGen = response.secGen;
 				var numerals = response.numerals;
@@ -253,8 +253,8 @@ border: 0px solid transparent;
 				$('#confirmPrimaryPhone').text(phone);
 				$('#confirmSchoolName').text(school);
 				$('#confirmAddress').text(address);
-				$('#confirmMin').text(delMin);
-				$('#confirmMax').text(delMax);
+				$('#confirmDels').text(delSlots);
+				//$('#confirmMax').text(delMax);
 				$('#confirmSecGenThanks').html(thankYou);
 				$('#secGenName').text(secGen);
 				$('#confirmNumerals').text(numerals);
@@ -785,13 +785,9 @@ border: 0px solid transparent;
 		  <div class="reg-container" id="reg-container-3">
 		  	<div class="row">
 		  	 <div class="form-group">
-			    <label for="minDelSize" class="col-sm-4 control-label">Minimum number of Delegates</label>
+			    <label for="delSize" class="col-sm-4 control-label">Number of Delegates</label>
 			    <div class="col-sm-2">
-			    <input type="text" class="form-control track-progress" id="minDelSize" name="minDelSlots" placeholder="0">
-			    </div>
-			    <label for="maxDelSize" class="col-sm-4 control-label">Maximum Delegates</label>
-			    <div class="col-sm-2">
-			    <input type="text" class="form-control track-progress" id="maxDelSize" name="maxDelSlots" placeholder="1000">
+			    <input type="text" class="form-control track-progress" id="delSize" name="delSlots" placeholder="0">
 			    </div>
 			  </div>
 		  	</div>
@@ -1441,6 +1437,16 @@ border: 0px solid transparent;
 			    </div>
 			    </div><!-- /form-group -->
 		  	</div>
+		  	<div class="row">
+		  		<p class="lead">Delegation & Committee Preferences</p>
+		  		<div class="form-group">
+		  			<label for="prefsText" class="col-sm-4 control-label"></label>
+		  			<div class="col-sm-8">
+		  			<p class="help-block">If you would like to request a country assignment by region or other grouping, please specify that here. You may also request specific committees. We will do our best to accommodate your request.</p>
+		  			<textarea class="form-control track-progress" id="prefsText" name="prefsText"></textarea>
+		  			</div>
+		  		</div>
+		  	</div>
 			<div class="row">
 			  <p class="lead">Additional Advisers</p>
 			  <div class="form-group">
@@ -1511,7 +1517,7 @@ border: 0px solid transparent;
 		  <div class="alert" role="alert" id="error-message"><strong>All done!</strong> Awaiting confirmation from the server.</div>
 		  <p class="lead">Your Account & Contact Information</p>
 		  	<div class="form-group">
-			    <label class="col-sm-4 control-label">Email Address</label>
+			    <label class="col-sm-4 control-label">Email Address/Username</label>
 			    <div class="col-sm-8">
 			      <p class="form-control-static" id="confirmEmail"></p>
 			    </div>
@@ -1541,11 +1547,11 @@ border: 0px solid transparent;
 			      <p class="form-control-static" id="confirmAddress"></p>
 			    </div>
 			</div>
-		  <p class="lead">Your Delegates & Additional Advisers</p>
+		  <p class="lead">Your Delegates</p>
 		  <div class="form-group">
 			    <label class="col-sm-4 control-label">Number of Delegates</label>
 			    <div class="col-sm-8">
-			      <p class="form-control-static"><strong><span id="confirmMin">0</span></strong> to <strong><span id="confirmMax">1,000</span></strong> delegates</p>
+			      <p class="form-control-static"><strong><span id="confirmDels">0</span></strong> delegates</p>
 			    </div>
 			</div>
 		  <p class="lead">Thank You</p>
@@ -1573,10 +1579,8 @@ border: 0px solid transparent;
 			<div class="col-sm-8 col-xs-6">
 			<h2>Support</h2>
 			<p class="lead">We're here when you need us.</p>
-			<div class="col-sm-2 btn-vert-block">
-				<a href="#" class="btn btn-info"><i class="fa fa-phone fa-inverse"></i>&nbsp;&nbsp; (847) 500-1234</a>
 			</div>
-			<div class="col-sm-2 col-sm-offset-2 btn-vert-block">
+			<div class="col-sm-2 btn-vert-block">
 			<a href="#" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; support@numun.org</a>
 			</div>
 

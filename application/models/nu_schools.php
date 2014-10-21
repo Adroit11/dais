@@ -96,6 +96,8 @@ class Nu_schools extends CI_Model
 			return $empty_response;
 		}	
 	}
+	
+	/*
 	public function assign_delegate($delegate_name, $delegate_slot){
 		if (!empty($delegate_slot)){
 		$this->db->query('UPDATE delegates SET name ='.$this->db->escape($delegate_name).' WHERE slotid ='.$delegate_slot.'');
@@ -104,7 +106,8 @@ class Nu_schools extends CI_Model
 		return 'No delegate slot specified.';
 	}
 	}
-	
+	*/
+		
 	public function get_phone($id){
 		if (!empty($id)){
 		$query = $this->db->query('SELECT phone FROM advisers WHERE userid='.$id.' LIMIT 1');

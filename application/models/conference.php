@@ -24,4 +24,38 @@ class Conference extends CI_Model
 		}
 		}
 	}
+	public function create_reg_button(){
+	$status = $this->get_reg_status();
+	if($status == 'closed'){
+		return '<a href="/register" class="btn btn-primary" id="reg-button" disabled>Registration is Closed</a>';	
+	}
+	if($status == 'open'){
+		return '<a href="/register" class="btn btn-primary" id="reg-button">I want to Register</a>';
+	}
+	if($status == 'waitlist'){
+		return '<a href="/register" class="btn btn-warning" id="reg-button">I want to Register</a><p>New schools will be added to a waiting list.</p>';
+		
+	}	
+	}
+	
+	public function get_reg_status(){
+		$query = $this->db->query('SELECT status FROM conference WHERE current=1');
+		if ($query->num_rows() > 0){
+		foreach ($query->result_array() as $array){
+		$status = $array['status'];
+		if($status == 0){
+			$response = 'closed';
+		}
+		if($status == 1){
+			$response = 'open';
+		}
+		if($status == 2){
+			$response = 'waitlist';
+		}
+		}
+		}else{
+			$response = 'Error: no conference has been set up.';
+		}
+	return $response;	
+	}
 }

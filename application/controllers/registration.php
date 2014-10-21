@@ -57,8 +57,8 @@ class Registration extends CI_Controller {
 			$schoolCity = $this->input->post('schoolCity');
 			$schoolState = $this->input->post('schoolState');
 			$schoolZIP = $this->input->post('schoolZIP');
-			$minDelSlots = $this->input->post('minDelSlots');
-			$maxDelSlots = $this->input->post('maxDelSlots');
+			$delSlots = $this->input->post('delSlots');
+			//$maxDelSlots = $this->input->post('maxDelSlots');
 			$delType = $this->input->post('delType');
 			$crisis = $this->input->post('crisis');
 			$press = $this->input->post('press');
@@ -77,7 +77,7 @@ class Registration extends CI_Controller {
 			$country2 = $this->input->post('countryPref2');
 			$country3 = $this->input->post('countryPref3');
 			
-			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $minDelSlots, $maxDelSlots, $delType, $crisis_pref, $press_pref, $country1, $country2, $country3);
+			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $delSlots, $delType, $crisis_pref, $press_pref, $country1, $country2, $country3);
 			if ($schoolID == false){
 				//error
 				$errormessage = "Sorry, we couldn't complete the registration process because there was an error while entering your school into our database. However, your adviser account was created. Please contact us at support@numun.org to continue registration.";	
@@ -146,8 +146,7 @@ class Registration extends CI_Controller {
 					'phone' => $phone,
 					'school' => $schoolName,
 					'address' => $schoolAddress,
-					'delMin' => $minDelSlots,
-					'delMax' => $maxDelSlots,
+					'delSlots' => $delSlots,
 				);
 				$jsonarray = array_merge($confirmVariables, $confMessages);
 				$json = json_encode($jsonarray);

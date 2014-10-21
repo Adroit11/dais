@@ -9,6 +9,7 @@ class Committees_page extends CI_Model
 	{
 		parent::__construct();
 		$this->load->database();
+		$this->load->model('conference');
 	}
 		public function get_committees_list($id){
 		if($id == "xi"){

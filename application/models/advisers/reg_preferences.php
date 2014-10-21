@@ -21,11 +21,11 @@ class Reg_preferences extends CI_Model
 			if (isset($school_info)){
 				$school_info_result = '';
 				if (!isset($school_info->assigned_del_slots)){
-				//school slots haven't been assigned, so give a range
-				$school_info_result .= '<div class="col-sm-3"><h4>Minimum</h4>';		
-				$school_info_result .= '<p class="lead"><strong><span id="min-del-slots">'.$school_info->min_del_slots.'</span></strong></p>';
-				$school_info_result .= '</div><div class="col-sm-3"><h4>Maximum</h4>';	
-				$school_info_result .= '<p class="lead"><strong><span id="max-del-slots">'.$school_info->max_del_slots.'</span></strong></p></div>';
+				//school slots haven't been assigned
+				$school_info_result .= '<div class="col-sm-3"><h4>Requested Quantity</h4>';		
+				$school_info_result .= '<p class="lead"><strong><span id="req-del-slots">'.$school_info->req_del_slots.'</span></strong></p>';
+				$school_info_result .= '</div>';	
+
 				$school_info_result .= '<div class="col-sm-4">';
 				if($allow_edits == 'yes'){
 				$school_info_result .= '<button class="btn btn-warning" id="edit-delegate-numbers">Edit</button></div>';
@@ -47,7 +47,7 @@ class Reg_preferences extends CI_Model
 			return 'No school specified.';
 		}
 	}
-	public function changeDelegateCount($min, $max, $id){
+	public function changeDelegateCount($count, $id){
 		//check if logged-in user has access to this School's prefs
 		$query = $this->db->query('SELECT userid FROM advisers WHERE schoolid = '.$id);
 		if($query-num_rows() > 0){
@@ -55,8 +55,7 @@ class Reg_preferences extends CI_Model
 			if($this->$user->id == $row->userid){
 				//update db with new values
 				$data = array(
-					'min_del_slots' => $min,
-					'max_del_slots' => $max
+					'req_del_slots' => $count
 				);
 				$where = "id = " . $id;
 				$update = $this->db->update('schools', $data, $where);
@@ -77,15 +76,26 @@ class Reg_preferences extends CI_Model
 		
 
 	}
+	public function assign_delegate($delegate_name, $delegate_slot){
+		if (!empty($delegate_slot)){
+		$this->db->query('UPDATE delegates SET name ='.$this->db->escape($delegate_name).' WHERE slotid ='.$delegate_slot.'');
+		return $delegate_name;
+	}else{
+		return 'No delegate slot specified.';
+	}
+	}
+
 	public function additionalAdvisers($schoolid){
-		$query = $this->db->query('SELECT name FROM advisers WHERE schoolid= \''.$schoolid.'\' AND type=\'secondary\'');
+		$query = $this->db->query('SELECT * FROM add_advisers WHERE schoolid= \''.$schoolid.'\' AND type=\'secondary\'');
 		if($query->num_rows() == 0){
 			return "You are the only adviser for this school.";	
 		}elseif($query->num_rows() > 0){
+			$result = '';
 			foreach ($query->result() as $row){
-				echo "<p><strong>" . $row->name . "</strong></p>";
-				echo "<p>" . $row->phone . "</p>";
+				$result .= "<p><strong>" . $row->name . "</strong></p>";
+				$result .= "<p>" . $row->phone . "</p>";
 			}
+		return $result;
 		}
 	}
 	public function getSchoolCountryPrefs($schoolid){

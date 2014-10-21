@@ -1,6 +1,9 @@
 <?php 
-	$committees_list = $this->committees_model->get_committees_list();
-	$committee_divs = $this->committees_model->get_committee_divs();
+	$current_id = $this->conference->current_conference_id();
+	$committees_list = $this->committees_page->get_committees_list($current_id);
+	$committee_divs = $this->committees_page->get_committee_divs($current_id);
+	$crisis_blurb = $this->committees_page->get_crisis_explanation();
+	$crisis_director = $this->committees_page->get_crisis_director();
 ?>
 <!doctype html>
 <html>
@@ -242,6 +245,34 @@ border: 0px solid transparent;
 				$("#committee-id-" + committeeId).removeClass("hidden");
 				
 		});
+		$(".modal-crisis").click(function(e){
+			e.preventDefault();
+			$("#crisis-blurb").modal();
+		
+		});
+		$(".modal-location").click(function(e){
+			e.preventDefault();
+			var map = $(this).attr("href").substring(8);
+			if(map == "N1"){
+			$("#loc-norris-1").modal();
+			}
+			if(map == "N2"){
+			$("#loc-norris-2").modal();
+			}
+			if(map == "N3"){
+			$("#loc-norris-3").modal();
+			}
+			if(map == "M2"){
+			$("#loc-mtc-2").modal();
+			}
+			if(map == "M3"){
+			$("#loc-mtc-3").modal();
+			}
+
+
+			
+		});
+
 	});
 	function checkAlerts(){
 		$.ajax({
@@ -325,25 +356,155 @@ border: 0px solid transparent;
 			</div>
 		</div><!-- /.row-fluid -->
 		</div><!-- /.container -->
-		<div class="container">
-		<div class="row-fluid" id="crisis-exp">
-		<div class="col-sm-9 col-sm-offset-3">
-		<p>
-			&nbsp;
-			<br /><br /><br />
-			&nbsp;
-		</p>
-		<h2>Crisis Committees</h2>
-		</div>
-		<div class="col-sm-3">
-		<p class="lead pull-left">"... unique and unexpected challenges for delegates ..."</p>
-		</div>
-		<div class="col-sm-9">
-		<p>Crisis committees present unique and unexpected challenges for our delegates at NUMUN. Although all committees -- no matter their size or crisis designation -- strive to maintain an environment which is fast-paced, politically realistic and immersive, crisis committees at NUMUN take these objectives further by granting delegates a larger stake in prevailing geopolitical issues. Crisis committees tend to focus tightly on a singular geographic area with a specific conflict at hand. Delegates have clear roles in these conflicts and must struggle to find common ground where there is very little of anything in common.</p>
-		</div>
 		
-		</div><!-- /.row-fluid -->
-		</div><!-- /.container -->
+<div class="modal fade" id="loc-norris-3">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Norris 3rd Floor</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+	        <img src="https://dl.dropboxusercontent.com/s/quacprmvtf3r422/3floorplans.jpg" alt="3rd Floor Map"/>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="loc-norris-2">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Norris 2nd Floor</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+	        <img src="https://dl.dropboxusercontent.com/s/0hg9io4cfvc9bcp/2floorplans.jpg" alt="3rd Floor Map"/>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="loc-norris-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Norris 1st Floor</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+	        <img src="https://dl.dropboxusercontent.com/s/pzby19cn5acpx5r/1floorplans.jpg" alt="3rd Floor Map"/>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="loc-mtc-2">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">McCormick Foundation Center 2nd Floor</h4>
+      </div>
+      <div class="modal-body">
+        <p class="lead">Directions to McCormick Foundation Center AKA "McTrib"</p>
+		<p><strong>From Pick-Staiger</strong></p>
+		<p>
+			<ol>
+				<li>From the lobby of Pick-Staiger, walk straight ahead and down the stairs.</li>
+				<li>Cross Campus Drive and continue straight ahead on the path.</li>
+				<li>Turn left at the next main path toward Kresge Hall and McCormick Foundation Center.</li>
+				<li>McCormick Foundation Center will be on your left. Enter at the south end of the building and take the elevator to 2.</li>
+			</ol>	
+		
+		<p><strong>From Norris</strong></p>
+			<ol>
+				<li>From the front entrance of Norris, turn left and follow the path across Campus Drive toward the stairs at the southern end of Main Library.</li>
+				<li>At the stairs, turn left and head south towards Kresge Hall and McCormick Foundation Center.</li>
+				<li>McCormick Foundation Center will be on your left. Enter at the south end of the building and take the elevator to 2.</li>
+			</ol>	
+		</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="loc-mtc-3">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">McCormick Foundation Center 3rd Floor</h4>
+      </div>
+      <div class="modal-body">
+        <p class="lead">Directions to McCormick Foundation Center AKA "McTrib"</p>
+		<p><strong>From Pick-Staiger</strong></p>
+		<p>
+			<ol>
+				<li>From the lobby of Pick-Staiger, walk straight ahead and down the stairs.</li>
+				<li>Cross Campus Drive and continue straight ahead on the path.</li>
+				<li>Turn left at the next main path toward Kresge Hall and McCormick Foundation Center.</li>
+				<li>McCormick Foundation Center will be on your left. Enter at the south end of the building and take the elevator to 3.</li>
+			</ol>	
+		
+		<p><strong>From Norris</strong></p>
+			<ol>
+				<li>From the front entrance of Norris, turn left and follow the path across Campus Drive toward the stairs at the southern end of Main Library.</li>
+				<li>At the stairs, turn left and head south towards Kresge Hall and McCormick Foundation Center.</li>
+				<li>McCormick Foundation Center will be on your left. Enter at the south end of the building and take the elevator to 3.</li>
+			</ol>	
+		</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="crisis-blurb">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">About Crisis Committees</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+			<?php echo $crisis_blurb; ?>
+        </p>
+        <p class="lead">
+	        <strong><?php echo $crisis_director; ?></strong>
+	        <br />
+			<small>Crisis Director</small>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+		
 <!--
 <div class="footer">
 <div class="dark-footer">
