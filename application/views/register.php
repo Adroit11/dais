@@ -173,6 +173,9 @@ border: 0px solid transparent;
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
+    	//Safari Fixes
+    	$('#reg-container-1').show();
+    	$('#reg-title-1').show();
     		$(window).on("ready scroll resize", function () {
 				handleScroll()
 			});
