@@ -9,6 +9,7 @@ class Secretariat_func extends CI_Model
 	{
 		parent::__construct();
 		$this->load->database();
+		$this->load->model('secretariat/invoice_sec');
 	}
 	public function get_all_staff(){
 		//$query = $this->db->query('SELECT * FROM staff');
@@ -181,8 +182,46 @@ class Secretariat_func extends CI_Model
 		}
 		
 	}
+	
+	//public function get_adviser_email($id){
+	//	$this->db->query()
+	//}
+	
+	public function get_userid($schoolid){
+		$query = $this->db->query('SELECT users.id AS uid FROM users LEFT JOIN advisers ON advisers.userid = users.id WHERE advisers.schoolid = '.$schoolid);
+		if($query->num_rows() > 0){
+			$row = $query->row();
+			return $row->uid;
+		}else{
+			return false;
+		}
+	}
+	public function get_email($schoolid){
+		$user = $this->get_userid($schoolid);
+		$query = $this->db->query('SELECT email FROM users WHERE id = '.$user);
+		if($query->num_rows() > 0){
+		$row = $query->row();
+		return $row->email;
+		}else{
+			return false;
+		}
+	}
+	
+	public function get_reg_time($schoolid){
+		$user = $this->get_userid($schoolid);
+		$query = $this->db->query('SELECT created_on FROM users WHERE id = '.$user);
+		if($query->num_rows() > 0){
+		$row = $query->row();
+		$time = $row->created_on;
+		$output = date("F jS", $time);
+		return $output;
+		}else{
+			return false;
+		}
+	}
+	
 	public function get_all_schools(){
-		$query = $this->db->query('SELECT schools.id AS id, schools.name AS school_name, advisers.name AS adviser_name, advisers.phone AS adviser_phone, schools.address, schools.city, schools.state, schools.zipcode, schools.min_del_slots, schools.max_del_slots FROM schools JOIN advisers ON schools.id = advisers.schoolid');
+		$query = $this->db->query('SELECT schools.id AS id, schools.name AS school_name, advisers.name AS adviser_name, advisers.phone AS adviser_phone, schools.customer, schools.address, schools.city, schools.state, schools.zipcode, schools.req_del_slots, schools.assigned_del_slots FROM schools JOIN advisers ON schools.id = advisers.schoolid');
 
 	
 	
@@ -200,13 +239,41 @@ class Secretariat_func extends CI_Model
 		   foreach ($query->result() as $row)
 		   {
 		   $schools_result .= '<tr>';
-		   $schools_result .= '<td>' . $row->id . '</td>';
+		   $schools_result .= '<td>' . $row->customer . '</td>';
 		   $schools_result .= '<td>' . $row->school_name . '</td>';
 		   $schools_result .= '<td><strong>' . $row->adviser_name . '</strong><br />' . $row->adviser_phone . '</td>';
 		   $schools_result .= '<td>' . $row->address . '<br />'. $row->city .', '. $row->state .' '. $row->zipcode .'</td>';
-		   $schools_result .= '<td><strong>' . $row->min_del_slots . '</strong> to <strong>' . $row->max_del_slots . '</strong></td>';
-		   $schools_result .= '<td><button class="btn btn-success btn-sm">Assign Slots</button><br />School ID:' . $row->id . '</td>';
-		   $schools_result .= '<td><button class="btn btn-info btn-sm">Email</button></td>';
+		   
+		   if(is_null($row->assigned_del_slots)){
+		   $schools_result .= '<td><em>' . $row->req_del_slots . '</em></td>';
+		   $schools_result .= '<td><button class="btn btn-primary btn-sm">Assign Slots</button></td>';
+		   $delegate_quantity = $row->req_del_slots;
+		   }else{
+		   $schools_result .= '<td>' . $row->assigned_del_slots . '</td>';
+		   $schools_result .= '<td><button class="btn btn-warning btn-sm">Edit Slots</button></td>';
+		   $delegate_quantity = $row->assigned_del_slots;
+		   }
+		   
+		   $invoice_exists = $this->invoice_sec->invoice_exists($row->id);
+		   if($invoice_exists != 1){
+			   //invoice does not exist
+			   $num_advisers = $this->invoice_sec->num_advisers($row->id);
+			   if($this->invoice_sec->num_delegations($row->id) == 'multiple'){
+				   $num_country = 2;
+			   }else{
+				   $num_country = 1;
+			   }
+			   
+			   $schools_result .= '<td><button class="btn btn-primary btn-sm create-invoice" id="create-invoice-'.$row->id.'" data-school-id="'.$row->id.'" data-school-email="'.$this->get_email($row->id).'" data-school-name="'. $row->school_name .'" data-adviser-name="'.$row->adviser_name.'" data-school-regtime="'.$this->get_reg_time($row->id).'" data-school-quantity="'.$delegate_quantity.'" data-school-advisers="'.$num_advisers.'" data-school-countries="'.$num_country.'">Create Invoice</button></td>';
+			
+		   }elseif($invoice_exists == 1){
+			   //invoice exists 
+			   $schools_result .= '<td><button class="btn btn-success btn-sm view-invoice" id="view-invoice-'.$row->id.'" data-school-id="'.$row->id.'" data-school-name="'. $row->school_name .'" data-school-custnum="'.$row->customer.'">View Invoice</button></td>';
+		   }
+		   
+		   
+		   
+		   $schools_result .= '<td><a href="mailto:'.$this->get_email($row->id).'" class="btn btn-info btn-sm">Email</a></td>';
 		   $schools_result .= '</tr>';
 		   }
 		   $schools_result .= '</tbody></table>';

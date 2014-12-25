@@ -272,7 +272,11 @@ border: 0px solid transparent;
 
 			
 		});
-
+		var hash = window.top.location.hash.substring(1);
+		if( hash ){
+			$(".committee-desc-container").addClass("hidden");
+			$(".committee-"+hash).removeClass("hidden");
+		}
 	});
 	function checkAlerts(){
 		$.ajax({

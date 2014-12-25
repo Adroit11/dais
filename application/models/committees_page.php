@@ -54,7 +54,11 @@ class Committees_page extends CI_Model
 		{
 			$committee_divs = '';
 			foreach ($committees->result() as $row){
+				if(!empty($row->slug)){
+				$committee_divs .= '<div id="committee-id-' . $row->id . '" class="committee-'.$row->slug.' committee-desc-container hidden">';
+				}else{
 				$committee_divs .= '<div id="committee-id-' . $row->id . '" class="committee-desc-container hidden">';
+				}
 				$committee_divs .= '<h1 class="committee-title">' . $row->name . '</h1>';
 				$committee_divs .= '<div class="committee-labels">';
 				$committee_divs .= '<p class="lead">';
@@ -100,6 +104,16 @@ class Committees_page extends CI_Model
 				$committee_divs .= '<div class="row">';
 				$committee_divs .= '<p class="lead">Email the Chair</p>';
 				$committee_divs .= '<a href="mailto:'.$row->email.'">'.$row->email.'</a>';
+				$committee_divs .= '</div></div>';
+				}
+				
+				if(is_null($row->twitter)){
+					//do nothing
+				}else{
+				$committee_divs .= '<div class="col-md-6">';
+				$committee_divs .= '<div class="row">';
+				$committee_divs .= '<p class="lead">Follow '.$row->name.' on Twitter</p>';
+				$committee_divs .= '<a class="btn btn-info" href="https://twitter.com/'.$row->twitter.'" target="_blank">@<strong>'.$row->twitter.'</strong></a>';
 				$committee_divs .= '</div></div>';
 				}
 				

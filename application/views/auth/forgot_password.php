@@ -199,14 +199,14 @@ border: 0px solid transparent;
         </div>
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
-          	<li class="lead"><a href="#welcome" class="welcome-page">ACCESS</a></li>
+          	<li class="lead"><a href="#welcome" class="welcome-page"></a></li>
         </div><!--/.nav-collapse -->
       </div>
       </div>
     </nav>
     </div><!-- /#navbar-main -->
 	<div class="container main-container">
-<h1><?php echo lang('forgot_password_heading');?></h1>
+<h1>Reset Password</h1>
 <p class="lead">To reset your password, enter the email address that you used to create your account.</p>
 
 <div id="infoMessage"><?php echo $message;?></div>

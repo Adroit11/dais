@@ -3,6 +3,7 @@
 class Registration extends CI_Controller {
 		public function submit(){
 			$this->load->library('ion_auth');
+			$this->load->library('email');
 			$this->load->helper('url');
 			$this->load->model('nu_schools');
 			$this->load->model('new_reg');
@@ -62,6 +63,7 @@ class Registration extends CI_Controller {
 			$delType = $this->input->post('delType');
 			$crisis = $this->input->post('crisis');
 			$press = $this->input->post('press');
+			$otherPrefs = $this->input->post('prefsText');
 			//Crisis and press prefs are boolean options, we have to check to see if their checkboxes are checked
 			if($crisis == 1){
 				$crisis_pref = 1;
@@ -77,7 +79,7 @@ class Registration extends CI_Controller {
 			$country2 = $this->input->post('countryPref2');
 			$country3 = $this->input->post('countryPref3');
 			
-			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $delSlots, $delType, $crisis_pref, $press_pref, $country1, $country2, $country3);
+			$schoolID = $this->new_reg->newSchool($schoolName, $schoolAddress, $schoolCity, $schoolState, $schoolZIP, $delSlots, $delType, $crisis_pref, $press_pref, $country1, $country2, $country3, $otherPrefs);
 			if ($schoolID == false){
 				//error
 				$errormessage = "Sorry, we couldn't complete the registration process because there was an error while entering your school into our database. However, your adviser account was created. Please contact us at support@numun.org to continue registration.";	
@@ -99,17 +101,17 @@ class Registration extends CI_Controller {
 			if (!empty($this->input->post('secondName')) && !empty($this->input->post('secondPhone'))){
 			$name2 = $this->input->post('secondName');
 			$phone2 =  $this->input->post('secondPhone');
-			$this->new_reg->newSecondaryAdviser($adviserID , $schoolID, $name2, $phone2);
+			$this->new_reg->newSecondaryAdviser($schoolID, $name2, $phone2);
 			}
 			if (!empty($this->input->post('thirdName')) && !empty($this->input->post('thirdPhone'))){
 			$name3 = $this->input->post('thirdName');
 			$phone3 =  $this->input->post('thirdPhone');
-			$this->new_reg->newSecondaryAdviser($adviserID , $schoolID, $name3, $phone3);
+			$this->new_reg->newSecondaryAdviser($schoolID, $name3, $phone3);
 			}
 			if (!empty($this->input->post('fourthName')) && !empty($this->input->post('fourthPhone'))){
 			$name4 = $this->input->post('fourthName');
 			$phone4 =  $this->input->post('fourthPhone');
-			$this->new_reg->newSecondaryAdviser($adviserID , $schoolID, $name4, $phone4);
+			$this->new_reg->newSecondaryAdviser($schoolID, $name4, $phone4);
 			}
 			}//New Primary adviser failed?
 			}//$schoolID false?
@@ -135,9 +137,11 @@ class Registration extends CI_Controller {
 					}else{
 						$customer_number = $schoolID.$last2;
 					}
+					$this->new_reg->setCustomerNumber($schoolID,$customer_number);
+					
 				$confirmVariables = array(
 					//success so send submitted variables
-					'errormessage' => 'Almost done! Your information has been saved and your account is now ready to activate. Please check your inbox for an activation email. Registration for your school is not complete until you activate your account.',
+					'errormessage' => 'All done! Your information has been saved and your account is now ready to use. Please check your inbox for a confirmation email.',
 					'type' => 'success',
 					'adviserEmail' => $email,
 					'adviserName' => $newPrimary,
@@ -148,6 +152,17 @@ class Registration extends CI_Controller {
 					'address' => $schoolAddress,
 					'delSlots' => $delSlots,
 				);
+				$emailBody = $this->new_reg->confirmEmailBody($newPrimary, $schoolName);
+
+				$this->email->from('support@numun.org', 'NUMUN Support');
+				$this->email->to($email);
+				$this->email->bcc('priyankamelgiri2015@u.northwestern.edu'); 
+				
+				$this->email->subject('NUMUN Account for '.$schoolName.'');
+				$this->email->message($emailBody);	
+				
+				$this->email->send();
+				
 				$jsonarray = array_merge($confirmVariables, $confMessages);
 				$json = json_encode($jsonarray);
 			}

@@ -17,7 +17,9 @@
 		$(".app-page").click(function(){
 			$("#welcome").hide();
 			var showID = $(this).attr("href");
-			var page = showID.substring(1)
+			var page = showID.substring(1);
+			$(".navbar-nav > li.active").removeClass("active");
+			$(this).parent("li").addClass("active");
 			history.pushState({
 			 id: page,
 			 page: page 
@@ -146,7 +148,7 @@
 		}});
 	}
 	function handleScroll(){
-                if($(window).scrollTop()<=100)
+               /* if($(window).scrollTop()<=100)
                 {
                     $(".navbar-brand").hide();
                     $('#main-nav-content').removeClass('compact');
@@ -159,7 +161,7 @@
                     $("#navbar-quick-login").hide();
                     $(".navbar-header").hide();
                     $(".navbar-brand").hide();
-                }
+                } */
             }        
    
 

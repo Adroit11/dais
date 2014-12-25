@@ -302,6 +302,104 @@ border: 0px solid transparent;
 		    $('#charNum').text(char + ' characters left. (Out of 140)');
 		  }
 		});
+		
+		$(".create-invoice").click(function(){
+			$("#createInvoiceModal").modal();
+			
+			var invSchool = $(this).data("schoolName");
+			$("#createinvoice-school").text(invSchool);
+			$("#school-name").val(invSchool);
+			
+			var invQuantity = $(this).data("schoolQuantity");
+			$("#delQuantity").text(invQuantity);
+			$("#delegate-quantity").val(invQuantity);
+			
+			var invRegtime = $(this).data("schoolRegtime");
+			$("#regTime").text(invRegtime);
+			$("#registration-time").val(invRegtime);
+			
+			var invId = $(this).data("schoolId");
+			$("#createinvoice-schoolid").val(invId);
+			
+			var invEmail = $(this).data("schoolEmail");
+			$("#adviser-email").val(invEmail);
+			
+			var invAdviser = $(this).data("adviserName");
+			$("#adviser-name").val(invAdviser);
+			
+			var invAdvisers = $(this).data("schoolAdvisers");
+			$("#school-advisers").val(invAdvisers);
+			
+			var invDelegations = $(this).data("schoolCountries");
+			$("#school-delegations").val(invDelegations);
+		});
+		
+		$("#save-invoice").click(function(){
+		var button = $(this);
+		button.html('<i class="fa fa-inverse fa-refresh fa-spin"></i>');
+		$.post( "/sec_ajax/create_invoice", $( "#create-invoice-form" ).serialize(), function(response){
+			var response = $.parseJSON(response);
+			if (response.status == 'ok'){
+				button.html('Save Changes');
+				$("#createInvoiceModal").modal('hide');
+				var schoolid = response.id;
+				$("#create-invoice-" + schoolid).removeClass('create-invoice').addClass('view-invoice').removeClass('btn-primary').addClass('btn-success');
+				$("#create-invoice-" + schoolid).data('schoolId') = schoolid;
+			}else{
+				$(".invoice-error").show().removeClass('hidden');
+			}
+		} );
+		});
+		
+		$(".view-invoice").click(function(){
+			var schoolid = $(this).data("school-id");
+			var schoolcustomer = $(this).data("school-custnum");
+			var schoolName = $(this).data("school-name");
+			var invoiceQuery = $.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "https://secure.numun.org/sec_ajax/get_invoice/",
+			data: {'getinvoice-id': schoolid},
+			});
+			
+			invoiceQuery.done(function( data ) {
+				//school info
+				$("#viewinvoice-school").text(schoolName);
+				$("#view-schoolid").text(schoolcustomer);
+			
+				//delegates line item
+				$("#view-del-quantity").text(data.delegate_q);
+				$("#view-del-fee").text(data.delegate_fee);
+				$("#view-del-total").text(data.delegates);
+				
+				//adviser line item
+				$("#view-adviser-quantity").text(data.adviser_q);
+				$("#view-adviser-fee").text(data.adviser_fee);
+				$("#view-adviser-total").text(data.advisers);
+				
+				//1st country line item
+				$("#view-country1-fee").text(data.country1_fee);
+				$("#view-country1-total").text(data.first);
+				
+				//2nd country line item
+				$("#view-country2-quantity").text(data.multi);
+				$("#view-country2-fee").text(data.country2_fee);
+				$("#view-country2-total").text(data.second);
+				
+				//add'l countries
+				$("#view-additionalCountries-quantity").text(data.additional);
+				
+				//total
+				$("#view-grand-total").text(data.grand_total);
+				
+				//payments
+				$("#view-payments").text(data.payments);
+				
+				
+			});
+			$("#viewInvoiceModal").modal();
+		});
+		
 		$(".welcome-page").click(function(){
 			$(".hidden-welcome:visible").hide();
 			$("#welcome").fadeIn("fast");
@@ -673,7 +771,8 @@ function results(){
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
 	            <li><a href="#sec-reg-schools" class="app-page">Registered Schools</a></li>
-	            <li><a href="#sec-invoices" class="app-page">Invoices</a></li>
+	            <li><a href="#sec-invoices" class="app-page">List Invoices</a></li>
+	            <li><a href="#sec-payments" class="app-page">Add Payment</a></li>
 	            <li><a href="#sec-assignments" class="app-page">Assignments</a></li>
 	            <li><a href="#sec-checkin" class="app-page">Check-In</a></li> 
 	            <li class="divider"></li>
@@ -729,7 +828,7 @@ function results(){
 		</div><!-- /#emergency -->
 		<div class="row" id="welcome">
 		<div class="col-md-7">
-			<h1>Welcome, Michael</h1>
+			<h1>Welcome, <?php echo $user->first_name; ?></h1>
 			<p class="lead">SECRETARIAT ACCESS</p>
 			<p>We're glad to have you!</p>
 			<p>Attention users,<br />
@@ -875,7 +974,7 @@ function results(){
 			<h1 class="default-head">Registered Schools</h1>
 			<div class="row">
 						  <?php echo $status_panel; ?>
-			              <div class="col-lg-4 col-md-6">
+			              <!--<div class="col-lg-4 col-md-6">
 			              	<div class="panel panel-primary">
                             <div class="panel-heading">
                                 <div class="row">
@@ -919,13 +1018,13 @@ function results(){
                                 </div>
                             </div>
                           	</div>
-			              </div>
+			              </div>-->
                           
 			</div>
 			<h3>All Schools</h3>
 			<table class="table table-hover">
 				<thead>
-				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Slots</th><th>Email</th></tr>
+				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Slots</th><th>Invoice</th><th>Email</th></tr>
 				</thead>
 				<tbody>
 				<?php
@@ -948,8 +1047,9 @@ function results(){
 			<!--	</tbody>
 			</table>-->
 				
-			<p>&nbsp;</p>
-			<h2>Payments</h2>
+			</div>
+		<div class="row hidden-welcome" id="sec-payments">
+			<h1 class="default-head">Payments</h1>
 			<p class="lead">Log payments from schools</p>
 			<form class="form-horizontal" role="form" id="payments">
 				<div class="form-group">
@@ -1374,84 +1474,140 @@ function results(){
 </div>
 <!-- /Modal -->
 
-<!-- Modal - Missing Delegate -->
-<div class="modal fade" id="missingDelModal" tabindex="-1" role="dialog" aria-labelledby="missingDelModal" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="missingDelModalLabel">Delegate Reported Missing</h4>
-      </div>
-      <div class="modal-body">
-      	<p class="lead">You have filed an electronic report of a missing delegate.</p>
-      	<p><strong>There is still more to do.</strong> First, contact your Secretariat contact or contacts.</p>
-      	<p>Secretariat will work with the delegate's adviser(s) to determine further action.</p>
-      	<br /><br />
-      	<p>Please remain in contact with Secretariat via chat in case more information is needed.</p>
-      	<br /><br />
-      	<p class="lead">Thank you.</p>
-      	<p>We appreciate your diligence and the diligence of all staff members in these matters.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- /Modal -->
 
-<!-- Modal - Add Delegate -->
-<div class="modal fade" id="addDelModal" tabindex="-1" role="dialog" aria-labelledby="addDelModal" aria-hidden="true">
+<!-- Modal - createInvoiceModal -->
+<div class="modal fade" id="createInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="createInvoiceModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="addDelModalLabel">Add Delegate</h4>
+        <h4 class="modal-title" id="addDelModalLabel">Create Invoice</h4>
       </div>
       <div class="modal-body">
-      	<p class="lead">Add a delegate to your roster</p>
-        <form class="form-horizontal" role="form">
+      	<p class="lead">Create Invoice for <span id="createinvoice-school">School</span></p>
+      	<p></p>
+      	
+        <form class="form-horizontal" id="create-invoice-form" role="form">
       		  <div class="form-group">
-			    <label for="delName" class="col-sm-4 control-label">Delegate's Name</label>
+			    <label for="delQuantity" class="col-sm-4 control-label">Number of Delegates</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="delName" placeholder="John Doe">
+			    <p class="form-control-static" id="delQuantity"></p>
+			    <input type="hidden" id="delegate-quantity" name="delegate-quantity" />
 			    </div>
 			  </div>
 			  <div class="form-group">
-			    <label for="schoolID" class="col-sm-4 control-label">School ID</label>
+			    <label for="regTime" class="col-sm-4 control-label">Registered on:</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control" id="schoolID" placeholder="e.g., 12234">
-			    <div class="schoolIDWarn">
-			    	<p class="help-block" id="schoolIDHelp">
-			    	The School ID is listed on every delegate's credentials. If the School ID matches our database, contact information for the school's adviser will appear below.
-			    	</p>
-			    </div>
-				<div id="schoolIDMatch">
-				    <p class="lead">St. Ignatius College Prep</p>
-					<p><strong>Primary Adviser</strong><br />Diane Haleas-Hines <small>(630) 555-1234</small></p>
-					<p><strong>Secondary Adviser</strong><br />Megan Doherty <small>(630) 555-1234</small></p>
-				    </div>
+			    <p class="form-control-static" id="regTime">Jan 1</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
-			    <label for="delPosition" class="col-sm-4 control-label">Position</label>
+			    <label for="regTime" class="col-sm-4 control-label">Early or Regular</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control" id="delPosition" placeholder="e.g., Djibouti">
+				<select id="regGroup" name="regGroup" class="form-control">
+			      <option value="regular">Regular</option>
+			      <option value="early">Early</option>
+			    </select>
+			    <input type="hidden" name="createinvoice-schoolid" id="createinvoice-schoolid" />
+			    <input type="hidden" name="adviser-email" id="adviser-email" />
+			    <input type="hidden" name="adviser-name" id="adviser-name" />
+			    <input type="hidden" name="school-name" id="school-name" />
+			    <input type="hidden" name="school-delegations" id="school-delegations" />
+			    <input type="hidden" name="school-advisers" id="school-advisers" />
+			    
 			    </div>
 			  </div>
         </form>
-      	<p><strong>Note:</strong> Adding a delegate manually to your roster does not change Secretariat's official records. Please notify your Secretariat contact(s) to report omissions in the roster by the end of the first session. If delegates have credentials, do not block their participation unless told otherwise by Secretariat.</p>
+        <div class="invoice-error alert alert-danger hidden"><strong>Error</strong> The invoice was not created.</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary" id="save-invoice">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 <!-- /Modal -->
 
+
+<!-- Modal - viewInvoiceModal -->
+<div class="modal fade" id="viewInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="viewInvoiceModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="viewInvoiceModalLabel">View Invoices</h4>
+      </div>
+      <div class="modal-body">
+		  <p class="lead">Viewing invoice for <strong><span id="viewinvoice-school">School</span></strong></p>
+		  <p>School ID: <strong><span id="view-schoolid"></span></strong></p>
+
+		  <table class="table table-hover">
+				<tr>
+					<th>Description</th>
+					<th class="col-sm-2" style="text-align:right; padding-right:2em;">Quantity</th>
+					<th>Price</th>
+					<th>Cost</th>
+				</tr>
+				<tr>
+					<td>Delegate Fee</td>
+					<td class="text-right"><span id="view-del-quantity"></span> &nbsp;&nbsp; &times;</td>
+					<td>$ <span id="view-del-fee"></span></td>
+					<td><strong>$ <span id="view-del-total"></span></strong></td>
+				</tr>
+				<tr>
+					<td>Adviser Fee</td>
+					<td class="text-right"><span id="view-adviser-quantity"></span> &nbsp;&nbsp; &times;</td>
+					<td>$ <span id="view-adviser-fee"></span></td>
+					<td><strong>$ <span id="view-adviser-total"></span></strong></td>
+				</tr>
+				<tr>
+					<td>1st Country Assignment</td>
+					<td class="text-right">1 &nbsp;&nbsp; &times;</td>
+					<td>$ <span id="view-country1-fee"></span> </td>
+					<td><strong>$ <span id="view-country1-total"></span></strong></td>
+				</tr>
+				<tr>
+					<td>2nd Country Assignment</td>
+					<td class="text-right"><span id="view-country2-quantity"></span> &nbsp;&nbsp; &times;</td>
+					<td>$ <span id="view-country2-fee"></span></td>
+					<td><strong>$ <span id="view-country2-total"></span></strong></td>
+				</tr>
+				<tr>
+					<td>Additional Countries</td>
+					<td class="text-right"><span id="view-additionalCountries-quantity"></span> &nbsp;&nbsp; &times;</td>
+					<td><em>Free</em></td>
+					<td><strong><em>Free</em></strong></td>
+				</tr>
+				<tr id="total-row">
+					<td></td>
+					<td></td>
+					<td><strong>Total</strong></td>
+					<td><strong>$ <span id="view-grand-total"></span></strong></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td><strong>Payments</strong></td>
+					<td><strong>$ <span id="view-payments"></span></strong></td>
+				</tr>
+			</table>
+			       <!-- <div class="invoice-error alert alert-danger hidden"><strong>Error</strong> The invoice could not be found.</div>-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Modal -->
+
+
+
+
+
 		</div><!-- /.container -->
+		
 <div class="footer">
 <div class="dark-footer">
 	<div class="container">
@@ -1485,7 +1641,7 @@ function results(){
 </div><!-- /.dark-footer -->
 	<div class="light-footer">
       <div class="container">
-        <p class="lead">&copy; 2014 <a href="numun.org">Northwestern University Model United Nations</a>
+        <p class="lead">&copy; 2014 Northwestern University Model United Nations
         <span class="pull-right"><a href="#" class="light-footer">Back to Top&nbsp;&nbsp;<i class="fa fa-chevron-up"></i></a></span>
         </p>
       </div><!-- /.container -->

@@ -6,18 +6,17 @@
 			<h2>Support</h2>
 			<p class="lead">We're here when you need us.</p>
 			<div class="col-sm-3 btn-vert-block">
-				<a href="#" class="btn btn-info"><i class="fa fa-phone fa-inverse"></i>&nbsp;&nbsp; (847) 786-5MUN</a>
-				<p>(847) 786-5686</p>
-			</div>
-			<div class="col-sm-2 col-sm-offset-1 btn-vert-block">
-			<a href="#" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; support@numun.org</a>
+			<a href="mailto:support@numun.org" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; Technical Support</a><br /><br />
+			<a href="mailto:registration@numun.org" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; Questions about Registration</a><br /><br />
+			<a href="mailto:finance@numun.org" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; Questions about Invoicing/Payments</a><br /><br />
+			<a href="mailto:secgen@numun.org" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; Email the Secretary-General</a>
 			</div>
 
 			
 			</div><!-- /.col-lg-4-->
 			<div class="col-sm-4 col-xs-6">
 			<h2>NUMUN XII</h2>
-			<p class="lead">It's on.</p>
+			<p class="lead">You have the floor.</p>
 			</div><!-- /.col-lg-8 -->
 		
 		</div><!-- /.row -->

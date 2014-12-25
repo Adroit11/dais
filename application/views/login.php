@@ -299,6 +299,14 @@ border: 0px solid transparent;
 			</div>
 		</div>
 		
+		<noscript>
+				<div class="alert alert-danger">
+				<h3><i class="fa fa-exclamation-triangle"></i> &nbsp; JavaScript is Disabled <a href="http://www.enable-javascript.com/" target="_blank" class="btn btn-info pull-right"><i class="fa fa-external-link"></i> &nbsp;Enable JavaScript</a></h3>
+				NUMUN Registration and Adviser Access require JavaScript to be enabled in your browser.
+				
+				</div>
+				</noscript>
+		
 			<div class="reg-container" id="reg-container-0">
 			<div class="row">
 			<form class="form-horizontal" role="form" action="/auth/login" method="post">
@@ -360,7 +368,7 @@ border: 0px solid transparent;
 			</div><!-- /.col-lg-4-->
 			<div class="col-sm-4 col-xs-6">
 			<h2>NUMUN XII</h2>
-			<p class="lead">It's on.</p>
+			<p class="lead">You have the floor.</p>
 			</div><!-- /.col-lg-8 -->
 		
 		</div><!-- /.row -->

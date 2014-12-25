@@ -13,7 +13,7 @@
    |										|	
 	---------------------------------------*/
 
-class Invoice extends CI_Model
+class Invoice_sec extends CI_Model
 {
 	public function __construct()
 	{
@@ -324,8 +324,13 @@ class Invoice extends CI_Model
 		}
 	}
 	public function get_school_payments($schoolid){
-	$query = $this->db->query('SELECT acctid, SUM(`amount`) `amount` FROM transactions WHERE `acctid` = '.$schoolid.' GROUP BY acctid');
-	$row = $query->row();
-	return $row->amount;
+	$check = $this->db->query('SELECT * FROM transactions WHERE `acctid` ='.$schoolid);
+	if($check->num_rows() > 0){
+		$query = $this->db->query('SELECT acctid, SUM(`amount`) AS total_payments FROM transactions WHERE `acctid` = '.$schoolid.' GROUP BY acctid');
+		$payments = $query->row();
+		return $payments->total_payments;
+	}else{
+		return '0'; 
+	}
 	}
 }

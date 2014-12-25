@@ -80,21 +80,32 @@ border: 0px solid transparent;
 	background-color: #16a085;
 	color: white;
 }
-.navbar-header{
+/*.navbar-header{
 	background: url('https://dl.dropboxusercontent.com/s/qxo7l62zezl8hdi/numun-bootstrap-nav.png') no-repeat;
 	background-size: 100%;
 	width: 240px;
 	height: 60px;
 	border-top: 8px transparent solid;
 	border-left: 10px transparent solid;
-}
+}*/
 .navbar{
 	font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	font-size: 1.2em;
+	font-size: 0.99em;
 }
-.navbar-brand{
-	display: none;
+.navbar-brand > img{
+	height: 54px;
+	padding: 0px;
+	margin: 0px;
+	margin-top: -15px;
+	border: 0;
+	display: block;
+	
 }
+
+div#numun-main-navbar{
+	background-color: #520062;
+}
+
 
 /* Custom styles
 -------------------------------------------------- */
@@ -211,6 +222,9 @@ border: 0px solid transparent;
 	}
 	tr.double-del {
 	border-left: none;
+	}
+	#usg-finance-thanks{
+		page-break-after: always;
 	}
 	table{
 		page-break-inside: avoid;

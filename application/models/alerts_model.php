@@ -43,8 +43,8 @@ class Alerts_model extends CI_Model
 			$empty_response = '</tbody></table>';
 			$empty_response .= '<div class="spacious col-md-12">';
 			$empty_response .= '<div class="col-md-12 text-center">';
-			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
-			$empty_response .= '<p class="lead"><strong>There aren&#8217;t any alerts.</strong></p><p>That&#8217;s a good thing, for now. Use the form below to issue an alert across all conference websites.</p>';
+			$empty_response .= '<h2><i class="fa fa-check-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>Good news! There are no alerts right now.</strong></p><p>In the event of an emergency, use the form below to issue an alert across all conference websites.</p>';
 			$empty_response .= '</div>';
 			$empty_response .= '</div>';
 			return $empty_response;

@@ -9,7 +9,8 @@ class Sec_ajax extends CI_Controller {
 			$this->load->library('ion_auth');
 			$this->load->helper('url');
 			$this->load->model('nu_schools');
-			$this->load->model('secretariat/invoice');
+			$this->load->model('secretariat/invoice_sec');
+			$this->load->model('advisers/invoice');
 			$secretariat = array(1,2);
 			$staff = array(3);
 			$adviser = array(4);
@@ -24,7 +25,7 @@ class Sec_ajax extends CI_Controller {
 		$customer = $this->input->post('customer-number');
 		if(isset($customer)){
 			if(strlen($customer) > 3){
-			$exists = $this->invoice->customer_exists($customer);
+			$exists = $this->invoice_sec->customer_exists($customer);
 				if($exists == false){
 					$response = array(
 					'error' => 'not a valid #'
@@ -51,17 +52,53 @@ class Sec_ajax extends CI_Controller {
 		$type = $this->input->post('type');
 		$check = $this->input->post('check-number');
 		$notes = $this->input->post('notes');
-		$response = $this->invoice->make_payment($customer, $schoolid, $amount, $type, $check, $notes);
+		$response = $this->invoice_sec->make_payment($customer, $schoolid, $amount, $type, $check, $notes);
 		if($response == false){
 			echo json_encode(array('error' => 'Database error'));
 		}
 		
 	}
 	public function invoices(){
-		$all_invoices = $this->invoice->get_approved_invoices();
+		//does anything use this? This is not very good
+		$all_invoices = $this->invoice_sec->get_approved_invoices();
 		echo $all_invoices;
 	}
 	
+	public function get_invoice(){
+		$schoolid = $this->input->post('getinvoice-id');
+		$invoice = $this->invoice->get_invoice($schoolid);
+		echo json_encode($invoice);
+		
+		
+	}
+	
+	public function create_invoice(){
+		$schoolid = $this->input->post('createinvoice-schoolid');
+		$delegates = $this->input->post('delegate-quantity'); 
+		$advisers = $this->input->post('school-advisers'); 
+		$countries = $this->input->post('school-delegations'); 
+		$level = $this->input->post('regGroup'); 
+		$email = $this->input->post('adviser-email');
+		$adviser = $this->input->post('adviser-name');
+		$school = $this->input->post('school-name');
+	
+		$sent = $this->invoice_sec->create_invoice($schoolid, $delegates, $advisers, $countries, $level, $email, $adviser, $school);
+		if($sent){
+			$response = array(
+			'status' => 'ok',
+			'id' => $schoolid
+			);
+			$json = json_encode($response);
+			echo $json;
+		}else{
+			$response = array(
+			'status' => 'error'
+			);
+			$json = json_encode($response);
+			echo $json;
+		}
+		
+	}
 	
 
 }

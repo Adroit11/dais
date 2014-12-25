@@ -16,7 +16,11 @@ class Invoice extends CI_Model
 		if($query->num_rows() > 0){
 		if($row->approved == 1){
 			//invoice has been approved
-			$date = array('date' => $this->get_deposit_deadline());
+			if($row->pay_level == 'regular'){
+			$date = array('date' => $this->get_deposit_deadline('regular'));
+			}elseif($row->pay_level == 'early'){
+			$date = array('date' => $this->get_deposit_deadline('early'));
+			}
 			$billed_quantities = array(
 				'delegate_q' => $row->delegate_quantity,
 				'adviser_q' => $row->adviser_quantity,
@@ -108,10 +112,14 @@ class Invoice extends CI_Model
 			return false;
 		}
 	}
-	public function get_deposit_deadline(){
+	public function get_deposit_deadline($pay_level){
 		$query = $this->db->get_where('conference', array('current' => 1));
 		$row = $query->row();
+		if($pay_level == "regular"){
 		return $row->deposit_deadline;
+		}elseif($pay_level == "early"){
+		return $row->early_deposit_deadline;
+		}
 	}
 	public function get_customer_number($schoolid){
 		$query = $this->db->get_where('schools', array('id' => $schoolid));
@@ -131,8 +139,12 @@ class Invoice extends CI_Model
 	}
 	public function get_payments($schoolid){
 		$query = $this->db->query('SELECT acctid, SUM(`amount`) `amount` FROM transactions WHERE `acctid` = '.$schoolid.' GROUP BY acctid');
+		if ($query->num_rows() > 0){
 		$row = $query->row();
 		return $row->amount;
+		}else{
+		return "No payments have been processed.";
+		}
 	}
 	
 	/*public function get_account_status($schoolid){

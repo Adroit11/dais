@@ -14,7 +14,7 @@ class Reg_preferences extends CI_Model
 	}
 	
 	public function schoolDelegateCount($schoolid){
-		$allow_edits = "yes";
+		$allow_edits = "no";
 		if (isset($schoolid)){
 			$query = $this->db->query('SELECT * FROM schools WHERE id = '.$schoolid.' LIMIT 1');
 			$school_info = $query->row();
@@ -31,6 +31,7 @@ class Reg_preferences extends CI_Model
 				$school_info_result .= '<button class="btn btn-warning" id="edit-delegate-numbers">Edit</button></div>';
 				}else{
 					//don't show edit button
+					$school_info_result .= '</div>';
 				}
 				}else{
 				//school slots have been assigned
@@ -116,11 +117,11 @@ class Reg_preferences extends CI_Model
 			$country_prefs .= '</ol>';
 			$country_prefs .= '</div>';
 			$country_prefs .= '<div class="col-sm-4">';
-			$country_prefs .= '<button class="btn btn-warning" id="edit-countries">Edit</button>';
+			//$country_prefs .= '<button class="btn btn-warning" id="edit-countries">Edit</button>';
 			$country_prefs .= '</div>';
 			return $country_prefs;
 		}else{
-			echo "<p>Error: no country preferences were found.</p>";
+			echo '<div class="col-sm-10"><p><strong>Error</strong><br /> No country preferences were found.</p></div>';
 		}
 	}
 	}

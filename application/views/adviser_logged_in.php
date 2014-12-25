@@ -36,11 +36,11 @@
         <span class="icon-bar"></span>
         </button>
         <p class="sr-only">NUMUN</p>
-        <a class="navbar-brand" href="#">NUMUN</a>
+        <a class="navbar-brand" href="#"><img src="https://dl.dropboxusercontent.com/s/qxo7l62zezl8hdi/numun-bootstrap-nav.png" /></a>
         </div>
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
-          	<li class="lead"><a href="#welcome" class="welcome-page">ACCESS</a></li>
+          	<li> <a href="#welcome" class="welcome-page">Welcome</a></li>
 			<li> <a href="#register" class="app-page">Preferences</a></li>
 			<li> <a href="#invoice" class="app-page">Invoice</a></li>
 			<li> <a href="#delegates" class="app-page">Delegates</a></li>
@@ -74,17 +74,17 @@
 			<h2 id="emergency-title"></h2>
 			<p class="lead" id="emergency-message"></p>
 		</div><!-- /#emergency -->
+		<div class="alert alert-info hidden-lg">
+		<h4>Don't see navigation links?</h4>
+		<p>Tap the <i class="fa fa-bars"></i> icon to reveal the navigation menu.</p>
+			
+		</div>
 		<div class="row" id="welcome">
 		<div class="col-md-7">
 			<h1>Welcome,&nbsp;<?php echo $user->first_name;?></h1>
-			<p class="lead">Thank you for being a wonderful part of NUMUN XII. We look forward to welcoming delegates from&nbsp;<?php echo $school; ?>.</p>
-			<p>We're glad to have you!</p>
-			<p>This year, we're using one online system to handle all of our school registration and delegate data in one place. We're also using it to track staff attendance at meetings. And it's really cool.</p>
-			<p>Hopefully, this system will make your life easier, not more complicated. However, we are open to your suggestions and we want to hear about any issues you encounter with this new system. At this point, we're pretty sure we've avoided <em>Healthcare.gov</em>-level problems, but no one is perfect, including our Tech Director, Michael McCarthy. Huge shout out and many thanks to him for his hard work on this over the summer!</p>
-			<p>With love,</p>
-			<div class="col-md-3">
-			<img src="http://placehold.it/100x100" style="border-radius: 100px;"/>
-			</div>
+			<p class="lead">Thank you for registering for NUMUN XII. We look forward to welcoming delegates from&nbsp;<?php echo $school; ?>.</p>
+			<p>This year, we're using one online system to handle all of our school registration and delegate data in one place.</p>
+			<p>Hopefully, this system will make your life easier, not more complicated. However, we are open to your suggestions and we want to hear about any issues you encounter with this new system.</p>
 			<div class="col-md-7">
 			<p class="lead"><br /><strong>Evie Atwater</strong><br /><small>Secretary-General &mdash; NUMUN XII</small></p>
 			</div>
@@ -94,39 +94,50 @@
 		<div class="col-md-12">
 		<div class="row">
 			<h1 class="default-head">Edit Preferences</h1>
-			<div class="col-sm-6">
-			<p class="lead">Update your delegate count and country preferences or add additional advisers below.</p>
+			<div class="col-sm-10">
+			<p class="lead">View your delegate count and country preferences or add additional advisers below.</p>
 			</div>
-			<div class="col-sm-4">
-			<h5><strong><?php echo $school; ?></strong></h5>
-			<p>School ID: <?php echo $customer_number; ?></p>
+			<div class="col-sm-5">
+			<p class="lead"><strong><?php echo $school; ?></strong><br/> School ID: <?php echo $customer_number; ?></p>
 			</div>
 		</div>
 		<form role="form" class="reg-preferences">
 		<div class="row">
+		<div class="col-sm-7">
 			<h3>Delegates</h3>
 			<?php echo $school_del_reg; ?>
-			
+		</div>
 		</div>
 		<div class="row">
+		<div class="col-sm-7">
 			<h3>Country Preferences</h3>
 			<?php echo $school_country_prefs; ?>
 		</div>
+		</div>
 		<div class="row">
+		<div class="col-sm-7">
 			<h3>Additional Advisers</h3>
 			<?php echo $school_advisers; ?>
 		</div>
+		</div>
 		</form>
 		</div>
-  		<div class="col-sm-6">
+  		<div class="col-sm-7">
   			<p>&nbsp;</p>
-  			<button class="btn btn-success" id="school-prefs-save" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>
+  			<!--<button class="btn btn-success" id="school-prefs-save" type="submit"><i class="fa fa-check fa-inverse"></i>&nbsp;&nbsp; Save</button>-->
   		</div>
 
 		</div><!-- /#register -->
 		<div class="row hidden-welcome" id="invoice">
 			<div class="hide-print">
 			<h1 class="default-head">Invoice</h1>
+			</div>
+			<div class="alert alert-info hide-print" role="alert">
+				<h3><i class="fa fa-asterisk"></i> &nbsp; Reminder: Single/Multiple Delegations</h3>
+				As a rule, schools that register <strong>15 or more</strong> delegates are designated as "Multiple Delegation" schools.<br />
+				Schools with 15 or more delegates registered will be charged $40 for the first country assignment plus $60 for the second assignment. These charges may have been updated in your invoice.
+				
+				
 			</div>
 			<?php
 			if($invoice != false){
@@ -194,11 +205,11 @@
 				</tr>
 			</table>
 			<div class="col-sm-3">
-			<h5>Deposit <span class="label label-warning">Due 10/1/2014</span></h5>
+			<h5>Deposit <span class="label label-warning">Due <?php echo $invoice['date']; ?></span></h5>
 			<p class="lead">$ <?php echo $invoice['deposit']; ?></p>
 			</div>
 			<div class="col-sm-3">
-			<h5>Balance</h5>
+			<h5>Balance Due at Conference</h5>
 			<p class="lead">$ <?php echo $invoice['pay_later']; ?></p>
 			</div>
 			<div class="col-sm-6">
@@ -206,9 +217,9 @@
 			<div class="col-sm-1">
 			<button type="button" class="btn btn-primary" onclick="window.print()">Print&nbsp;&nbsp;<i class="fa fa-print fa-inverse"></i></button>
 			</div>
-			<div class="col-sm-2 col-sm-offset-1">
+			<!--<div class="col-sm-2 col-sm-offset-1">
 			<button type="button" class="btn btn-primary" disabled="disabled">Save PDF&nbsp;&nbsp;<i class="fa fa-file fa-inverse"></i></button>
-			</div>
+			</div>-->
 			<div class="col-sm-2 pull-right">
 			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#paymentInfo">How to Pay</button>
 			</div>
@@ -218,7 +229,7 @@
 			<div class="col-xs-6">
 			<h5>Thank you!</h5>
 			</div>
-			<div class="col-xs-6">
+			<div class="col-xs-6" id="usg-finance-thanks">
 				<p class="lead">
 					<strong>Joshua Kaplan</strong>
 					<br />Undersecretary-General of Finance 
@@ -242,14 +253,14 @@
 				    <thead>
 				        <th>ID #</th>
 				        <th>Organization</th>
-				        <th>Amount Due</th>
+				        <th>Amount Paid</th>
 				        <th>Date Due</th>
 				    </thead>
 				    <tbody>
 				        <tr>
 				            <td><?php echo $customer_number; ?></td>
 				            <td><?php echo $school; ?></td>
-				            <td>$ 1,210</td>
+				            <td></td>
 				            <td><?php echo $invoice['date']; ?></td>
 				        </tr>
 				        <tr>
@@ -271,7 +282,7 @@
 			}else{
 				//invoice not approved or doesn't exist	
 			?>
-			<div class="spacious col-md-12"><div class="col-md-12 text-center"><h2><i class="fa fa-exclamation-circle"></i></h2><p class="lead"><strong>Your invoice is not ready.</strong></p><p>An invoice will be ready when your delegate and adviser quantities are finalized and our Undersecretary General of Finance has approved the charges.</p></div></div>
+			<div class="spacious col-md-12"><div class="col-md-12 text-center"><h2><i class="fa fa-exclamation-circle"></i></h2><p class="lead"><strong>Your invoice is not available.</strong></p><p>Your invoice will be posted when our Undersecretary General of Finance has approved the charges.</p></div></div>
 			<?php
 			}
 			?>
@@ -288,29 +299,29 @@
 			<div class="col-sm-6">
 			<h3>Liability Waiver</h3>
 			<p>This document waives and holds harmless NUMUN and Northwestern University from liability related to attending the NUMUN conference.</p>
-			    <button class="btn btn-lg btn-success" disabled="disabled">Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></button>
+			    <a href="https://dl.dropboxusercontent.com/s/avgxkimwhhhlcw5/liability-waiver15.pdf" class="btn btn-lg btn-success" download>Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></a>
 			</div>
 			<div class="col-sm-6">
 			<h3>Photo Release</h3>
 			<p>This document allows NUMUN to use the names and photographs of individual delegates for advertising and marketing purposes in the future.</p>
-			    <button class="btn btn-lg btn-success" disabled="disabled">Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></button>
+			    <a href="http://numun.org/blog/wp-content/uploads/2014/02/photo-release.pdf"  class="btn btn-lg btn-success" download>Download &nbsp;&nbsp;<i class="fa fa-arrow-circle-down fa-inverse"></i></a>
 			</div>
 		</div><!-- /#forms -->
 		<div class="row hidden-welcome" id="profile">
 			<h1 class="default-head">Profile</h1>
 			<div class="col-md-12">
 			<p class="lead"><strong><?php echo $user->first_name . ' ' . $user->last_name; ?></strong><br /><span><?php echo  $school; ?></span></p>
-			<p>Your profile page is the place to make corrections and changes to your personal contact information prior to NUMUN XII. You can also view correspondence between you and Secretariat in a simple view.</p><br /><br />
+			<!--<p>Your profile page is the place to make corrections and changes to your personal contact information prior to NUMUN XII. You can also view correspondence between you and Secretariat in a simple view.</p><br /><br />-->
 			</div>
 			<h3>Contact Information</h3>
 			<form class="form-horizontal">
 			<div class="form-group">
 				<label class="col-md-4 control-label" for="primaryPhone">Phone Number</label>
 				<div class="col-md-6 col-md-offset-1">
-				<input type="text" class="form-control" id="primaryPhone" value="<?php echo $phone; ?>">
+				<?php echo $phone; ?>
 				</div>
 			</div>
-			<div class="form-group">
+			<!--<div class="form-group">
 			  <label class="col-md-4 control-label" for="checkboxes">Would you allow our staff to send you a text message (SMS) in a serious emergency? <small>(Opt-In; Charges may apply.)</small></label>
 			  <div class="col-md-6 col-md-offset-1">
 			  <div class="radio">
@@ -395,13 +406,15 @@
 			<div class="col-sm-10">
 			<p class="lead"><strong>Warning</strong> This option permanently deletes all of the data associated with you in our database. We will retain school information as a precaution until we are notified of any changes.</p>
 			<br />
-			<button class="btn btn-danger btn-lg">Delete Profile</button>
-			</div>
+			<button class="btn btn-danger btn-lg">Delete Profile</button>-->
+			</form>
 		</div><!-- /#profile -->
+		
+		
 		<div class="row hidden-welcome" id="delegates">
 			<h1 class="default-head">Delegates</h1>
 			<p class="lead hide-print">Assign your organization's delegate positions to individual students below.</p>
-			<p class="hide-print">Your assignments can be changed at any time before <strong>February 28, 2015</strong> at <strong>11:59 pm</strong> CST.</p>
+			<p class="hide-print">You can edit student assignments at any time before <strong>March 15, 2015</strong>.</p>
 			<form role="form" class="del-assignments">
 			<table class="table table-hover">
 			<thead>
@@ -420,6 +433,40 @@
 			</form>
 			
 		</div><!-- /#delegates -->
+		<div class="row hidden-welcome" id="contact">
+			<h1 class="default-head">Contact Us</h1>
+			<div class="col-md-9">
+			<p class="lead"><strong>For questions regarding invoicing and payments:</strong><br />
+			Email <strong>Joshua Kaplan</strong>, our Undersecretary-General of Finance</p>
+			</div>
+			<div class="col-md-3">
+			<p><a href="mailto:finance@numun.org" class="btn btn-primary btn-block"><i class="fa fa-envelope-o fa-inverse"></i> &nbsp; Email Joshua</a></p>
+			</div>
+			<p>&nbsp;</p><p>&nbsp;</p>
+			<div class="col-md-9">
+			<p class="lead"><strong>For non-technical questions regarding registration:</strong><br />
+			Email <strong>Priyanka Melgiri</strong>, our Undersecretary-General of Registration</p></div>
+			<div class="col-md-3">
+			<p><a href="mailto:registration@numun.org" class="btn btn-primary btn-block"><i class="fa fa-envelope-o fa-inverse"></i> &nbsp; Email Priyanka</a></p>
+			</div>
+			<p>&nbsp;</p><p>&nbsp;</p>
+			<div class="col-md-9">
+			<p class="lead"><strong>For technical support with this website:</strong><br/>
+			Email <strong>Michael McCarthy</strong>, our Technology Director</p>
+			</div>
+			<div class="col-md-3">
+			<p><a href="mailto:support@numun.org" class="btn btn-primary btn-block"><i class="fa fa-envelope-o fa-inverse"></i> &nbsp; Email Michael</a></p>
+			</div>
+			<p>&nbsp;</p><p>&nbsp;</p>	
+			<div class="col-md-9">
+			<p class="lead"><strong>Other questions, comments, or concerns:  </strong><br />
+			Email <strong>Evelyn Atwater</strong>, our Secretary-General</p>
+			</div>
+			<div class="col-md-3">
+			<p><a href="mailto:secgen@numun.org" class="btn btn-primary btn-block"><i class="fa fa-envelope-o fa-inverse"></i> &nbsp; Email Evelyn</a></p>
+			</div>
+		</div><!-- /#contact -->
+
 <div class="modal fade" id="paymentInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">

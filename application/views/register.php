@@ -174,8 +174,17 @@ border: 0px solid transparent;
 	$( document ).ready(function() {
     	console.log( "ready!" );
     	//Safari Fixes
-    	$('#reg-container-1').show();
-    	$('#reg-title-1').show();
+    	 if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) 
+		   {
+		   console.log('safari');
+		   $('#safari-box').removeClass('hidden');       
+		   }    
+    	
+    	history.pushState({
+			 id: 1,
+			 page: "Step 1"	 
+		 }, null, "/register");
+		 //getPage(1);
     		$(window).on("ready scroll resize", function () {
 				handleScroll()
 			});
@@ -193,21 +202,21 @@ border: 0px solid transparent;
 		});
     	$("#submit-reg-1").click(function(){
 		 history.pushState({
-			 id: 2,
+			 id: 1,
 			 page: "Step 2"	 
 		 }, null, "/register");
 		 getPage(2);
 		 });
 		 $("#submit-reg-2").click(function(){
 		  history.pushState({
-			 id: 3,
+			 id: 2,
 			 page: "Step 3"	 
 		 }, null, "/register");
 		 getPage(3);
 		 });
 		 $("#submit-reg-3").click(function(){
 		 history.pushState({
-			 id: 4,
+			 id: 3,
 			 page: "Step 4"	 
 		 }, null, "/register");
 		 getPage(4);
@@ -412,7 +421,7 @@ border: 0px solid transparent;
 						 }
 						}
 				 },
-				 primaryPhone: {
+				 /*primaryPhone: {
 					 validators: {
 					 	 stringLength: {
 						 	min: 14,
@@ -422,7 +431,7 @@ border: 0px solid transparent;
 							message: 'Please provide a valid phone number.' 
 						 }
 					 }
-				 },
+				 },*/
 				 schoolName: {
 					 validators: {
 						 notEmpty: {
@@ -462,17 +471,10 @@ border: 0px solid transparent;
 						 }
 					 }
 				 },
-				 minDelSlots: {
+				 delSlots: {
 					 validators: {
 						 notEmpty: {
-							 message: 'Please provide a minimum number of delegates.'
-						 }
-					 }
-				 },
-				 maxDelSlots: {
-					 validators: {
-						 notEmpty: {
-							 message: 'Please provide a maximum number of delegates.'
+							 message: 'Please specify the number of delegates attending.'
 						 }
 					 }
 				 },
@@ -511,7 +513,7 @@ border: 0px solid transparent;
 		  'pattern': '({{999}}) {{999}}-{{9999}}',
 		  'persistent': false
 		});
-		$('#primaryAdviserPhone').on('keyup', function(){
+		/*$('#primaryAdviserPhone').on('keyup', function(){
 			if($(".reg-container:visible").children().hasClass('has-success')){
 				var phoneLength = $(this).val().length;
 				if(phoneLength == 14){ 
@@ -543,7 +545,7 @@ border: 0px solid transparent;
 				}else{
 					$('#submit-reg-3').prop("disabled", false);
 			}
-		});
+		});*/
 	});
 	function getPage(pageid){
 		if($(".reg-container:visible").children().hasClass('has-error')){
@@ -569,7 +571,7 @@ border: 0px solid transparent;
                     $('#main-nav-content').removeClass('compact');
                     $("#navbar-quick-login").show();
                     $(".navbar-header").show();
-                    $("#sys-title").text("ACCESS");
+                    $("#sys-title").text("");
                 }
                 else
                 {
@@ -577,13 +579,14 @@ border: 0px solid transparent;
                     $("#navbar-quick-login").hide();
                     $(".navbar-header").hide();
                     $(".navbar-brand").hide();
-                    $("#sys-title").text("NUMUN Access");
+                    $("#sys-title").text("NUMUN");
                 }
             }
    function populateConfirmation(){
 	   console.log("Submit reg form");
 	   
-   }         
+   }
+       
    
 
 	</script>
@@ -608,7 +611,7 @@ border: 0px solid transparent;
         </div>
         <div class="collapse navbar-collapse" id="numun-main-navbar">
           <ul class="nav navbar-nav">
-            <li class="lead"><a href="/login" id="sys-title">ACCESS</a></li>
+            <li class="lead"><a href="/login" id="sys-title"></a></li>
 			<li> <a href="#" class="smoothScroll">Registration</a></li>
 			<li id="emergency-link"> <a href="#emergency" class="smoothScroll"><i class="fa fa-exclamation-triangle fa-inverse" id="emergency-link-icon"></i>&nbsp;&nbsp; Alert</a></li>
           </ul>
@@ -625,8 +628,10 @@ border: 0px solid transparent;
       </div>
     </nav>
     </div><!-- /#navbar-main -->
-
+		
 		<div class="container main-container">
+		
+		<div class="alert alert-danger hidden" id="safari-box"><strong>Safari Users</strong> We are currently experiencing an issue with the Safari browser. Please use an alternative such as Chrome or Firefox while we work to correct this issue.</div>
 		
 		<div class="row" id="register">
 		<form class="form-horizontal" role="form" id="reg-form">
@@ -666,34 +671,34 @@ border: 0px solid transparent;
 			  <div class="form-group">
 			    <label for="emailAddress" class="col-sm-4 control-label">Email Address</label>
 			    <div class="col-sm-8">
-			    <input type="email" class="form-control track-progress" id="emailAddress" name="accountEmail" placeholder="Enter email">
+			    <input type="email" class="form-control track-progress" id="emailAddress" name="accountEmail" placeholder="Enter email" autocomplete="off">
 			    <p class="help-block">Your email address will also be your username.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="passwordCreate" class="col-sm-4 control-label">Create a Password</label>
 			    <div class="col-sm-8">
-			    <input type="password" class="form-control track-progress" id="passwordCreate" name="accountPassword" placeholder="A strong password">
+			    <input type="password" class="form-control track-progress" id="passwordCreate" name="accountPassword" placeholder="A strong password" autocomplete="off">
 			    <p class="help-block">You will need to remember your password to log in to your account.</p>
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="primaryAdviserFirst" class="col-sm-4 control-label">Primary Adviser</label>
 			    <div class="col-sm-4">
-			    <input type="text" class="form-control track-progress" id="primaryAdviserFirst" name="primaryFirstName" placeholder="First Name">
+			    <input type="text" class="form-control track-progress" id="primaryAdviserFirst" name="primaryFirstName" placeholder="First Name" autocomplete="off">
 			    </div>
 			    <div class="col-sm-4">
-			    <input type="text" class="form-control track-progress" id="primaryAdviserLast" name="primaryLastName" placeholder="Last Name">
+			    <input type="text" class="form-control track-progress" id="primaryAdviserLast" name="primaryLastName" placeholder="Last Name" autocomplete="off">
 			    </div>
 			  </div>
 			   <div class="form-group">
 			    <label for="primaryAdviserPhone" class="col-sm-4 control-label">Primary Phone Contact</label>
 			    <div class="col-sm-8">
-			    <input type="tel" class="form-control track-progress last" id="primaryAdviserPhone" name="primaryPhone" placeholder="(847) 500-1234">
+			    <input type="tel" class="form-control track-progress last" id="primaryAdviserPhone" name="primaryPhone" placeholder="(847) 500-1234" autocomplete="off">
 			    </div>
 			  </div>
 			  <a href="/login" class="btn btn-default reg-next"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;Back to Login</a>
-			   <button type="button" class="btn btn-primary reg-next pull-right" id="submit-reg-1" disabled="disabled">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
+			   <button type="button" class="btn btn-primary reg-next pull-right" id="submit-reg-1">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
 
 		  <p>&nbsp;</p>
 		  </div><!-- reg-container-1 -->
@@ -701,19 +706,19 @@ border: 0px solid transparent;
 			  <div class="form-group">
 			    <label for="schoolName" class="col-sm-4 control-label">School or Club Name</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="schoolName" name="schoolName" placeholder="Example High School">
+			    <input type="text" class="form-control track-progress" id="schoolName" name="schoolName" placeholder="Example High School" autocomplete="off">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="schoolAddress" class="col-sm-4 control-label">Mailing Address</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="schoolAddress" name="schoolAddress" placeholder="1234 Campus Drive">
+			    <input type="text" class="form-control track-progress" id="schoolAddress" name="schoolAddress" placeholder="1234 Campus Drive" autocomplete="off">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="schoolCity" class="col-sm-4 control-label">City</label>
 			    <div class="col-sm-8">
-			    <input type="text" class="form-control track-progress" id="schoolCity" name="schoolCity" placeholder="Evanston">
+			    <input type="text" class="form-control track-progress" id="schoolCity" name="schoolCity" placeholder="Evanston" autocomplete="off">
 			    </div>
 			  </div>
 			   <div class="form-group">
@@ -782,7 +787,7 @@ border: 0px solid transparent;
 			    </div>
 			  </div>
 			  	<button type="button" class="btn btn-primary" id="back-reg-1"><i class="fa fa-chevron-left fa-inverse"></i>&nbsp;&nbsp;Back</button>
-			    <button type="button" class="btn btn-primary pull-right reg-next" id="submit-reg-2" disabled="disabled">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
+			    <button type="button" class="btn btn-primary pull-right reg-next" id="submit-reg-2">Next&nbsp;&nbsp;<i class="fa fa-chevron-right fa-inverse"></i></button>
 				<p>&nbsp;</p>
 		  </div><!-- reg-container-2 -->
 		  <div class="reg-container" id="reg-container-3">
@@ -790,7 +795,7 @@ border: 0px solid transparent;
 		  	 <div class="form-group">
 			    <label for="delSize" class="col-sm-4 control-label">Number of Delegates</label>
 			    <div class="col-sm-2">
-			    <input type="text" class="form-control track-progress" id="delSize" name="delSlots" placeholder="0">
+			    <input type="text" class="form-control track-progress" id="delSize" name="delSlots">
 			    </div>
 			  </div>
 		  	</div>
@@ -800,10 +805,10 @@ border: 0px solid transparent;
 			    <div class="col-sm-8">
 			    <div class="checkbox">
 		        <label class="radio-inline">
-		          <input type="radio" name="delType" class="track-progress" id="singleDel" name="delType" value="single" /> Single delegation ($60 fee)
+		          <input type="radio" name="delType" class="track-progress" id="singleDel"  value="single" /> Single delegation ($60 fee)
 		        </label>
 		        <label class="radio-inline">
-		          <input type="radio" name="delType" class="track-progress" id="multiDel" name="delType" value="multiple" /> Multiple delegations ($100 fee)
+		          <input type="radio" name="delType" class="track-progress" id="multiDel"  value="multiple" /> Multiple delegations ($100 fee)
 		        </label>
 		      </div>
 			    <p class="help-block">Each delegation represents one country. If you register <strong>15</strong> or more delegates, you are required to register as a Multiple Delegations school.</p>
@@ -1506,7 +1511,7 @@ border: 0px solid transparent;
 			</div>
 			<div class="row">
 			  <button type="button" class="btn btn-primary" id="back-reg-2"><i class="fa fa-chevron-left fa-inverse"></i>&nbsp;&nbsp;Back</button>
-			    <button type="button" class="btn btn-success pull-right reg-next" id="submit-reg-3" disabled="disabled">Submit&nbsp;&nbsp;<i class="fa fa-share fa-inverse"></i></button>
+			    <button type="button" class="btn btn-success pull-right reg-next" id="submit-reg-3">Submit&nbsp;&nbsp;<i class="fa fa-share fa-inverse"></i></button>
 			</div>
 			<div class="row">
 				<p>&nbsp;</p>
@@ -1575,6 +1580,8 @@ border: 0px solid transparent;
 		</form>
 		</div><!-- /.row -->
 		</div><!-- /.container -->
+		
+		
 <div class="footer">
 <div class="dark-footer">
 	<div class="container">
@@ -1582,16 +1589,15 @@ border: 0px solid transparent;
 			<div class="col-sm-8 col-xs-6">
 			<h2>Support</h2>
 			<p class="lead">We're here when you need us.</p>
-			</div>
-			<div class="col-sm-2 btn-vert-block">
-			<a href="#" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; support@numun.org</a>
+			<div class="col-sm-3 btn-vert-block">
+			<a href="mailto:support@numun.org" class="btn btn-info"><i class="fa fa-envelope fa-inverse"></i>&nbsp;&nbsp; support@numun.org</a>
 			</div>
 
 			
 			</div><!-- /.col-lg-4-->
 			<div class="col-sm-4 col-xs-6">
 			<h2>NUMUN XII</h2>
-			<p class="lead">It's on.</p>
+			<p class="lead">You have the floor.</p>
 			</div><!-- /.col-lg-8 -->
 		
 		</div><!-- /.row -->
