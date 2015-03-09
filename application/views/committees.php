@@ -230,8 +230,16 @@ border: 0px solid transparent;
 	margin-bottom: 40px;
 	}
 	
+	.bg-available-dot {
+		color:#1181d1;
+		font-size: 0.5em;
+		vertical-align: 45%;
+		transition: all 1.5s ease;
+		opacity: 0;
+	}
+	
 	</style>
-	<script src="https://dl.dropboxusercontent.com/s/6tls9z1rsoh4yc2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
@@ -245,6 +253,8 @@ border: 0px solid transparent;
 				$("#committee-id-" + committeeId).removeClass("hidden");
 				
 		});
+		//$(".bg-available-dot").css("opacity", 1);
+		$(".bg-available-dot").hide();
 		$(".modal-crisis").click(function(e){
 			e.preventDefault();
 			$("#crisis-blurb").modal();
@@ -355,6 +365,7 @@ border: 0px solid transparent;
 			</div>-->
 			<div id="instructions" class="committee-desc-container">
 			<p class="lead">Select a Committee to the left</p>
+			<!--<p><span class="label label-info">New!</span><br /> Background guides available for committees indicated by <i class="fa fa-circle bg-available-dot"></i></p>-->
 			</div>
 			<?php echo $committee_divs; ?>
 			</div>

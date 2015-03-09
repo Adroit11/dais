@@ -65,15 +65,15 @@ class Registration extends CI_Controller {
 			$press = $this->input->post('press');
 			$otherPrefs = $this->input->post('prefsText');
 			//Crisis and press prefs are boolean options, we have to check to see if their checkboxes are checked
-			if($crisis == 1){
-				$crisis_pref = 1;
-			}else{
+			if($crisis == 0 || '' || null){
 				$crisis_pref = 0;
-			}
-			if($press == 1){
-				$press_pref = 1;
 			}else{
+				$crisis_pref = 1;
+			}
+			if($press == 0 || '' || null){
 				$press_pref = 0;
+			}else{
+				$press_pref = 1;
 			}
 			$country1 = $this->input->post('countryPref1');
 			$country2 = $this->input->post('countryPref2');
@@ -156,7 +156,7 @@ class Registration extends CI_Controller {
 
 				$this->email->from('support@numun.org', 'NUMUN Support');
 				$this->email->to($email);
-				$this->email->bcc('priyankamelgiri2015@u.northwestern.edu'); 
+				$this->email->bcc('priyankamelgiri2015@u.northwestern.edu, carriephillips2016@u.northwestern.edu'); 
 				
 				$this->email->subject('NUMUN Account for '.$schoolName.'');
 				$this->email->message($emailBody);	

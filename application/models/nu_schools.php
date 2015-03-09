@@ -82,6 +82,11 @@ class Nu_schools extends CI_Model
 		      }else{
 			  $delegate_slots_result .= "<td>N/A</td>";
 		      }
+		      if (isset($row->waiverlink) && isset($row->photolink)){
+			    $delegate_slots_result .= '<td><button class="btn btn-sm btn-default delegate-forms-btn" data-slot-id="'.$row->slotid.'" data-name="'.$row->name.'" class="delegate-forms-btn"><i class="fa fa-cloud-upload"></i> &nbsp; Revise Forms</button></td>';  
+		      }else{
+		      $delegate_slots_result .= '<td><button class="btn btn-sm btn-primary delegate-forms-btn" data-slot-id="'.$row->slotid.'" data-name="'.$row->name.'"  class="delegate-forms-btn"><i class="fa fa-cloud-upload"></i> &nbsp; Upload Forms</button></td>';
+		      }
 		      $delegate_slots_result .= "</tr>";
 		      }
 		return $delegate_slots_result;

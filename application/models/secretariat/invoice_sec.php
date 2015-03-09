@@ -20,6 +20,9 @@ class Invoice_sec extends CI_Model
 		parent::__construct();
 		$this->load->database();
 		$this->load->model('secretariat/sec_email');
+		//$this->load->model('secretariat/secretariat_func'); <-- PRODUCES 500 ERROR
+		//$this->load->model('conference');
+		
 	}
 	
 	public function customer_exists($customer){
@@ -55,10 +58,10 @@ class Invoice_sec extends CI_Model
 		$query = $this->db->get();
 		if ($query->num_rows() > 0){
 		   $result = '<table class="table table-hover"><thead>';
-		   $result .= '<tr><th>#</th><th>School</th><th>Total Fees</th><th>Total Payments</th><th>Balance Now</th><th>Balance Due Later</th><th>View Details</th></tr>';
+		   $result .= '<tr><th>#</th><th>School</th><th>Total Fees</th><th>Total Payments</th><th>Balance Now</th><th>Balance Due Later</th></tr>';
 		   $result .= '</thead><tbody>';
 		   foreach ($query->result() as $row){
-		   $result .= '<tr>';
+		   $result .= '<tr id="account-' . $row->customer . '">';
 		   ////Column: # (Customer #)
 		   $result .= '<td>' . $row->customer . '</td>';
 		   
@@ -108,6 +111,7 @@ class Invoice_sec extends CI_Model
 		   }else{
 			   $deposit = $this->get_deposit_amount($row->id, 'raw');
 			   $result .= '<td>$ '.number_format($deposit).'<br /><span class="label label-warning">Due '.$this->get_deposit_deadline().'</span></td>';
+			   $result .= '<td>$ '.number_format($deposit).'<br /><span class="label label-warning">Due '.$this->get_balance_deadline().'</span></td>';
 			   
 		   }
 		   //$result .= '<td>$ 50.00<br /><span class="label label-success">Paid</span></td>'
@@ -115,8 +119,8 @@ class Invoice_sec extends CI_Model
 		   //$result .= '<td>$ 50.00<br /><span class="label label-warning">Due '.$this->get_balance_deadline().'</span></td>';
 		   
 		   //Column: Account
-		   $view_account = '<button class="btn btn-info" id="view-invoice" data-school="'.$row->id.'">View Account #'.$row->customer.'</button>';
-		   $result .= '<td>' . $view_account . '</td>';
+		   //$view_account = '<button class="btn btn-info" id="view-invoice" data-school="'.$row->id.'">View Account #'.$row->customer.'</button>';
+		   //$result .= '<td>' . $view_account . '</td>';
 		   $result .= '</tr>';
 		   }
 		   $result .= '</tbody></table>';
@@ -160,6 +164,8 @@ class Invoice_sec extends CI_Model
 	}
 	
 	public function create_invoice($schoolid, $delegates, $advisers, $countries, $level, $email, $adviser, $school){
+		$conference = $this->conference->current_conference_name();
+		//$conference = "NUMUN XII";
 		//create
 		//INSERT 
 		$invoice = array(
@@ -172,6 +178,10 @@ class Invoice_sec extends CI_Model
 		);
 		$dbsuccess = $this->db->insert('invoices', $invoice);
 		
+		//$emailTitle = 'Invoice for NUMUN is now available - '.$school.'';
+		//$emailHeadline = 'Invoice Posted';
+		//$emailMessage = 'Your invoice for '.$conference.' is now available on our Adviser Portal. To access your invoice online, go to https://secure.numun.org or use the button below.';
+		//$buttonText = "View Invoice";
 		//send email to adviser
 		$body = $this->sec_email->invoice_available($adviser, $school);
 		$this->email->from('support@numun.org', 'NUMUN Support');
@@ -191,6 +201,7 @@ class Invoice_sec extends CI_Model
 		
 	}
 	
+	
 	/*public function approve_invoice($schoolid){
 		if(isset($schoolid)){
 		//Set approved to 1
@@ -200,7 +211,8 @@ class Invoice_sec extends CI_Model
 		
 	}*/
 	
-	public function make_payment($customer, $schoolid, $amount, $type, $check_number, $notes){
+	
+	public function make_payment($customer, $schoolid, $amount, $type, $check_number, $notes, $emailAddress){
 		$payment_array = array(
 			'acctid' => $schoolid,
 			'description' => $notes,
@@ -214,15 +226,35 @@ class Invoice_sec extends CI_Model
 		$test = $this->db->get();
 		if($test->num_rows() == 1){
 			//returns exactly one row, so we are good
-		$this->db->insert('transactions', $payment_array);
-		return ($this->db->affected_rows() != 1) ? false : true;
-		}else{
-			//customer number and school ID don't match, despite our best efforts. Oops.
-			return false;
+		$dbsuccess = $this->db->insert('transactions', $payment_array);
+			
+			//send an email saying that a payment has been entered into the system.
+			//$emailAddress = $this->secretariat_func->get_email($schoolid);
+			$emailTitle = 'Payment Received for NUMUN - '.$school.'';
+			$emailHeadline = 'Payment Posted';
+			$emailMessage = 'A payment of $'.$amount.' has been recorded in your account for NUMUN. You can view your invoice and total payments received by going to https://secure.numun.org or clicking on the button below.';
+			$buttonText = "View Invoice";
+			
+			//body compiled by sec_email, which returns a block of HTML
+			$body = $this->sec_email->send_email($emailTitle, $emailHeadline, $emailMessage, $adviser, $school, $buttonText);
+			$this->email->from('support@numun.org', 'NUMUN Support');
+			$this->email->to($emailAddress);
+			//$this->email->bcc('joshuakaplan2015@u.northwestern.edu'); 
+			
+			$this->email->subject('Payment Received for NUMUN - '.$school.'');
+			
+			$this->email->message($body);	
+			
+			$emailsuccess = $this->email->send();
 		}
 		
-		
+		if ($dbsuccess === true && $emailsuccess === true){
+			return true;
+		}else{
+			return false;
+		}
 	}
+	
 	
 	public function get_total($schoolid, $format){
 		$this->db->select('*');
@@ -300,7 +332,7 @@ class Invoice_sec extends CI_Model
 		$row = $query->row();
 		if($query->num_rows() > 0){
 			//Current conference exists
-			if($level == "regular"){
+			if($level == "regular" || $level == "waitlist"){
 			$response = array(
 				'delegate_fee' => $row->delegate_fee,
 				'adviser_fee' => $row->adviser_fee,
@@ -332,5 +364,26 @@ class Invoice_sec extends CI_Model
 	}else{
 		return '0'; 
 	}
+	}
+	
+	public function update_invoice($schoolid, $delegate_quantity){
+		if($delegate_quantity >= 15){
+			$country_quantity = 2;
+		}else{
+			$country_quantity = 1;
+		}
+		$data = array(
+			'delegate_quantity' => $delegate_quantity,
+			'country_quantity' => $country_quantity
+		); 
+		
+		$this->db->where('schoolid', $schoolid);
+		$update = $this->db->update('invoices', $data); 
+		
+		if ($update){
+			return true;
+		}else{
+			return false;
+		}
 	}
 }

@@ -3,11 +3,13 @@
 	$userid = $user->id;
 	$phone_prefs = $this->nu_schools->get_phone_prefs($userid); 
 	?>
-	<script src="https://dl.dropboxusercontent.com/s/6tls9z1rsoh4yc2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
-    	
+    	//hide form uploads for now
+    	$("#delegate-forms-th").hide();
+    	$(".delegate-forms-btn").hide();
     	
     	checkAlerts();
     	alertInterval = setInterval(checkAlerts, 1000 * 60 * 2);    	
@@ -20,10 +22,14 @@
 			var page = showID.substring(1);
 			$(".navbar-nav > li.active").removeClass("active");
 			$(this).parent("li").addClass("active");
+			if(history.pushState == null){
+				//broswer doesnt support
+			}else{
 			history.pushState({
 			 id: page,
 			 page: page 
 		 }, null, "#"+page);
+		 }
 			getPage(page);
 			//$("#welcome").hide();
 			//$(".hidden-welcome:visible").hide();
@@ -63,6 +69,7 @@
 	        console.log(id);
 	        console.log(name);
 			$('#slot_' + id + '_exists').parent().html('<span class="del-name-exists">' + name + '</span>&nbsp;&nbsp;<a href="#" class="btn btn-xs btn-warning pull-right edit-slot new" id="slot_' + id + '_exists">Edit</a>');
+			$("button[data-slot-id='"+id+"']").data("name", name);
 			}
 			}, "text");
 			$('.currently:visible').detach();
@@ -86,12 +93,30 @@
 			$(this).parent().find(".edit-slot:hidden").show();
 			$(this).detach();
 		});
+		
+		$(".delegate-forms-btn").click(function(e){
+			$("#uploadForm").modal();
+			var name = $(this).data("name");
+			var slotId = $(this).data("slotId");
+			$("#upload-forms-name").text(name);
+			$("#delSlotId").val(slotId);
+			
+		});
+		/*$("#save-forms-upload").on("click", function(e){
+			e.preventDefault();
+			
+		});*/
+		
+		
+		
+		
+		
 		$("#edit-delegate-numbers").click(function(e){
 			e.preventDefault();
 			$(this).after('<button class="btn btn-danger btn-sm undo-edit"><i class="fa fa-times fa-inverse"></i></button>');
 			$(this).fadeOut();
 			
-			
+		
 			
 		});
 		$("#edit-countries").click(function(e){

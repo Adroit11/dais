@@ -18,12 +18,17 @@ class Welcome extends CI_Controller {
 			redirect('/login');
 		}elseif ($this->ion_auth->in_group($secretariat)){
 		$this->load->model('secretariat/secretariat_func');
-		$this->load->model('secretariat/invoice');
-		$this->load->model('committees_model');
-		$this->load->view('secretariat_logged_in');
+		$this->load->model('secretariat/table');
+		$this->load->model('secretariat/assignments');
+		//$this->load->model('secretariat/invoice_sec');
+		//$this->load->model('committees_model');
+		//$this->load->view('secretariat_logged_in');
+		$this->load->view('sec_down');
 		
 		}elseif ($this->ion_auth->in_group($staff)){
-		$this->load->view('staff_logged_in');
+		$this->load->model('advisers/reg_preferences');
+		$this->load->model('advisers/invoice');
+		$this->load->view('adviser_beta');
 		}elseif ($this->ion_auth->in_group($adviser)){
 		$this->load->model('advisers/reg_preferences');
 		$this->load->model('advisers/invoice');

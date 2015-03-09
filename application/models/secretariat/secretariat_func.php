@@ -10,6 +10,7 @@ class Secretariat_func extends CI_Model
 		parent::__construct();
 		$this->load->database();
 		$this->load->model('secretariat/invoice_sec');
+		$this->load->model('secretariat/assignments');
 	}
 	public function get_all_staff(){
 		//$query = $this->db->query('SELECT * FROM staff');
@@ -221,7 +222,8 @@ class Secretariat_func extends CI_Model
 	}
 	
 	public function get_all_schools(){
-		$query = $this->db->query('SELECT schools.id AS id, schools.name AS school_name, advisers.name AS adviser_name, advisers.phone AS adviser_phone, schools.customer, schools.address, schools.city, schools.state, schools.zipcode, schools.req_del_slots, schools.assigned_del_slots FROM schools JOIN advisers ON schools.id = advisers.schoolid');
+		$query = $this->db->query('SELECT schools.id AS id, schools.name AS school_name, advisers.name AS adviser_name, advisers.phone AS adviser_phone, schools.customer, schools.address, schools.city, schools.state, schools.zipcode, schools.req_del_slots, schools.assigned_del_slots, schools.waitlist FROM schools JOIN advisers ON schools.id = advisers.schoolid');
+		$waitquery = $this->db->query('SELECT schools.id AS id, schools.name AS school_name, advisers.name AS adviser_name, advisers.phone AS adviser_phone, schools.customer, schools.address, schools.city, schools.state, schools.zipcode, schools.req_del_slots, schools.assigned_del_slots, schools.waitlist FROM schools JOIN advisers ON schools.id = advisers.schoolid WHERE schools.waitlist = "yes"');
 
 	
 	
@@ -238,21 +240,28 @@ class Secretariat_func extends CI_Model
 		   $schools_result = '';
 		   foreach ($query->result() as $row)
 		   {
-		   $schools_result .= '<tr>';
-		   $schools_result .= '<td>' . $row->customer . '</td>';
-		   $schools_result .= '<td>' . $row->school_name . '</td>';
-		   $schools_result .= '<td><strong>' . $row->adviser_name . '</strong><br />' . $row->adviser_phone . '</td>';
-		   $schools_result .= '<td>' . $row->address . '<br />'. $row->city .', '. $row->state .' '. $row->zipcode .'</td>';
+		   $schools_result .= '<tr id="school-'.$row->id.'">';
+		   $schools_result .= '<td id="school-'.$row->id.'-customer">' . $row->customer . '</td>';
+		   $schools_result .= '<td id="school-'.$row->id.'-name">' . $row->school_name . '</td>';
+		   $schools_result .= '<td id="school-'.$row->id.'-adviser"><strong>' . $row->adviser_name . '</strong><br />' . $row->adviser_phone . '</td>';
+		   $schools_result .= '<td id="school-'.$row->id.'-address">' . $row->address . '<br />'. $row->city .', '. $row->state .' '. $row->zipcode .'</td>';
 		   
 		   if(is_null($row->assigned_del_slots)){
-		   $schools_result .= '<td><em>' . $row->req_del_slots . '</em></td>';
-		   $schools_result .= '<td><button class="btn btn-primary btn-sm">Assign Slots</button></td>';
+		   $schools_result .= '<td id="school-'.$row->id.'-req-slots"><span class="req-slots-number"><em>' . $row->req_del_slots . '</em></span> <br /> <button class="btn btn-warning btn-sm revise-delegates" id="revise-'.$row->id.'" data-school-id="'.$row->id.'" data-delegate-quantity="'.$row->req_del_slots.'" data-school-name="'.$row->school_name.'">Edit</button></td>';
+		  /* $schools_result .= '<td id="school-'.$row->id.'-assign"><button class="btn btn-primary btn-sm">Assign Slots</button></td>';*/
 		   $delegate_quantity = $row->req_del_slots;
 		   }else{
-		   $schools_result .= '<td>' . $row->assigned_del_slots . '</td>';
-		   $schools_result .= '<td><button class="btn btn-warning btn-sm">Edit Slots</button></td>';
+		  $schools_result .= '<td id="school-'.$row->id.'-assigned-slots">' . $row->assigned_del_slots . '</td>';
+		   /*$schools_result .= '<td id="school-'.$row->id.'-edit-slots"><button class="btn btn-warning btn-sm">Edit Slots</button></td>';*/
 		   $delegate_quantity = $row->assigned_del_slots;
+		   } 
+		   $slots_assigned = $this->assignments->slots_assigned($row->id);
+		   if ($slots_assigned > 0){
+			   $schools_result .= '<td id="school-'.$row->id.'-assignments"><button class="btn btn-success btn-sm get-assignments" id="get-assignments-'.$row->id.'" data-school-id="'.$row->id.'" data-school-name="'.$row->school_name.'">View '.$slots_assigned.' Assignments</button></td>';
+		   }else{
+			  $schools_result .= '<td id="school-'.$row->id.'-assignments"><button class="btn btn-danger btn-sm get-assignments" id="get-assignments-'.$row->id.'" data-school-id="'.$row->id.'" data-school-name="'.$row->school_name.'">No Slots Assigned</button></td>'; 
 		   }
+		   
 		   
 		   $invoice_exists = $this->invoice_sec->invoice_exists($row->id);
 		   if($invoice_exists != 1){
@@ -273,7 +282,7 @@ class Secretariat_func extends CI_Model
 		   
 		   
 		   
-		   $schools_result .= '<td><a href="mailto:'.$this->get_email($row->id).'" class="btn btn-info btn-sm">Email</a></td>';
+		   $schools_result .= '<td id="school-'.$row->id.'-email"><a href="mailto:'.$this->get_email($row->id).'" class="btn btn-info btn-sm">Email</a></td>';
 		   $schools_result .= '</tr>';
 		   }
 		   $schools_result .= '</tbody></table>';
@@ -288,12 +297,103 @@ class Secretariat_func extends CI_Model
 			$empty_response .= '</div>';
 			return $empty_response;   
 		   }
+		   
+		if ($waitquery->num_rows() > 0)
+		{
+		   $schools_wait = '';
+		   foreach ($waitquery->result() as $row1)
+		   {
+		   $schools_wait .= '<tr id="school-'.$row1->id.'">';
+		   $schools_wait .= '<td id="school-'.$row1->id.'-customer">' . $row1->customer . '</td>';
+		   $schools_wait .= '<td id="school-'.$row1->id.'-name">' . $row1->school_name . '</td>';
+		   $schools_wait .= '<td id="school-'.$row1->id.'-adviser"><strong>' . $row1->adviser_name . '</strong><br />' . $row1->adviser_phone . '</td>';
+		   $schools_wait .= '<td id="school-'.$row1->id.'-address">' . $row1->address . '<br />'. $row1->city .', '. $row1->state .' '. $row1->zipcode .'</td>';
+		   
+		   if(is_null($row1->assigned_del_slots)){
+		   $schools_wait .= '<td id="school-'.$row1->id.'-req-slots"><span class="req-slots-number"><em>' . $row1->req_del_slots . '</em></span> <br /> <button class="btn btn-warning btn-sm revise-delegates" id="revise-'.$row1->id.'" data-school-id="'.$row1->id.'" data-delegate-quantity="'.$row1->req_del_slots.'" data-school-name="'.$row1->school_name.'">Edit</button></td>';
+		   $schools_wait .= '<td id="school-'.$row1->id.'-assign"><button class="btn btn-primary btn-sm">Assign Slots</button></td>';
+		   $delegate_quantity = $row1->req_del_slots;
+		   }else{
+		   $schools_wait .= '<td id="school-'.$row1->id.'-assigned-slots">' . $row1->assigned_del_slots . '</td>';
+		   $schools_wait .= '<td id="school-'.$row1->id.'-edit-slots"><button class="btn btn-warning btn-sm">Edit Slots</button></td>';
+		   $delegate_quantity = $row1->assigned_del_slots;
+		   }
+		   
+		   $invoice_exists = $this->invoice_sec->invoice_exists($row1->id);
+		   if($invoice_exists != 1){
+			   //invoice does not exist
+			   $num_advisers = $this->invoice_sec->num_advisers($row1->id);
+			   if($this->invoice_sec->num_delegations($row1->id) == 'multiple'){
+				   $num_country = 2;
+			   }else{
+				   $num_country = 1;
+			   }
+			   
+			   $schools_wait .= '<td><button class="btn btn-primary btn-sm create-invoice" id="create-invoice-'.$row1->id.'" disabled="disabled" data-school-id="'.$row1->id.'" data-school-email="'.$this->get_email($row1->id).'" data-school-name="'. $row1->school_name .'" data-adviser-name="'.$row1->adviser_name.'" data-school-regtime="'.$this->get_reg_time($row1->id).'" data-school-quantity="'.$delegate_quantity.'" data-school-advisers="'.$num_advisers.'" data-school-countries="'.$num_country.'">WAITLISTED</button></td>';
+			
+		   }elseif($invoice_exists == 1){
+			   //invoice exists 
+			   $schools_wait .= '<td><button class="btn btn-success btn-sm view-invoice" id="view-invoice-'.$row1->id.'" data-school-id="'.$row1->id.'" data-school-name="'. $row1->school_name .'" data-school-custnum="'.$row1->customer.'">View Invoice</button></td>';
+		   }
+		   
+		   
+		   
+		   $schools_wait .= '<td id="school-'.$row1->id.'-email"><a href="mailto:'.$this->get_email($row1->id).'" class="btn btn-info btn-sm">Email</a></td>';
+		   $schools_wait .= '</tr>';
+		   }
+		   $schools_wait .= '</tbody></table>';
+		   return $schools_wait;
+		   }else{
+			$empty_response = '</tbody></table>';
+			$empty_response .= '<div class="spacious col-md-12">';
+			$empty_response .= '<div class="col-md-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong></strong></p><p>There aren&#8217;t any waitlisted schools yet. Registration is currently '. $this->conference_status('single-word') .'.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			return $empty_response;   
+		   }
 	}
 	
 	/*public function email_adviser($schoolid, $message){
 	
 		
 	}*/
+	
+	public function revise_del_count($schoolid, $delegate_quantity){
+		//update count
+		$data = array(
+               'req_del_slots' => $delegate_quantity,
+            );
+
+			$this->db->where('id', $schoolid);
+			$update = $this->db->update('schools', $data); 
+			
+			//update invoice
+			$update_invoice = $this->invoice_sec->update_invoice($schoolid, $delegate_quantity);
+			
+			if($update && $update_invoice){
+				//success
+				$response = array('status' => 'ok', 'id' => $schoolid, 'slots' => $delegate_quantity);
+			}else{
+				$response = array('status' => 'failed');
+			}
+			return $response;
+			
+		
+		
+		
+		
+	}
+	
+	public function total_reg_delegates(){
+		$query = $this->db->query('SELECT SUM(req_del_slots) FROM schools');
+		foreach ($query->result_array() as $row){
+		$total = $row['SUM(req_del_slots)'];
+		}
+		return $total;
+		
+	}
 		
 }
 	

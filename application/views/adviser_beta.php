@@ -79,6 +79,10 @@
 		<p>Tap the <i class="fa fa-bars"></i> icon to reveal the navigation menu.</p>
 			
 		</div>
+		<div class="alert alert-info hidden-lg">
+		<h4>Beta View</h4>
+		<p>You're viewing the adviser beta view.</p>
+			
 		
 		<noscript>
 				<div class="alert alert-danger">
@@ -153,7 +157,7 @@
 			?>
 			<div class="col-xs-5 col-xs-offset-1 pull-right">
 			<p class="lead text-right">INVOICE <strong>#</strong><?php echo $customer_number; ?><br />
-			<strong>Deposit Due</strong> <?php echo $invoice['date']; ?></p>
+			<strong>Due</strong> <?php echo $invoice['date']; ?></p>
 			</div>
 			<div class="col-xs-2">
 			<h5>Bill to:</h5>
@@ -422,17 +426,16 @@
 		
 		<div class="row hidden-welcome" id="delegates">
 			<h1 class="default-head">Delegates</h1>
-			<!--<div class="alert alert-info hide-print" role="alert">
+			<div class="alert alert-info hide-print" role="alert">
 				<h3>Position Assignments</h3>
-				<p>We expect to release position assignments by early March. Background guides for all committees will be available in mid-February.</p>
-			</div>-->
-			<p class="lead hide-print">Assign your delegates to committee positions below.</p>
-			<p>Committee descriptions are available by hovering over the <span class="label label-info"><i class="fa fa-info"></i></span> icon.</p>
+				<p>We expect to release position assignments in early March. Background guides for all committees will be available in February.</p>	
+			</div>
+			<p class="lead hide-print">Once your school has been assigned delegate positions (or "slots"), you may assign those positions to individual students below. That way we will have your student's names and uploaded required forms in one place.</p>
 			<!--<p class="hide-print">You can edit student assignments at any time before <strong>March 15, 2015</strong>.</p>-->
 			<form role="form" class="del-assignments">
 			<table class="table table-hover">
 			<thead>
-				<tr><th>Delegate Name</th><th>Position</th><th>Committee</th><th id="delegate-forms-th">Photo & Waiver Forms</th></tr>
+				<tr><th>Delegate Name</th><th>Position</th><th>Committee</th></tr>
 			</thead>
 			<tbody>
 				<?php echo $delegate_slots; ?>
@@ -506,43 +509,6 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-
-
-<div class="modal fade" id="uploadForm" tabindex="-1" role="dialog" aria-labelledby="uploadForm" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title">Upload Delegate Forms</h4>
-      </div>
-      <div class="modal-body">
-      <p class="lead">Upload Forms for <strong><span id="upload-forms-name"></span></strong></p>
-      <p>Please scan delegate Waiver and Photo Release forms and save in a PDF or JPG format. Upload those files for each delegate using the file upload form below.</p>
-      	<form id="uploadDelegateForms" class="form-horizontal">
-		  <div class="form-group">
-		  <label class="col-md-4 control-label" for="delWaiver">Waiver</label>
-		  <div class="col-md-8">
-		    <input id="delWaiver" name="delWaiver" class="input-file" type="file">
-		  </div>
-		</div>
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="delPhotoRelease">Photo Release</label>
-		  <div class="col-md-8">
-		    <input id="delPhotoRelease" name="delPhotoRelease" class="input-file" type="file">
-		  </div>
-		</div>
-		<input type="hidden" id="delSlotId" name="delSlotId" value="" />
-      	</form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> &nbsp; <button type="button" class="btn btn-primary" id="save-forms-upload">Save</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-
 
 <div class="modal fade" id="editPreferences" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">

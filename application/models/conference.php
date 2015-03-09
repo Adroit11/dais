@@ -11,6 +11,8 @@ class Conference extends CI_Model
 		$this->load->database();
 	}
 	
+	
+	
 	public function current_conference_id(){
 		$query = $this->db->query('SELECT id FROM conference WHERE current=1');
 		if ($query->num_rows() > 0){
@@ -24,6 +26,22 @@ class Conference extends CI_Model
 		}
 		}
 	}
+	
+	public function current_conference_name(){
+			$query = $this->db->query('SELECT numerals FROM conference WHERE current=1');
+			if ($query->num_rows() > 0){
+			if ($query->num_rows() > 1){
+			//multiple conferences, throw error
+			return false;
+			}elseif($query->num_rows() == 1){
+			$row = $query->row(); 
+			$current_name = 'NUMUN '.$row->numerals;
+			return $current_name;
+			}
+			}
+			
+	}
+	
 	public function create_reg_button(){
 	$status = $this->get_reg_status();
 	if($status == 'closed'){

@@ -1,26 +1,32 @@
 <?php
 	$user = $this->ion_auth->user()->row();
-	$alerts = $this->alerts_model->get_all_alerts();
-	$committees_all = $this->committees_model->get_all_committees();
-	$committees_crisis = $this->committees_model->get_crisis_committees();
-	$committees_non_crisis = $this->committees_model->get_non_crisis_committees();
-	$all_staff = $this->secretariat_func->get_all_staff();
+	//$alerts = $this->alerts_model->get_all_alerts();
+	//$committees_all = $this->committees_model->get_all_committees();
+	//$committees_crisis = $this->committees_model->get_crisis_committees();
+	//$committees_non_crisis = $this->committees_model->get_non_crisis_committees();
+	//$all_staff = $this->secretariat_func->get_all_staff();
 	$all_schools = $this->secretariat_func->get_all_schools();
 	$status_alert = $this->secretariat_func->conference_status('alert');
-	$status_panel = $this->secretariat_func->conference_status('panel');
+	//$status_panel = $this->secretariat_func->conference_status('panel');
 	$current_conference = 'NUMUN ' . $this->secretariat_func->current_conference('numerals');
-	$current_sec_gen = $this->secretariat_func->current_conference('sec-gen');
-	$registration_message = $this->secretariat_func->current_conference('reg-message');
+	//$current_sec_gen = $this->secretariat_func->current_conference('sec-gen');
+	//$registration_message = $this->secretariat_func->current_conference('reg-message');
+	$total_del = $this->secretariat_func->total_reg_delegates();
+	$full_table = $this->table->schools_table();
+	$unassigned_slots = $this->assignments->unassigned_slots();
 	
 ?>
+
 <!doctype html>
 <html>
 	<head>
 	<title>Secretariat - NUMUN</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href='//fonts.googleapis.com/css?family=Raleway:400,700,300' rel='stylesheet' type='text/css'>
-	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-	<link href="https://dl.dropboxusercontent.com/s/8dd9oigm2ycxkeb/sect-style.min.css" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Raleway:400,700,300' rel='stylesheet' type='text/css'>
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+	<!--<link href="https://dl.dropboxusercontent.com/s/8dd9oigm2ycxkeb/sect-style.min.css" rel="stylesheet">-->
+	<link href="https://secure.numun.org/assets/css/sect-style.min.css" rel="stylesheet">
+	
 	<style type="text/css">
 	/* Sticky footer styles
 -------------------------------------------------- */
@@ -207,6 +213,8 @@ border: 0px solid transparent;
 	}
 	</style>
 	<script src="https://dl.dropboxusercontent.com/s/6tls9z1rsoh4yc2/jquery.min.js"></script>
+	<script src="https://secure.numun.org/assets/js/tableToExcel.js"></script>
+	<script src="https://secure.numun.org/assets/js/reviseAccount.js"></script>
 	<script type="text/javascript">
 	$( document ).ready(function() {
     	console.log( "ready!" );
@@ -223,6 +231,11 @@ border: 0px solid transparent;
 				template: '<div class="popover helvetica" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
 				content: '<strong>Joshua Kaplan</strong> <span class="label label-info">Primary</span><br /> (847) 555-0123<br /><strong>Sam Young</strong> <span class="label label-info">Secondary</span><br /> (847) 555-1234<hr /><h4>Logistics</h4><p class="lead"><strong>Norris Events</strong><br /> (847) 444-<strong>3333</strong></p><br />(<strong>3333</strong> from any campus phone)<br /><strong>Sam Young</strong> (847) 555-0123</p><hr /><h4>Web Technology</h4><p class="lead"><strong>Michael McCarthy</strong> (773) 616-1658</p>'
 				});
+		$('#chat-popover').popover({
+				template: '<div class="popover helvetica" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+				content: '<form class="form" id="staff-support-form"><div class="form-group"><label for="message" class="control-label">Message</label><textarea class="form-control" id="slack-message" name="message" placeholder="Type your message here..."></textarea><input type="hidden" name="channel" value="staff-support" /><br /></div></form><p><a href="#" class="btn btn-success" id="send-staff-chat"><i class="fa fa-comment"></i>&nbsp; Send</a></p><p id="slack-message-status"></p>'
+				});				
+	
 		$('#session-popover').popover({
 				template: '<div class="popover helvetica" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
 				content: '<form role="form"><div class="form-group"><select id="sessionSelect" class="form-control"><option>Select a Session</option><optgroup label="Thursday"><option value="session1">Session I</option></optgroup><optgroup label="Friday"><option value="session2">Session II</option><option value="session3">Session III</option></optgroup><optgroup label="Saturday"><option value="session4">Session IV</option><option value="session5">Session V</option><option value="sessionMidnight">Midnight Crisis</option></optgroup><optgroup label="Sunday"><option value="session6">Session VI</option></optgroup></select></div></form>'
@@ -280,11 +293,15 @@ border: 0px solid transparent;
 			var humanLink = chatLink.split("=")[1];
 			$(this).after('<span id="gchatLinkHuman">Chat with ' + humanLink + '</span>');
 		});
+		
 		$(".app-page").click(function(){
+			console.log("click");
 			var showID = $(this).attr("href");
+			console.log(showID);
 			$("#welcome").hide();
 			$(".hidden-welcome:visible").hide();
-			$(showID + ":hidden").fadeIn("fast");
+			$(showID+":hidden").fadeIn("fast");
+			
 			if ($(".dropdown-menu:visible").index > -1)
 			{
 				$(".dropdown-menu:visible").hide();	
@@ -292,6 +309,7 @@ border: 0px solid transparent;
 			$(window).scrollTop(0);
 			return false;
 		});
+		
 		$('#alert-message').keyup(function () {
 		  var max = 140;
 		  var len = $(this).val().length;
@@ -302,8 +320,51 @@ border: 0px solid transparent;
 		    $('#charNum').text(char + ' characters left. (Out of 140)');
 		  }
 		});
+		$(".get-assignments").click(function(){
+			$("#assignments-response").html('<i class="fa fa-refresh fa-spin"></i>');
+			var schoolName = $(this).data("schoolName");
+			var schoolId = $(this).data("schoolId");
+			$("#assignments-school").text(schoolName);
+			
+			$.post( "/sec_ajax/display_assignments", {schoolid: schoolId})
+			.done( function( data ) {
+				$("#assignments-response").html(data);
+			});
+			
+			$("#assignmentsModal").modal();
+			
+		});
 		
-		$(".create-invoice").click(function(){
+		$(".assign-slot").click(function(){
+			var button = $(this);
+			
+			button.removeClass("btn-primary").addClass("btn-warning").html('<i class="fa fa-refresh fa-spin"></i>');
+			var slotid = button.data("slotId");
+			var schoolid = button.parents("tr").children("td").children("select").val();
+			$.post( "/sec_ajax/assign_slot", {schoolid: schoolid, slotid: slotid})
+			.done( function( data ) {
+				button.addClass("btn-default").removeClass("btn-warning").html(data);
+				//$("#assign-slot-"+slotid+"-response").text(data);
+				button.parents("tr").slideUp();
+			});
+			
+			
+		});
+		
+		$(".create-position-btn").click(function(e){
+			e.preventDefault();
+			var button = $(this);
+			$(this).removeClass("btn-primary").addClass("btn-warning").html('<i class="fa fa-refresh fa-spin"></i>');
+			
+			$.post( "/sec_ajax/new_slot", $("#new-delegate-slot").serialize())
+			.done( function( data ) {
+				button.addClass("btn-default").removeClass("btn-warning").html(data);
+				//$("#assign-slot-"+slotid+"-response").text(data);
+			});
+		});
+		
+		$("body").on("click", ".create-invoice", function(){
+		//$(".create-invoice").click(function(){
 			$("#createInvoiceModal").modal();
 			
 			var invSchool = $(this).data("schoolName");
@@ -344,14 +405,30 @@ border: 0px solid transparent;
 				$("#createInvoiceModal").modal('hide');
 				var schoolid = response.id;
 				$("#create-invoice-" + schoolid).removeClass('create-invoice').addClass('view-invoice').removeClass('btn-primary').addClass('btn-success');
-				$("#create-invoice-" + schoolid).data('schoolId') = schoolid;
+				//$("#create-invoice-" + schoolid).data('schoolId') = schoolid;
+				$("#create-invoice-" + schoolid).html("View Invoice");
 			}else{
 				$(".invoice-error").show().removeClass('hidden');
 			}
 		} );
 		});
-		
-		$(".view-invoice").click(function(){
+		$("body").on("click", "#send-staff-chat", function(e){
+			e.preventDefault();
+			var formData = $("#staff-support-form").serializeArray();
+			var slackMessage = $.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "https://secure.numun.org/message/slackmsg/",
+			data: formData,
+			});
+			
+			slackMessage.done(function(){
+				$("#slack-message").inner("");
+				$("#slack-message-status").text("Your message has been sent.");
+			});
+		});
+		$("body").on("click", ".view-invoice", function(){
+		//$(".view-invoice").click(function(){
 			var schoolid = $(this).data("school-id");
 			var schoolcustomer = $(this).data("school-custnum");
 			var schoolName = $(this).data("school-name");
@@ -395,9 +472,28 @@ border: 0px solid transparent;
 				//payments
 				$("#view-payments").text(data.payments);
 				
+				//footer button
+				$("#view-payments-more").data("customer", schoolcustomer);
+				
 				
 			});
 			$("#viewInvoiceModal").modal();
+		});
+		
+		$("body").on("click", "#view-payments-more", function(){
+			customer = $(this).data("customer");
+			
+			$(".hidden-welcome:visible").hide("fast");
+			$("#sec-invoices").show("fast");
+			$("#viewInvoiceModal").modal('hide');
+			$(window).scrollTop(0);
+			
+			$(document.body).scrollTop($("#account-"+customer).offset().top - 70);
+			$("#account-"+customer).addClass("info")
+			setTimeout(function(){
+				$("#account-"+customer).removeClass('info');}, 8000);
+			
+			
 		});
 		
 		$(".welcome-page").click(function(){
@@ -410,7 +506,7 @@ border: 0px solid transparent;
 			$(window).scrollTop(0);
 			return false;
 		});
-		/*$('#create-alert').click(function(e){
+		$('#create-alert').click(function(e){
 			e.preventDefault();
 			//var formdata = $(".alert-form:input").serialize();
 			//console.log(formdata);
@@ -436,7 +532,7 @@ border: 0px solid transparent;
 			}
 			}, "json");
 
-		});*/
+		});
 		$('#create-alert').click(function(e){
 			e.preventDefault();
 			var title = $("#alert-title").val();
@@ -663,7 +759,8 @@ border: 0px solid transparent;
 			  });
 		});
 		
-	});
+//end of onload	
+});
 		function checkAlerts(){
 		$.ajax({
 		type: "GET",
@@ -774,10 +871,12 @@ function results(){
 	            <li><a href="#sec-invoices" class="app-page">List Invoices</a></li>
 	            <li><a href="#sec-payments" class="app-page">Add Payment</a></li>
 	            <li><a href="#sec-assignments" class="app-page">Assignments</a></li>
+	            <!--
 	            <li><a href="#sec-checkin" class="app-page">Check-In</a></li> 
 	            <li class="divider"></li>
 	            <li><a href="#sec-adviser-lookup" class="app-page">Find Advisers</a></li>
 	            <li><a href="#sec-school-forms" class="app-page">School Forms</a></li>
+	            -->
 	          </ul>
 	        </li>
 	        <li class="dropdown">
@@ -787,11 +886,14 @@ function results(){
 	            <li><a href="#sec-committees" class="app-page">All Committees</a></li>
 			    <li><a href="#sec-committees-non-crisis" class="app-page"><i class="fa fa-caret-right"></i>&nbsp;&nbsp;Non-Crisis</a></li>
 			    <li><a href="#sec-committees-crisis" class="app-page"><i class="fa fa-caret-right"></i>&nbsp;&nbsp;Crisis</a></li>
+	            <!--
 	            <li class="divider"></li>
 	            <li><a href="#sec-webpages" class="app-page">Approve Committee Web Pages</a></li>
 	            <li><a href="#sec-awards" class="app-page">Awards</a></li>
+	            -->
 	          </ul>
 	        </li>
+	       <!--
 	        <li class="dropdown">
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Staff <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
@@ -799,6 +901,7 @@ function results(){
 	            <li><a href="#sec-add-staff" class="app-page">Add New Staff</a></li>
 	          </ul>
 	        </li>
+	        -->
 			<li id="emergency-link"> <a href="#emergency" class="app-page"><i class="fa fa-exclamation-triangle fa-inverse" id="emergency-link-icon"></i>&nbsp;&nbsp; Alert</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -812,6 +915,7 @@ function results(){
 	        </li>
           <form class="navbar-form navbar-right">
           <a class="btn btn-danger" id="help-popover" data-toggle="popover" title="Help" data-placement="bottom" data-html="true">Help</a>
+          <a class="btn btn-warning" id="chat-popover" data-toggle="popover" title="Chat" data-placement="bottom" data-html="true"><i class="fa fa-question"></i></a>
           </form>
           </ul>
         </div><!--/.nav-collapse data-toggle="modal" data-target="#needsHelpModal"-->
@@ -826,6 +930,85 @@ function results(){
 			<h2 id="emergency-title"></h2>
 			<p class="lead" id="emergency-message"></p>
 		</div><!-- /#emergency -->
+		
+		<div class="row" id="sys-status-collapsed">
+		<div class="col-md-12">
+				<div class="alert alert-success">
+				<p><i class="fa fa-line-chart"></i> &nbsp; <strong>Current Status</strong> of Secretariat Portal Features <span class="pull-right"><a href="#sys-status" class="btn btn-warning app-page">More Info</a></span></p>
+				<p>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; View All Schools</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; View Invoices</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Add a Payment</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Create an Invoice</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Invoice Available Email</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; View School Positions</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Assign Remaining Positions</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Create New Delegate Positions</span>
+				<br />
+				<span class="label label-danger"><i class="fa fa-times"></i> &nbsp; Remove Positions from Schools</span>
+				<span class="label label-danger"><i class="fa fa-times"></i> &nbsp; Payment Emails</span>
+				</p>
+				
+				</div>
+		</div>	
+		</div>
+		
+		<div class="row hidden-welcome" id="sys-status">
+		<h1 class="default-head"><i class="fa fa-line-chart"></i> &nbsp; SYSTEM STATUS</h1>
+		<div class="col-md-12">
+				<div class="alert alert-info">
+				<h2><i class="fa fa-exclamation-triangle"></i> &nbsp;&nbsp; Limited Access</h2>
+				<p>More information is available below.</p>
+				</div>
+				
+				<p><span class="label label-info">At 4:00 pm 1-27-15</span> Most features are functioning. I am conducting additional testing. To access any of the Secretariat features below, just click on the green tag/label.</p>
+				<p>&nbsp;</p>
+				<p><span class="label label-info">At 3:20 pm 1-27-15</span> We are currently experiencing an issue on the Secretariat version of the site. Some features have been disabled to pinpoint the issue.</p>
+				<p>&nbsp;</p>
+				<p><small>-Michael McCarthy</small></p>
+				</div>
+				<h4>Current Status:</h4>
+				
+				<div class="col-md-6">
+				<h3>
+				<small>Secretariat Portal - Working</small> <br />
+				<p><a class="app-page" href="#sec-reg-schools"><span class="label label-success"><i class="fa fa-check"></i> &nbsp; View All Schools</span></a></p>
+				<p><a class="app-page" href="#sec-invoices">   <span class="label label-success"><i class="fa fa-check"></i> &nbsp; View Invoices</span></a></p>
+				<p><a class="app-page" href="#sec-payments">   <span class="label label-success"><i class="fa fa-check"></i> &nbsp; Add a Payment</span></a></p>
+				<p><span class="label label-success"><i class="fa fa-check"></i> &nbsp; Create an Invoice</span></p>
+				<p><span class="label label-success"><i class="fa fa-check"></i> &nbsp; Invoice Available Email</span></p>
+				</h3>
+				
+				<h3>
+				<small>Secretariat Portal - Not Working</small> <br/>
+				<p><span class="label label-danger"><i class="fa fa-times"></i> &nbsp; Payment Emails</span></p>
+
+				</h3>
+				
+				</div>
+				
+				<div class="col-md-4">
+				
+				<h4>
+				<small>Database</small> <br />
+				<p><span class="label label-success"><i class="fa fa-check"></i> &nbsp; School Registration Data</span></p>
+				<p><span class="label label-success"><i class="fa fa-check"></i> &nbsp; Invoice & Payments Data</span></p>
+				</h4>
+				
+				<h4>
+				<small>Adviser Portal</small> <br />
+				<p><span class="label label-success"><i class="fa fa-check"></i> &nbsp; All Functional</span></p>
+				</h4>
+				
+				<h4><small><?php echo $current_conference; ?></small></h4>
+				<?php echo $status_alert; ?>
+
+				
+				</div>
+		</div>	
+		
+		
+				
 		<div class="row" id="welcome">
 		<div class="col-md-7">
 			<h1>Welcome, <?php echo $user->first_name; ?></h1>
@@ -838,6 +1021,8 @@ function results(){
 			<p class="lead"><br /><strong>Evie Atwater</strong><br /><small>Secretary-General &mdash; NUMUN XII</small></p>
 			</div>
 		</div>
+	
+		
 		<div class="col-md-4 col-md-offset-1">
 		<?php if (isset($current_conference)){?>
 		<h3 class="lead"><?php echo $current_conference; ?></h3>
@@ -846,7 +1031,11 @@ function results(){
 				echo '<div class="alert alert-danger">No conference has been set up. <br> Create a new conference under <strong>Conference > Setup</strong>.</div>';
 			}
 		?>
-		
+		<div class="alert alert-info">
+			<h4><i class="fa fa-bar-chart"></i> &nbsp; Conference Stats</h4>
+			<h4 class="helvetica"><?php echo $total_del; ?> <small>delegates</small></h4>
+		</div>
+		<!--
 		<h3 class="lead">Upcoming Meetings & Events</h3>
 		<ul class="event-list">
 		<li><strong>9/18</strong> <div class="pull-right">New Staff Introduction</div><div class="clearfix"></div></li>
@@ -872,7 +1061,9 @@ function results(){
 		<ul class="event-list">
 		<li><strong>4/15-4/18 2015</strong> NUMUN XII <br /><em>Required for all members</em></li>
 		</ul>
+		</div>-->
 		</div>
+		
 		</div><!-- /#welcome -->
 		<div class="row hidden-welcome" id="sec-conf-settings">
 			<h1 class="default-head">Conference Setup</h1>
@@ -970,7 +1161,7 @@ function results(){
 		<div class="row hidden-welcome" id="sec-reg-schools">
 			<h1 class="default-head">Registered Schools</h1>
 			<div class="row">
-						  <?php echo $status_panel; ?>
+						  <?php //echo $status_panel; ?>
 			              <!--<div class="col-lg-4 col-md-6">
 			              	<div class="panel panel-primary">
                             <div class="panel-heading">
@@ -1019,16 +1210,29 @@ function results(){
                           
 			</div>
 			<h3>All Schools</h3>
+			<button class="btn btn-primary" onclick="tableToExcel('full-schools-table', 'NUMUNXIISchools')"><i class="fa fa-table"></i> &nbsp; Download Excel</button>
 			<table class="table table-hover">
 				<thead>
-				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Slots</th><th>Invoice</th><th>Email</th></tr>
+				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Positions</th><th>Invoice</th><th>Email</th></tr>
 				</thead>
 				<tbody>
 				<?php
 				echo $all_schools;
 				?>
-
- </div>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="row hidden-welcome" id="sec-reg-schools-full">
+		
+		<table id="full-schools-table">
+			
+			<?php echo $full_table; ?>
+			
+		</table>
+			
+		</div>
+		
 		<div class="row hidden-welcome" id="sec-invoices">
 			<h1 class="default-head">Invoices</h1>
 			<p class="lead">Edit, approve, and send invoices.</p>
@@ -1045,6 +1249,64 @@ function results(){
 			</table>-->
 				
 			</div>
+		<div class="row hidden-welcome" id="sec-assignments">
+			<h1 class="default-head">Assignments</h1>
+			
+			<p class="lead"><strong>Create new</strong> delegate positions</p>
+				<form class="form-horizontal" role="form" id="new-delegate-slot">
+					<div class="form-group">
+						<label for="committee" class="col-md-3 control-label">Committee</label>
+						<div class="col-md-4">
+							<?php echo $this->assignments->select_committees(); ?>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="payment-amount" class="col-md-3 control-label">Position</label>
+						<div class="col-md-5">
+							<input type="text" class="form-control" id="new-position" name="new-position" placeholder="e.g., United States" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="payment-amount" class="col-md-3 control-label">Double Delegation</label>
+						<div class="col-md-3">
+							<label class="radio-inline"><input type="radio" name="double-del" value="1">Yes (Please repeat this process.)</label>
+							<label class="radio-inline"><input type="radio" name="double-del" value="0">No</label>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						
+						<label for="committee" class="col-md-3 control-label">Assign to</label>
+						<div class="col-md-4">
+							<?php echo $this->assignments->select_schools(); ?>
+							<p class="help-block">Optional</p>
+						</div>
+					</div>
+					
+					<div class="col-md-9 col-md-offset-3">
+						<button class="btn btn-success create-position-btn">Create Position</button>
+						<p>&nbsp;</p>
+					</div>
+					<div class="clearfix"></div>
+				</form>
+
+			<hr />
+			
+			<p class="lead"><strong>Assign</strong> remaining delegate slots to schools</p>
+		
+					<table class="table table-hover">
+					<thead>
+						<tr><th class="col-md-3">Position</th><th>Committee</th><th>Assign</th></tr>
+					</thead>
+					<tbody id="assignments-unassigned">
+					<?php echo $unassigned_slots; ?>
+					</tbody>
+					</table>
+			
+		</div>	
+			
+			
+			
 		<div class="row hidden-welcome" id="sec-payments">
 			<h1 class="default-head">Payments</h1>
 			<p class="lead">Log payments from schools</p>
@@ -1088,315 +1350,6 @@ function results(){
 			</form>
 
 		</div>
-		<div class="row hidden-welcome" id="sec-adviser-lookup">
-			<h1 class="default-head">Adviser/School Lookup</h1>
-			<p class="lead">Delegate credentials contain School ID numbers rather than School names. Use this form to look up Schools and Advisers by ID number.</p>
-			<form class="horizontal" role="form">
-				<div class="form-group">
-					<label for="adviser-search" class="col-md-4 control-label">Locate Adviser(s) and Schools</label>
-					<div class="col-md-8">
-					<input type="text" class="form-control" id="adviser-search" placeholder="Type a Delegate ID, School ID, School name, or Adviser name" />
-					</div>
-				</div>
-			</form>
-		</div>
-		<div class="row hidden-welcome" id="sec-assignments">
-			<h1 class="default-head">School Assignments</h1>
-		</div>
-		<div class="row hidden-welcome" id="sec-school-forms">
-			<h1 class="default-head">School Forms</h1>
-		</div>
-		<div class="row hidden-welcome" id="sec-checkin">
-			<h1 class="default-head">NUMUN XII Check-In</h1>
-			<h4><span class="label label-danger">Secretariat-Only</span></h4>
-			<form class="form-horizontal" role="form">
-				<div class="form-group">
-					<label for="adviser-checkin" class="col-md-3 control-label">Adviser Name</label>
-					<div class="col-md-8">
-					<input type="text" class="form-control" id="adviser-checkin" placeholder="e.g., Morty Schapiro" />
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="school-checkin" class="col-md-3 control-label">School ID Number</label>
-					<div class="col-md-8">
-					<input type="text" class="form-control" id="school-checkin" placeholder="e.g., 1058" />
-					<p class="help-block">School ID is printed at the top of the confirmation page.</p>
-					</div>
-				</div>
-					<div class="col-md-8 col-md-offset-3">
-					 <div id="checkin-search-results"></div>
-					  <div id="checkin-search-results2"></div>
-					</div>
-
-			</form>
-		</div>
-		<div class="row hidden-welcome" id="sec-all-staff">
-			<h1 class="default-head">NUMUN XII Staff</h1>
-		<table class="table table-hover">
-				<thead>
-				<tr><th>Name</th><th>Committee</th><th>Role</th></tr>
-				</thead>
-				<tbody>
-				<?php
-				echo $all_staff;
-				?>
-		</div><!-- /#sec-all-staff -->
-		
-		<div class="row hidden-welcome" id="meetings">
-			<h1 class="default-head">Staff Meetings</h1>
-			<ol class="breadcrumb">
-			  <li title="You don't currently have access to conference-wide pages.">Staff</li>
-			  <li><a href="#user" class="app-page">Michael McCarthy</a></li>
-			  <li class="active">Meetings</li>
-			</ol>
-			<p class="lead">Answer the following questions to self-report your attendance. Otherwise, use a laptop at the front of the room to sign in.</p>
-			<form class="form-horizontal" role="form">
-		  	  <div class="form-group">
-			    <label for="meetingDate" class="col-sm-4 control-label">Meeting on</label>
-			    <div class="col-sm-6 col-md-4">
-			    	<select id="meetingDate" name="meetingDate" class="form-control"> 
-					<option value="" selected="selected">Select a Date</option>
-					<optgroup label="Fall Quarter">
-					<option value="8/1">8/1</option> 
-					<option value="9/1">9/1</option> 
-					<option value="10/1">10/1</option> 
-					<option value="11/1">11/1</option> 
-					<option value="11/7">11/7</option> 
-					<option value="11/14">11/14</option> 
-					<option value="11/21">11/21</option> 
-					<option value="12/1">12/1</option> 
-					<option value="12/7">12/7</option> 
-					<option value="12/14">12/14</option> 
-					<option value="12/21">12/21</option> 
-					</optgroup>
-					</select>
-				</div>
-				<div class="col-sm-6 col-md-4">
-				<a class="btn btn-sm btn-info" id="meetingToday">Today's Meeting</a>
-				</div>
-			</div><!-- /.form-group --> 
-			<div class="form-group">
-			    <label for="meetingQuestion" class="col-sm-4 control-label">Which Parli Pro motion is your favorite?</label>
-			    <div class="col-sm-4">
-			    	<select id="meetingQuestion" name="meetingQuestion" class="form-control"> 
-					<option value="" selected="selected">Select a Motion</option>
-					<option value="adjourn">Motion to Adjourn</option> 
-					<option value="suspend">Motion to Suspend</option> 
-					<option value="dividequestion">Motion to Divide the Question</option> 
-					<option value="rollcall">Motion for a Roll-Call Vote</option> 
-					<option value="appealchair">Motion to Appeal the Decision of the Chair</option> 
-					</select>
-				</div>
-			</div><!-- /.form-group --> 
-			  <div class="form-group">
-			  	<div class="col-sm-6 col-md-2 col-sm-offset-4">
-			  			<button type="button" class="btn btn-success" id="staffAttendanceSubmit" role="submit">Submit</button>
-			  	</div>
-			  	<div class="col-sm-6 col-md-2">
-			  			<button type="button" class="btn btn-warning" id="cantAttend">I can't make it</button>
-			  	</div>
-			  </div><!-- /.form-group -->
-			</form>
-		</div><!-- /#meetings -->
-		<div class="row hidden-welcome" id="sec-committees">
-			<h1 class="default-head">All Committees</h1>
-			<ol class="breadcrumb">
-			  <li><a href="#">Committees</a></li>
-			</ol>
-			<?php
-			if(isset($committees_all)){
-			echo '<table class="table">';
-			echo '<thead><tr><th class="col-sm-1">#</th><th class="col-sm-4">Committee</th><th>Location</th><th>Size</th><th>Type</th></tr></thead>';
-			echo '<tbody>';
-			echo $committees_all;
-			}
-			?>
-		</div><!-- /#sec-committees -->
-		<div class="row hidden-welcome" id="sec-committees-crisis">
-			<h1 class="default-head">Crisis Committees</h1>
-			<ol class="breadcrumb">
-			  <li><a href="#sec-committees" class="app-page">Committees</a></li>
-			  <li>Crisis</li>
-			</ol>
-			<?php
-			if(isset($committees_crisis)){
-			echo '<table class="table">';
-			echo '<thead><tr><th class="col-sm-1">#</th><th class="col-sm-4">Committee</th><th>Location</th><th>Size</th></tr></thead>';
-			echo '<tbody>';
-			echo $committees_crisis;
-			}
-			?>
-		</div><!-- /#sec-committees-crisis -->
-		<div class="row hidden-welcome" id="sec-committees-non-crisis">
-			<h1 class="default-head">Non-Crisis Committees</h1>
-			<ol class="breadcrumb">
-			  <li><a href="#sec-committees" class="app-page">Committees</a></li>
-			  <li>Non-crisis</li>
-			</ol>
-			<?php
-			if(isset($committees_non_crisis)){
-			echo '<table class="table">';
-			echo '<thead><tr><th class="col-sm-1">#</th><th class="col-sm-4">Committee</th><th>Location</th><th>Size</th></tr></thead>';
-			echo '<tbody>';
-			echo $committees_non_crisis;
-			}
-			?>
-		</div><!-- /#sec-committees-crisis -->
-		<div class="row hidden-welcome" id="attendance">
-			<h1 class="default-head">Roster</h1>
-			<ol class="breadcrumb">
-			  <li><a href="#" rel="tooltip" data-toggle="tooltip" data-placement="top" title="No access to conference-wide pages." class="bread-disabled">Committees</a></li>
-			  <li><a href="#myCommittee">DISEC</a></li>
-			  <li class="active">Roster</li>
-			</ol>
-			<p class="lead">Use the table below to keep track of delegate attendance. All chairs will be held responsible for taking complete attendance for each session.</p>
-			<p>Some of you may prefer to use a spreadsheet to do this. This table will calculate your quorum, simple majority and 2/3 majority levels for you. <strong>Changes are saved automatically.</strong></p>
-			<p>Reporting delegates <strong>missing</strong> is a serious matter. However, do not hesitate to use this feature. <strong>Always</strong> contact your assigned Secretariat contacts when a delegate is missing.</p>
-			<hr />
-			<p class="lead"><span id="confSession">Session I</span> &nbsp;&nbsp;&nbsp;&nbsp; <button class="btn btn-warning btn-sm" id="session-popover" data-toggle="popover" title="Change Session" data-placement="right" data-html="true">Change Session</button></p>
-			<table class="table table-hover">
-				<tr><th>Delegate Name</th><th>School ID</th><th>Position</th><th>Committee</th><th>Present</th><th>Report Missing</th></tr>
-				<tr><td>Alex Jones</td><td>11234</td><td>Latvia</td><td>DISEC</td><td><input type="checkbox" /> (and Voting <input type="checkbox" />)</td><td><a href="#help?report=Alex%20Jones&school=11234" class="btn btn-danger btn-block" data-toggle="modal" data-target="#missingDelModal">Alex Jones is Missing</a></td></tr>
-				<tr><td>Bridget Kelley</td><td>11234</td><td>Latvia</td><td>DISEC</td><td><input type="checkbox" /> (and Voting <input type="checkbox" />)</td><td><a href="#help?report=Bridget%20Kelley&school=11234" class="btn btn-danger btn-block">Bridget Kelley is Missing</a></td></tr>
-				<tr><td>Chad Lutz</td><td>11234</td><td>Albania</td><td>DISEC</td><td><input type="checkbox" /> (and Voting <input type="checkbox" />)</td><td><a href="#help?report=Chad%20Lutz&school=11234" class="btn btn-danger btn-block">Chad Lutz is Missing</a></td></tr>
-				<tr><td>Devin Malone</td><td>11234</td><td>Albania</td><td>DISEC</td><td><input type="checkbox" /> (and Voting <input type="checkbox" />)</td><td><a href="#help?report=Devin%20Malone&school=11234" class="btn btn-danger btn-block">Devin Malone is Missing</a></td></tr>
-				<tr><td>Edward Nolan</td><td>11234</td><td>Bulgaria</td><td>DISEC</td><td><input type="checkbox" /> (and Voting <input type="checkbox" />)</td><td><a href="#help?report=Edward%20Nolan&school=11234" class="btn btn-danger btn-block">Edward Nolan is Missing</a></td></tr>
-				<tr><td>Fred Ozmanski</td><td>11234</td><td>Bulgaria</td><td>DISEC</td><td><input type="checkbox" /> (and Voting <input type="checkbox" />)</td><td><a href="#help?report=Fred%20Ozmanski&school=11234" class="btn btn-danger btn-block">Fred Ozmanski is Missing</a></td></tr>
-  			</table>
-  			<button class="btn btn-success" data-toggle="modal" data-target="#addDelModal"><i class="fa fa-plus fa-inverse"></i>&nbsp;&nbsp;Add Delegate</button>
-  					</div><!-- /#delegates -->
-		<div class="row hidden-welcome" id="tools">
-			<h1 class="default-head">Tools</h1>
-			<ol class="breadcrumb">
-			  <li title="You don't currently have access to conference-wide pages.">Committees</li>
-			  <li><a href="#myCommittee" class="app-page">DISEC</a></li>
-			  <li class="active">Tools</li>
-			</ol>
-			<div class="col-md-12">
-			<p class="lead">Voting Booth <small>Powered by Control the Beast</small></p>
-			<div class="col-md-7">
-			<h3><small>Voting on</small> Resolution B1</h3>
-			<div class="col-md-10 col-md-offset-1">
-			<h2 id="currentVoter">Cameroon</h2>
-			<br />
-			<div class="votingButtons">
-			<div class="col-md-4">
-			<button class="btn btn-success btn-lg btn-block votingbooth" id="vbYes">Yes</button>
-			<br />
-			<p class="lead counter text-center" id="vbYesCounter">0</p>
-			</div>
-			<div class="col-md-4">
-			<button class="btn btn-warning btn-lg btn-block votingbooth" id="vbAbstain">Abstain</button>
-			<br />
-			<p class="lead counter text-center" id="vbAbstainCounter">0</p>
-			</div>
-			<div class="col-md-4">
-			<button class="btn btn-danger btn-lg btn-block votingbooth" id="vbNo">No</button>
-			<br />
-			<p class="lead counter text-center" id="vbNoCounter">0</p>
-			</div>
-			</div>
-			</div>
-		</div>
-		<div class="col-md-4 col-md-offset-1" id="votingContainer">
-		<h3 class="lead">Next to Vote</h3>
-		<ul class="voter-list">
-		<li>Canada</li>
-		<li>Central African Republic</li>
-		<li>Chad</li>
-		<li>Chile</li>
-		<li>China</li>
-		<li>Colombia</li>
-		<li>Comoros</li>
-		<li>Congo</li>
-		<li>Costa Rica</li>
-		<li>Cote D'Ivoire</li>
-		<li>Croatia</li>
-		<li>Cuba</li>
-		<li>Cyprus</li>
-		<li>Czech Republic</li>
-		</ul>
-		<h4 class="lead">Important Dates</h4>
-		<ul class="event-list">
-		<li><strong>4/15-4/18 2015</strong> NUMUN XII <br /><em>Required for all members</em></li>
-		</ul>
-		</div>
-		<div class="col-md-7 votingResults">
-		<p class="lead">Final Results</p>
-		<div class="voting-results-text"></div>
-		<p class="lead"></p>
-		<table class="voting-results-table">
-		<tr><th>Country/Position</th><th>Vote</th></tr>
-		</table>
-		</div>
-
-			<p class="lead">Excel Templates</p>
-			<p class="lead">More</p>
-			</div>
-		</div><!-- /#tools -->
-		<div class="row hidden-welcome" id="staff-forms">
-			<h1 class="default-head">Forms & Downloads</h1>
-			<ol class="breadcrumb">
-			  <li title="You don't currently have access to conference-wide pages.">Committees</li>
-			  <li><a href="#myCommittee" class="app-page">DISEC</a></li>
-			  <li class="active">Forms & Downloads</li>
-			</ol>
-			<div class="col-md-8">
-			<p class="lead">Forms</p>
-			<p class="lead">Downloads</p>
-			</div>
-		</div><!-- /#staff-forms -->
-		<div class="row hidden-welcome" id="staff-feedback">
-			<h1 class="default-head">Feedback</h1>
-			<ol class="breadcrumb">
-			  <li title="You don't currently have access to conference-wide pages.">Staff</li>
-			  <li><a href="#user" class="app-page">Michael McCarthy</a></li>
-			  <li class="active">Feedback</li>
-			</ol>
-			<p class="lead">How can we improve?</p>
-			<form class="form-horizontal" role="form">
-			<div class="form-group">
-			<label class="control-label col-sm-3" for="staffFeedbackType">Category</label>
-			<div class="col-sm-6">
-			<select class="form-control" id="staffFeedbackType">
-				<option selected>Select a Type</option>
-				<option value="general">General Comments</option>
-				<optgroup label="Group Activities">
-				<option value="bonding">Community & Bonding</option>
-				<option value="events">Events</option>
-				<option value="meetings">Meetings</option>
-				</optgroup>
-				<optgroup label="Conference">
-				<option value="genconference">General Conference Preparation</option>
-				<option value="parlipro">Parliamentary Procedure</option>
-				<option value=""></option>
-				<option value="crisis">Simulations & Crises</option>
-				<option value="committeeDISEC">My Committee: DISEC</option>
-				</optgroup>
-				<optgroup label="Other">
-				<option value="travel">Travel/Collegiate MUN</option>
-				<option value=""></option>
-				</optgroup>
-			</select>
-			</div>
-			</div>
-			<div class="form-group">
-				<label class="control-label col-sm-3" for="staffFeedbackComments">Comments</label>
-				<div class="col-sm-6">
-				<textarea class="form-control" id="staffFeedbackComments" rows="4"></textarea> 
-				</div>
-			</div>
-			<div class="form-group">
-			<div class="col-md-2 col-md-offset-7">
-			<button class="btn btn-default">Clear</button>
-			</div>
-			<div class="col-md-2">
-			<button class="btn btn-success">Send Feedback</button>
-			</div>
-			</div>
-			</form>
-			
-		</div><!-- /#staff-forms -->
 <!-- Modal - Needs Help -->
 <div class="modal fade" id="needsHelpModal" tabindex="-1" role="dialog" aria-labelledby="needsHelpModal" aria-hidden="true">
   <div class="modal-dialog">
@@ -1427,12 +1380,25 @@ function results(){
 			
 		  </div>
 		</div>
-		<div class="panel panel-warning">
+		<!--<div class="panel panel-warning">
 		  <div class="panel-heading">
-		    <h3 class="panel-title">Logistical Contacts</h3>
+		    <h3 class="panel-title">Send a Message</h3>
 		  </div>
 		  <div class="panel-body">
-		    <p class="lead">
+		  	<form class="form" id="staff-support-form">
+		  		<div class="form-group">
+			   	 <label for="message" class="control-label">Message</label>
+			   	 <textarea class="form-control" id="message" name="message" placeholder="Type your message here..."></textarea>
+			   	 <input type="hidden" name="channel" value="staff-support" />
+				</div>
+				<div class="form-group">
+					<button class="btn-lg btn-success" id="send-staff-chat"><i class="fa fa-chat"></i>&nbsp; Send</button>
+				</div>				
+		  	</form>
+
+		  </div>
+		  <!--<div class="panel-body">
+		   <p class="lead">
 			    <strong>Norris Events</strong>
 			    <br />
 			    <a class="btn btn-success hidden-md hidden-lg" href="tel:18474912330"><i class="fa fa-phone fa-inverse"></i>&nbsp;&nbsp;(847) 491-2330</a>
@@ -1444,7 +1410,7 @@ function results(){
 				<a class="btn btn-success hidden-md hidden-lg" href="tel:18475550124"><i class="fa fa-phone fa-inverse"></i>&nbsp;&nbsp;(847) 555-0124</a>
 				<span class="hidden-xs hidden-sm">(847) 555-0124</span>
 			</p>
-		  </div>
+		  </div>-->
 		</div>
 		<div class="panel panel-info">
 		  <div class="panel-heading">
@@ -1470,6 +1436,38 @@ function results(){
   </div>
 </div>
 <!-- /Modal -->
+
+
+<!-- Modal - viewAssignments -->
+<div class="modal fade" id="assignmentsModal" tabindex="-1" role="dialog" aria-labelledby="assignmentsModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="addDelModalLabel">View Assignments</h4>
+      </div>
+      <div class="modal-body">
+      	<p class="lead">Viewing Assignments for <strong><span id="assignments-school">School</span></strong></p>
+      	<p></p>
+      	<table class="table table-hover">
+			<thead>
+				<tr><th>Delegate Name</th><th>Position</th><th>Committee</th></tr>
+			</thead>
+			<tbody id="assignments-response">
+      	
+      	<!--<div id="assignments-response"></div>-->
+			</tbody>
+      	</table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Modal -->
+
+
 
 
 <!-- Modal - createInvoiceModal -->
@@ -1499,11 +1497,12 @@ function results(){
 			    </div>
 			  </div>
 			  <div class="form-group">
-			    <label for="regTime" class="col-sm-4 control-label">Early or Regular</label>
+			    <label for="regTime" class="col-sm-4 control-label">Registration Group</label>
 			    <div class="col-sm-8">
 				<select id="regGroup" name="regGroup" class="form-control">
 			      <option value="regular">Regular</option>
 			      <option value="early">Early</option>
+			      <option value="waitlist">Waitlist</option>
 			    </select>
 			    <input type="hidden" name="createinvoice-schoolid" id="createinvoice-schoolid" />
 			    <input type="hidden" name="adviser-email" id="adviser-email" />
@@ -1520,6 +1519,77 @@ function results(){
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="save-invoice">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Modal -->
+
+<!-- Modal - reviseSchoolModal -->
+<div class="modal fade" id="reviseSchoolModal" tabindex="-1" role="dialog" aria-labelledby="reviseSchoolModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="addDelModalLabel">Revise School Preferences</h4>
+      </div>
+      <div class="modal-body">
+      	<p class="lead">Editing Preferences for <span id="revise-school">School</span></p>
+      	<p></p>
+      	
+        <form class="form-horizontal" id="revise-delegate-form" role="form">
+      		  <div class="form-group">
+			    <label for="delQuantity" class="col-sm-4 control-label">Number of Delegates</label>
+			    <div class="col-sm-2 col-sm-offset-4">
+			    <input type="text" class="form-control" id="revise-delegate-quantity" name="revise-delegate-quantity" placeholder=""/>
+			    <input type="hidden" name="revise-schoolid" id="revise-schoolid" />
+			    </div>
+			    <div class="col-sm-2" id="response-revise-delegate">
+				   
+			    </div>
+			  </div>
+			  
+			  <!-- <div class="form-group">
+			    <label for="delQuantity" class="col-sm-4 control-label">Advisers</label>
+			    <div class="col-sm-8">
+			    <input type="text" id="delQuantity" name="school-advisers" />
+			    </div>
+			  </div>
+
+			  <div class="form-group">
+			    <label for="regTime" class="col-sm-4 control-label"></label>
+			    <div class="col-sm-8">
+				<select id="regGroup" name="regGroup" class="form-control">
+			      <option value="regular">Regular</option>
+			      <option value="early">Early</option>
+			    </select>
+			    <input type="hidden" name="createinvoice-schoolid" id="createinvoice-schoolid" />
+			    <input type="hidden" name="adviser-email" id="adviser-email" />
+			    <input type="hidden" name="adviser-name" id="adviser-name" />
+			    <input type="hidden" name="school-name" id="school-name" />
+			    <input type="hidden" name="school-delegations" id="school-delegations" />
+			    <input type="hidden" name="school-advisers" id="school-advisers" />
+			    
+			    </div>
+			  </div>-->
+        </form>
+        
+        	<!--<div class="form-group">
+			    <label for="regTime" class="col-sm-4 control-label">Country Assignment Ranking</label>
+			    <div class="col-sm-8">
+			    <p> 1. <select class="form-control"><option value="0">No Change</option></select></p>
+			    <p> 2. <select class="form-control"><option value="0">No Change</option></select></p>
+			    <p> 3. <select class="form-control"><option value="0">No Change</option></select></p>
+			    
+			    </div>
+			  </div>
+			  -->
+        
+        <div class="invoice-message hidden"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button class="btn btn-primary" id="save-revise-delegates">Update</button>
       </div>
     </div>
   </div>
@@ -1592,6 +1662,7 @@ function results(){
 			       <!-- <div class="invoice-error alert alert-danger hidden"><strong>Error</strong> The invoice could not be found.</div>-->
       </div>
       <div class="modal-footer">
+      	<button type="button" class="btn btn-info" id="view-payments-more">View Payment Details</a>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -1603,7 +1674,8 @@ function results(){
 
 
 
-		</div><!-- /.container -->
+		</div>
+		</div> <!-- /.container -->
 		
 <div class="footer">
 <div class="dark-footer">

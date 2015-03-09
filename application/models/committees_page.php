@@ -25,7 +25,25 @@ class Committees_page extends CI_Model
 			$all_committees = '<ul class="committee-list">';
 			foreach ($committees->result() as $row){
 				$all_committees .= '<li>';
-				$all_committees .= '<a href="javascript:void(0);" data-id="#committee-id-' . $row->id . '" class="committee-link">' . $row->name . '</a>';
+				
+				/*if (!$this->has_guides($row->id)){
+					//no background guides available
+				}else{
+					//add blue dot
+					$all_committees .= '<a href="#" data-toggle="tooltip" title="Background Guide(s) Available"><i class="fa fa-circle bg-available-dot"></i></a>';
+				}
+				*/
+				
+				$all_committees .= '<a href="javascript:void(0);" data-id="#committee-id-' . $row->id . '" class="committee-link">';
+				
+				if (!$this->has_guides($row->id)){
+					//no background guides available
+				}else{
+					//add blue dot
+					//$all_committees .= '<i class="fa fa-circle bg-available-dot"></i> &nbsp;';
+				}
+				 
+				$all_committees .= $row->name . '</a>';
 				$all_committees .= '</li>';
 			}		
 				$all_committees .= '</ul>';
@@ -34,7 +52,7 @@ class Committees_page extends CI_Model
 			$empty_response .= '<div class="spacious col-sm-12">';
 			$empty_response .= '<div class="col-sm-12 text-center">';
 			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
-			$empty_response .= '<p class="lead"><strong>Sorry, committee information isn&#8217;t available yet.</p>';
+			$empty_response .= '<p class="lead"><strong>Sorry, committee information isn&#8217;t available yet.</strong></p>';
 			$empty_response .= '</div>';
 			$empty_response .= '</div>';
 			return $empty_response;
@@ -79,22 +97,34 @@ class Committees_page extends CI_Model
 				$committee_divs .= '</div>';
 				$committee_divs .= '<p class="lead">Description</p>';
 				$committee_divs .= '<p class="committee-desc">' . $this->get_committee_desc($row->id) . '</p>';
-				if ($row->type != 'crisis' && $row->type != 'non-crisis'){
-					//No Topics - i.e. press corps/special
-				}else{
-				$committee_divs .= '<p>&nbsp;</p>';
-				$committee_divs .= '<p class="lead">Topics</p>';
-				$committee_divs .= $this->get_committee_topics($row->id);
-				}
 				
 				if(is_null($row->letter)){
 					//do nothing
 					$committee_divs .= '<p>&nbsp;</p>';
 				}else{
 				$committee_divs .= '<p>&nbsp;</p>';
-				$committee_divs .= '<div class="col-md-6"><div class="row"><p class="lead">Letter from the Chair</p>';
-				$committee_divs .= '<a href="'.$row->letter.'" class="btn btn-success" target="_blank">View PDF &nbsp;<i class="fa fa-file-pdf-o"></i></a></div></div>';
+				$committee_divs .= '<div class="col-md-12"><div class="row"><p class="lead">Letter from the Chair';
+				$committee_divs .= '<a href="'.$row->letter.'" class="btn btn-success pull-right" target="_blank">View PDF &nbsp;<i class="fa fa-file-pdf-o"></i></a></p></div></div>';
+				
+				//What is this?
 				$email_only = "no";
+				}
+				if(is_null($row->parlipro)){
+					//do nothing
+				}else{
+					$committee_divs .= '<div class="col-md-12"><div class="row"><p class="lead">Parliamentary Procedure';
+				$committee_divs .= '<a href="'.$row->parlipro.'" class="btn btn-success pull-right" target="_blank">View PDF &nbsp;<i class="fa fa-file-pdf-o"></i></a></p><p><strong>Important:</strong> This committee will use a different style of parliamentary procedure than other NUMUN committees.</p></div></div>';
+				}
+				
+				if ($row->type != 'crisis' && $row->type != 'non-crisis'){
+					//No Topics - i.e. press corps/special
+					$committee_divs .= '<p>&nbsp;</p>';
+				$committee_divs .= '<p class="lead">Documents</p>';
+				$committee_divs .= $this->get_committee_topics($row->id);
+				}else{
+				$committee_divs .= '<p>&nbsp;</p>';
+				$committee_divs .= '<p class="lead">Topics</p>';
+				$committee_divs .= $this->get_committee_topics($row->id);
 				}
 				
 				if(is_null($row->email)){
@@ -136,13 +166,24 @@ class Committees_page extends CI_Model
 		if ($topics->num_rows() > 0)
 		{
 			$committee_topics = '<table class="table">';
-			$committee_topics .= '<thead><tr><th>Letter</th><th>Topic</th><th>Background Guide</th>';
+			$committee_topics .= '<thead><tr><th>Topic</th><th></th><th>View PDF</th>';
 			$committee_topics .= '</tr></thead><tbody>';
 			foreach ($topics->result() as $row){
 			$committee_topics .= '<tr>';
-			$committee_topics .= '<td>'.$row->order.'</td>';
-			$committee_topics .= '<td><strong>'.$row->title.'</strong></td>';
-			$committee_topics .= '<td><a href="'.$row->pdflink.'" class="btn btn-success btn-sm" target="_blank">View PDF</a></td>';
+			$committee_topics .= '<td><strong>'.$row->order.'</strong></td>';
+			$committee_topics .= '<td>'.$row->title.'</td>';
+				if(is_null($row->pdflink)){
+					$committee_topics .= '<td><p class="muted">Not Available</p></td>';
+				}else{
+					$committee_topics .= '<td><a href="'.$row->pdflink.'" class="btn btn-default btn-sm" target="_blank"><i class="fa fa-cloud-download"></i> Open</a></td>';
+				}
+				//kill all the word docs!
+				/*if(is_null($row->doclink)){
+					$committee_topics .= '<td><p class="muted">Not Available</p></td>';
+				}else{
+					$committee_topics .= '<td><a href="'.$row->doclink.'" class="btn btn-default btn-sm" target="_blank"><i class="fa fa-cloud-download"></i> Open</a></td>';
+				}*/
+			
 			$committee_topics .= '</tr>';
 			}
 			$committee_topics .= '</tbody></table>';
@@ -180,6 +221,16 @@ class Committees_page extends CI_Model
 	        return $modal_result;
 		}
 	}
+	}
+	
+	public function has_guides($committee_id){
+		$topics = $this->db->query('SELECT * FROM committee_topics WHERE committeeid = ' . $committee_id);
+		if ($topics->num_rows() > 0){
+			return true;
+		}else{
+			return false;
+		}
+			
 	}
 	
 	public function get_crisis_explanation(){

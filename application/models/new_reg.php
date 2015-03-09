@@ -26,7 +26,8 @@ class New_reg extends CI_Model
 	   'country1' => $country1, 
 	   'country2' => $country2, 
 	   'country3' => $country3,
-	   'other_prefs' => $otherPrefs
+	   'other_prefs' => $otherPrefs,
+	   'waitlist' => "yes"
 	);
 	
 	$this->db->insert('schools', $school); 
@@ -617,8 +618,8 @@ omContent]{
                             <h1 style="margin: 0;padding: 0;display: block;font-family: Helvetica;font-size: 40px;font-style: normal;font-weight: bold;line-height: 125%;letter-spacing: -1px;text-align: left;color: #606060 !important;">NUMUN XII Registration<span style="font-size:13px; line-height:1.6em">&nbsp;</span></h1>
 <br>
 <span>'.$name.',</span><br>
-Thank you for registering for NUMUN XII. Your account at numun.org is now ready to use. This email also serves as a confirmation that your school, '.$school.', is registered for NUMUN.<br>
-While your account is ready to use, many of the features will be inactive until later. We will send you an email when you are able to access your invoice online and view your assignments.<br>
+Thank you for registering for NUMUN XII. Your account at numun.org is now ready to use. This email also serves as a notice that your school, '.$school.', is on the waitlist for NUMUN.<br>
+We will send you an email if we have enough capacity to accommodate your school.<br>
 Thank you again for choosing NUMUN.
 
                         </td>
@@ -675,12 +676,9 @@ Our new account-based conference website gives you greater control over certain 
 For example, you\'ll have access to your delegates\' attendance records in real time. Our new website also helps us better address any issues during the conference because it provides a centralized communication platform.
 <br>
 <br>
-<strong>Where can I access my account to change these preferences?</strong><br>
+<strong>Where can I access my account?</strong><br>
 The account login page can be found at <a href="https://secure.numun.org" target="_blank" style="word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #6DC6DD;font-weight: normal;text-decoration: underline;">account.numun.org</a>.<br>
 Alternatively, you can also find a link at the top of our homepage at numun.org.&nbsp;<br>
-<br>
-<strong>Where can I change my email address or password?</strong><br>
-Login to your account. Click on your name in the top right corner of the screen and choose "Profile" from the dropdown menu. This is where you can change your email notification settings or create a new password.<br>
 <br>
 <strong>I have more questions. Whom should I contact?</strong><br>
 Please send an email to our dedicated Website Support address: support@numun.org. We will attempt to response to most emails within 24 hours.<br>

@@ -20,6 +20,8 @@ class Invoice extends CI_Model
 			$date = array('date' => $this->get_deposit_deadline('regular'));
 			}elseif($row->pay_level == 'early'){
 			$date = array('date' => $this->get_deposit_deadline('early'));
+			}elseif($row->pay_level == 'waitlist'){
+			$date = array('date' => $this->get_deposit_deadline('waitlist'));
 			}
 			$billed_quantities = array(
 				'delegate_q' => $row->delegate_quantity,
@@ -105,6 +107,13 @@ class Invoice extends CI_Model
 				'country1_fee' => $row->early_first_country_fee,
 				'country2_fee' => $row->early_second_country_fee
 			);	
+			}elseif($level == "waitlist"){
+			$response = array(
+				'delegate_fee' => $row->delegate_fee,
+				'adviser_fee' => $row->adviser_fee,
+				'country1_fee' => $row->first_country_fee,
+				'country2_fee' => $row->second_country_fee
+			);	
 			}
 			return $response;
 		}else{
@@ -116,9 +125,11 @@ class Invoice extends CI_Model
 		$query = $this->db->get_where('conference', array('current' => 1));
 		$row = $query->row();
 		if($pay_level == "regular"){
-		return $row->deposit_deadline;
+			return $row->deposit_deadline;
 		}elseif($pay_level == "early"){
-		return $row->early_deposit_deadline;
+			return $row->early_deposit_deadline;
+		}elseif($pay_level == "waitlist"){
+			return $row->waitlist_deposit_deadline;
 		}
 	}
 	public function get_customer_number($schoolid){

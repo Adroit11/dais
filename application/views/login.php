@@ -1,5 +1,6 @@
 <?php
 $reg_button = $this->conference->create_reg_button();
+$conference = 'NUMUN XII'; //$this->conference->current_conference_name();
 ?>
 <!doctype html>
 <html>
@@ -294,7 +295,7 @@ border: 0px solid transparent;
 		</div><!-- /#emergency -->
 		<div class="row">
 			<div id="reg-title-0" class="text-center">
-				<h1>NUMUN XII</h1><h1><small>Login or Register your school to begin</small></h1>
+				<h1><?php echo $conference; ?></h1><h1><small>Login or Register your school to begin</small></h1>
 				<p>&nbsp;</p>
 			</div>
 		</div>
@@ -367,7 +368,7 @@ border: 0px solid transparent;
 			
 			</div><!-- /.col-lg-4-->
 			<div class="col-sm-4 col-xs-6">
-			<h2>NUMUN XII</h2>
+			<h2><?php echo $conference; ?></h2>
 			<p class="lead">You have the floor.</p>
 			</div><!-- /.col-lg-8 -->
 		

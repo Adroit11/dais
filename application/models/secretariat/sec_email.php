@@ -9,7 +9,7 @@ class Sec_email extends CI_Model
 	}
 	
 		
-	public function send_email($emailTitle, $emailHeadline, $emailMessage, $adviser, $school){
+	public function send_email($emailTitle, $emailHeadline, $emailMessage, $adviser, $school, $buttonText){
 	$body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -521,7 +521,7 @@ omContent]{
                     <tbody>
                         <tr>
                             <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Arial;font-size: 16px;padding: 20px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
-                                <a class="mcnButton " title="Activate Account" href="https://secure.numun.org" target="_blank" style="font-weight: normal;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">View Invoice</a>
+                                <a class="mcnButton " title="Activate Account" href="https://secure.numun.org" target="_blank" style="font-weight: normal;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">'.$buttonText.'</a>
                             </td>
                         </tr>
                     </tbody>
@@ -1110,7 +1110,7 @@ omContent]{
                             <h1 style="margin: 0;padding: 0;display: block;font-family: Helvetica;font-size: 40px;font-style: normal;font-weight: bold;line-height: 125%;letter-spacing: -1px;text-align: left;color: #606060 !important;">NUMUN XII Invoice<span style="font-size:13px; line-height:1.6em">&nbsp;</span></h1>
 <br>
 <span>'.$adviser.',</span><br> 
-The invoice for your school, '.$school.', is now available online. Please login using the account you created during registration to view and pay your invoice. Click <strong>Invoice</strong> at the top of the page to go directly to to your invoice and to view any processed payments.<br>
+The invoice for your school, '.$school.', is now available online. Please login using the account you created during registration to view and pay your invoice. Click <strong>Invoice</strong> at the top of the page to go directly to your invoice and to view any processed payments.<br>
 NUMUN does not accept online payments. Please follow the instructions online to pay by check.
 
                         </td>

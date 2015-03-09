@@ -2,7 +2,7 @@
 <html>
 	<head>
 	<title>NUMUN XII Registration - NUMUN</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--<link href='//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic|Raleway:400,700,300' rel='stylesheet' type='text/css'>-->
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link href="https://dl.dropboxusercontent.com/s/kuf4za5pbv9kbbx/style.min.css" rel="stylesheet">
@@ -167,7 +167,7 @@ border: 0px solid transparent;
     }    
 	}
 	</style>
-	<script src="https://dl.dropboxusercontent.com/s/6tls9z1rsoh4yc2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.1/js/bootstrapValidator.min.js"></script>
 	<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/pe47osgi7digvrj/jquery.formatter.min.js"></script>
 	<script type="text/javascript">
@@ -474,7 +474,7 @@ border: 0px solid transparent;
 				 delSlots: {
 					 validators: {
 						 notEmpty: {
-							 message: 'Please specify the number of delegates attending.'
+							 message: 'Please specify the number of delegates attending NUMUN.'
 						 }
 					 }
 				 },
@@ -794,8 +794,8 @@ border: 0px solid transparent;
 		  	<div class="row">
 		  	 <div class="form-group">
 			    <label for="delSize" class="col-sm-4 control-label">Number of Delegates</label>
-			    <div class="col-sm-2">
-			    <input type="text" class="form-control track-progress" id="delSize" name="delSlots">
+			    <div class="col-sm-8">
+			    <input type="text" class="form-control track-progress" id="delSize" name="delSlots" placeholder="# of Delegates">
 			    </div>
 			  </div>
 		  	</div>
@@ -815,7 +815,7 @@ border: 0px solid transparent;
 			    </div>
 			  </div>
 			  <div class="form-group">
-			    <label for="passwordCreate" class="col-sm-4 control-label">Crisis Committees</label>
+			    <label for="crisisCheck" class="col-sm-4 control-label">Crisis Committees</label>
 			    <div class="col-sm-8">
 			    	<div class="checkbox">
 			    		<label>
@@ -825,7 +825,7 @@ border: 0px solid transparent;
 			    </div>
 			  </div>
 			  <div class="form-group">
-			    <label for="passwordCreate" class="col-sm-4 control-label">Press Corps</label>
+			    <label for="pressCheck" class="col-sm-4 control-label">Press Corps</label>
 			    <div class="col-sm-8">
 			    	<div class="checkbox">
 			    		<label>
