@@ -56,9 +56,9 @@ $lang['group_delete_unsuccessful'] 	= 'Unable to delete group';
 $lang['group_name_required'] 		= 'Group name is a required field';
 
 // Activation Email
-$lang['email_activation_subject']            = 'Account Activation';
-$lang['email_activate_heading']    = 'Activate account for %s';
-$lang['email_activate_subheading'] = 'Please click this link to %s.';
+$lang['email_activation_subject']            = 'Activate your NUMUN Account';
+$lang['email_activate_heading']    = 'Activate your Account';
+$lang['email_activate_subheading'] = 'Click this link or copy it into your browser: %s';
 $lang['email_activate_link']       = 'Activate Your Account';
 
 // Forgot Password Email

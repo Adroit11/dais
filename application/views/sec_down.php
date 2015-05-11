@@ -12,7 +12,8 @@
 	//$current_sec_gen = $this->secretariat_func->current_conference('sec-gen');
 	//$registration_message = $this->secretariat_func->current_conference('reg-message');
 	$total_del = $this->secretariat_func->total_reg_delegates();
-	$full_table = $this->table->schools_table();
+	$schools_table = $this->table->schools_table();
+	$delegates_table = $this->table->delegates_table();
 	$unassigned_slots = $this->assignments->unassigned_slots();
 	
 ?>
@@ -338,10 +339,27 @@ border: 0px solid transparent;
 		$(".assign-slot").click(function(){
 			var button = $(this);
 			
-			button.removeClass("btn-primary").addClass("btn-warning").html('<i class="fa fa-refresh fa-spin"></i>');
+			button.removeClass("btn-primary").addClass("btn-warning").html('<i class="fa fa-refresh fa-spin"></i> Assigning');
 			var slotid = button.data("slotId");
 			var schoolid = button.parents("tr").children("td").children("select").val();
 			$.post( "/sec_ajax/assign_slot", {schoolid: schoolid, slotid: slotid})
+			.done( function( data ) {
+				button.addClass("btn-default").removeClass("btn-warning").html(data);
+				//$("#assign-slot-"+slotid+"-response").text(data);
+				button.parents("tr").slideUp();
+			});
+			
+			
+		});
+		
+		$("body").on("click", ".drop-slot", function(){
+			var button = $(this);
+			var slotid = button.data("slotId");
+			console.log('drop '+slotid);
+			
+			button.removeClass("btn-primary").addClass("btn-warning").html('<i class="fa fa-refresh fa-spin"></i> Removing');
+			var slotid = button.data("slotId");
+			$.post( "/sec_ajax/drop_slot", {slotid: slotid})
 			.done( function( data ) {
 				button.addClass("btn-default").removeClass("btn-warning").html(data);
 				//$("#assign-slot-"+slotid+"-response").text(data);
@@ -473,14 +491,53 @@ border: 0px solid transparent;
 				$("#view-payments").text(data.payments);
 				
 				//footer button
-				$("#view-payments-more").data("customer", schoolcustomer);
+				//$("#view-payments-more").data("customer", schoolcustomer);
+				var schoolId = schoolcustomer.substring(0, 2);
+				$("#view-payments-button").data("schoolId", schoolId);
+
 				
 				
 			});
 			$("#viewInvoiceModal").modal();
 		});
 		
-		$("body").on("click", "#view-payments-more", function(){
+		
+		$("body").on("click", ".list-payments", function(){
+			var schoolid = $(this).data("schoolId");
+			var paymentQuery = $.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "https://secure.numun.org/sec_ajax/list_payments/",
+			data: {'school-id': schoolid},
+			});
+			
+			paymentQuery.done(function( newdata ) {
+			$("#viewInvoiceModal").modal('hide');
+			$("#viewPaymentsModal").modal();
+			$("#view-payments-response").html('<tr><th>Description</th><th>Type</th><th>Amount</th><th>Delete</th></tr>');
+			$("#view-payments-school").text(newdata.schoolName);
+			$("#view-payments-response").append(newdata.response);
+			$("#view-payments-total").text('$ '+newdata.total);
+			});
+		});
+		
+		$("body").on("click", ".delete-payment", function(){
+			var button = $(this);
+			button.addClass("btn-warning").removeClass("btn-danger");
+			button.html('<i class="fa fa-refresh fa-spin"></i>');
+			var transid = button.data('transaction');
+			$.post( "/alerts/create", {'transaction-id': transid}, function(data) {
+				if(data = 1){
+					button.addClass("btn-success").removeClass("btn-warning");
+					button.html('<i class="fa fa-check"></i>&nbsp; Removed');
+				}else{
+					button.html('<i class="fa fa-exclamation-circle"></i>&nbsp; Error');
+				}
+			});
+			
+		});
+		
+		$("body").on("click", "#view-payments-more", function(){ 
 			customer = $(this).data("customer");
 			
 			$(".hidden-welcome:visible").hide("fast");
@@ -944,8 +1001,7 @@ function results(){
 				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; View School Positions</span>
 				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Assign Remaining Positions</span>
 				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Create New Delegate Positions</span>
-				<br />
-				<span class="label label-danger"><i class="fa fa-times"></i> &nbsp; Remove Positions from Schools</span>
+				<span class="label label-success"><i class="fa fa-check"></i> &nbsp; Remove Positions from Schools</span><br />
 				<span class="label label-danger"><i class="fa fa-times"></i> &nbsp; Payment Emails</span>
 				</p>
 				
@@ -1210,7 +1266,8 @@ function results(){
                           
 			</div>
 			<h3>All Schools</h3>
-			<button class="btn btn-primary" onclick="tableToExcel('full-schools-table', 'NUMUNXIISchools')"><i class="fa fa-table"></i> &nbsp; Download Excel</button>
+			<button class="btn btn-primary" onclick="tableToExcel('full-schools-table', 'NUMUNXIISchools')"><i class="fa fa-table"></i> &nbsp; Download Schools Excel</button>
+			<button class="btn btn-primary" onclick="tableToExcel('full-delegates-table', 'NUMUNXIIDelegates')"><i class="fa fa-table"></i> &nbsp; Download Delegates Excel</button>
 			<table class="table table-hover">
 				<thead>
 				<tr><th>#</th><th>School/Club Name</th><th>Primary Adviser</th><th>Address</th><th># of Delegates</th><th>Positions</th><th>Invoice</th><th>Email</th></tr>
@@ -1227,7 +1284,13 @@ function results(){
 		
 		<table id="full-schools-table">
 			
-			<?php echo $full_table; ?>
+			<?php echo $schools_table; ?>
+			
+		</table>
+		
+		<table id="full-delegates-table">
+			
+			<?php echo $delegates_table; ?>
 			
 		</table>
 			
@@ -1662,14 +1725,40 @@ function results(){
 			       <!-- <div class="invoice-error alert alert-danger hidden"><strong>Error</strong> The invoice could not be found.</div>-->
       </div>
       <div class="modal-footer">
-      	<button type="button" class="btn btn-info" id="view-payments-more">View Payment Details</a>
+      	<!--<button type="button" class="btn btn-info list-payments" id="view-payments-button">View Payments</a>-->
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 <!-- /Modal -->
+<!-- Modal - viewPaymentsModal -->
+<div class="modal fade" id="viewPaymentsModal" tabindex="-1" role="dialog" aria-labelledby="viewPaymentsModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="viewInvoiceModalLabel">View Payments</h4>
+      </div>
+      <div class="modal-body">
+		  <p class="lead">Viewing Payments for <strong><span id="view-payments-school">School</span></strong></p>
 
+		  <table class="table table-hover" id="view-payments-response">
+				<tr>
+					<th>Description</th>
+					<th>Type</th>
+					<th>Amount</th>
+					<th>Delete</th>
+				</tr>
+			</table>
+			<p class="lead"><strong>Total Payments:</strong> <span id="view-payments-total"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 

@@ -38,6 +38,7 @@ class Assignments extends CI_Model
 		      }else{
 		      $delegate_slots_result .= '<td><button class="btn btn-sm btn-primary delegate-forms-btn" data-slot-id="'.$row->slotid.'" data-name="'.$row->name.'"  class="delegate-forms-btn"><i class="fa fa-cloud-upload"></i> &nbsp; Upload Forms</button></td>';
 		      }*/
+		      $delegate_slots_result .= '<td><button class="btn btn-primary btn-sm drop-slot" data-slot-id="'.$row->slotid.'"><i class="fa fa-times"></i> Remove</button></td>';
 		      $delegate_slots_result .= "</tr>";
 		}
 		}else{
@@ -148,6 +149,12 @@ class Assignments extends CI_Model
 		
 	}
 	
+	public function drop_slot($slotid){
+		//deletes the delegate entry tying a school to a slot, but leaves the slot available for another school
+		$this->db->query('DELETE FROM delegates WHERE slotid = '.$this->db->escape($slotid));
+		return $this->db->affected_rows();
+	}
+	
 	public function new_slot($committeeid, $position, $double){
 		if($committeeid == 0){
 			return "Failed: No committee specified";
@@ -172,6 +179,81 @@ class Assignments extends CI_Model
 		}*/
 		
 		}
+	}
+	
+	public function view_committee($committeeid){
+		$roster = $this->db->query('SELECT * FROM `delegate_slots` INNER JOIN delegates ON delegate_slots.id = delegates.slotid WHERE committeeid ='.$this->db->escape($committeeid));
+		
+		if ($roster->num_rows() > 0)
+		{
+		   $delegate_slots_result = '';
+		   foreach ($roster->result() as $row)
+		   {
+			      $delegate_slots_result .= '<tr id="slot-'.$row->slotid.'">';
+		      
+		      if(!empty($row->name)){
+		      $delegate_slots_result .= '<td><span class="del-name-exists">'.$row->name.'</span></td>';
+		      }else{
+			   $delegate_slots_result .= '<td>Unassigned</td>';
+		      }
+		      
+		      if (isset($row->position)){
+			  $delegate_slots_result .= "<td>".$row->position."</td>";
+		      }else{
+			  $delegate_slots_result .= "<td>N/A</td>";
+		      }
+		      
+		      if($row->ses1 == 1){
+		      $delegate_slots_result .= '<td><i class="fa fa-check text-success"></i></td>';
+		      }else{
+		      $delegate_slots_result .= '<td><i class="fa fa-times text-danger"></i></td>';
+		      }
+		      
+		      if($row->ses2 == 1){
+		      $delegate_slots_result .= '<td><i class="fa fa-check text-success"></i></td>';
+		      }else{
+		      $delegate_slots_result .= '<td><i class="fa fa-times text-danger"></i></td>';
+		      }
+		      
+		      if($row->ses3 == 1){
+		      $delegate_slots_result .= '<td><i class="fa fa-check text-success"></i></td>';
+		      }else{
+		      $delegate_slots_result .= '<td><i class="fa fa-times text-danger"></i></td>';
+		      }
+		      
+		      if($row->ses4 == 1){
+		      $delegate_slots_result .= '<td><i class="fa fa-check text-success"></i></td>';
+		      }else{
+		      $delegate_slots_result .= '<td><i class="fa fa-times text-danger"></i></td>';
+		      }
+		      
+		      if($row->ses5 == 1){
+		      $delegate_slots_result .= '<td><i class="fa fa-check text-success"></i></td>';
+		      }else{
+		      $delegate_slots_result .= '<td><i class="fa fa-times text-danger"></i></td>';
+		      }
+		      
+		      if($row->ses6 == 1){
+		      $delegate_slots_result .= '<td><i class="fa fa-check text-success"></i></td>';
+		      }else{
+		      $delegate_slots_result .= '<td><i class="fa fa-times text-danger"></i></td>';
+		      }
+		      
+		      if($row->sesmn == 1){
+		      $delegate_slots_result .= '<td><i class="fa fa-check text-success"></i></td>';
+		      }else{
+		      $delegate_slots_result .= '<td><i class="fa fa-times text-danger"></i></td>';
+		      }
+		      
+		      $delegate_slots_result .= "</tr>";
+		}
+		}else{
+			$delegate_slots_result = "No slots assigned.";
+		}
+		
+		return $delegate_slots_result;
+
+		
 	}
 	
 	

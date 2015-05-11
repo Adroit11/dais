@@ -106,8 +106,8 @@ $config['salt_prefix']    = '$2y$';
  | The controller should check this function and act
  | appropriately. If this variable set to 0, there is no maximum.
  */
-$config['site_title']                 = "NUMUN";       // Site Title, example.com
-$config['admin_email']                = "mmcc93@gmail.com"; // Admin Email, admin@example.com
+$config['site_title']                 = "NUMUN Support";       // Site Title, example.com
+$config['admin_email']                = "support@numun.org"; // Admin Email, admin@example.com
 $config['default_group']              = 'advisers';           // Default group, use name
 $config['admin_group']                = 'admin';             // Default administrators group, use name
 $config['identity']                   = 'email';             // A database column which is used to login with
@@ -142,7 +142,7 @@ $config['identity_cookie_name'] = 'identity';
  | 	  'file' = Use the default CI config or use from a config file
  | 	  array  = Manually set your email config settings
  */
-$config['use_ci_email'] = FALSE; // Send Email using the builtin CI email class, if false it will return the code and the identity
+$config['use_ci_email'] = TRUE; // Send Email using the builtin CI email class, if false it will return the code and the identity
 $config['email_config'] = array(
 	'mailtype' => 'html',
 );

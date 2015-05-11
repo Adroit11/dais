@@ -137,6 +137,17 @@ class Sec_ajax extends CI_Controller {
 		}
 	}
 	
+	public function list_payments(){
+		$schoolid = $this->input->post('school-id');
+		echo $this->invoice_sec->list_school_payments($schoolid);
+	}
+	
+	public function delete_payment(){
+		$transid = $this->input->post('transaction-id');
+		echo $this->invoice_sec->delete_payment($transid);
+	}
+	
+	
 	public function display_assignments(){
 		$schoolid = $this->input->post('schoolid');
 		$assignments_table = $this->assignments->get_assignments($schoolid);
@@ -150,6 +161,19 @@ class Sec_ajax extends CI_Controller {
 		$slotid = $this->input->post('slotid');
 		$assign = $this->assignments->assign_slot($schoolid, $slotid);
 		echo $assign;
+	}
+	
+	public function drop_slot(){
+		$slotid = $this->input->post('slotid');
+		$drop = $this->assignments->drop_slot($slotid);
+		if($drop == 1){
+			//success
+			$msg = "Dropped slot " .$slotid;
+		}else{
+			//no dice
+			$msg = "Database error";
+		}
+		echo $msg;
 	}
 	
 	public function new_slot(){
@@ -178,6 +202,18 @@ class Sec_ajax extends CI_Controller {
 		}
 		
 		echo $msg;
+	}
+	
+	public function committee_slots(){
+		$committeeid = $this->input->post('select-committee');
+		$committee = $this->committees_page->get_committee($committeeid);
+		$table = $this->assignments->view_committee($committeeid);
+		$response = array(
+		'committee' => $committee,
+		'table' => $table
+		);
+		
+		echo json_encode($response);
 	}
 	
 

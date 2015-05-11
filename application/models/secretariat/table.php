@@ -10,6 +10,7 @@ class Table extends CI_Model
 	{
 		parent::__construct();
 		$this->load->database();
+		$this->load->model('committees_model');
 		
 	}
 
@@ -132,4 +133,40 @@ class Table extends CI_Model
 		
 	}
 	
+	
+	public function delegates_table(){
+		$query = $this->db->query('SELECT * FROM `delegates` INNER JOIN delegate_slots ON delegates.slotid = delegate_slots.id');
+		if($query->num_rows() > 0){
+			$response = "<tr><th>Delegate/Slot ID</th><th>Delegate Name</th><th>School ID#</th><th>School Name</th><th>Committee</th><th>Position</th><th>Double Delegation</th></tr>";
+			foreach($query->result() as $row){
+				$response .= "<tr>";
+				$response .= "<td>".$row->id."</td>";
+				$response .= "<td>".$row->name."</td>";
+				$response .= "<td>".$row->schoolid."</td>";
+				$response .= "<td>".$this->get_school($row->schoolid)."</td>";
+				$response .= "<td>".$this->committees_model->get_committee_name($row->committeeid)."</td>";
+				$response .= "<td>".$row->position."</td>";
+				
+				if($row->double_del == 1){
+					$response .= "<td>Yes</td>";
+				}elseif($row->double_del == 0){
+					$response .= "<td>No</td>";
+				}
+				
+				$response .= "</tr>";	
+			}
+		return $response;	
+		}
+	}
+	
+	public function get_school($schoolid){
+		$school_query = $this->db->query('SELECT name FROM schools WHERE id = '.$schoolid);
+		$row = $school_query->row(); 
+		if(isset($row)){
+		return $row->name;
+		}
+		else{
+			return false;
+		}
+	}
 }

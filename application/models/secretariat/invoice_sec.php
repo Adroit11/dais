@@ -20,7 +20,7 @@ class Invoice_sec extends CI_Model
 		parent::__construct();
 		$this->load->database();
 		$this->load->model('secretariat/sec_email');
-		//$this->load->model('secretariat/secretariat_func'); <-- PRODUCES 500 ERROR
+		//$this->load->model('secretariat/secretariat_func'); <-- PRODUCES 500 ERROR - Secretariat_func calls Invoice_sec!!!
 		//$this->load->model('conference');
 		
 	}
@@ -87,7 +87,7 @@ class Invoice_sec extends CI_Model
 		   ////Column: Total Payments
 		   $paid_amount = $this->get_school_payments($row->id);
 		   
-		   $result .= '<td>$ '. number_format($paid_amount) .'</td>';
+		   $result .= '<td>$ '. number_format($paid_amount) .'<br /><button type="button" class="btn btn-info btn-sm list-payments" id="view-payments-button" data-school-id="'.$row->id.'">View Payments</button></td>';
 		   
 		    //Column: Balance
 		   //		Total - Payments
@@ -217,7 +217,8 @@ class Invoice_sec extends CI_Model
 			'acctid' => $schoolid,
 			'description' => $notes,
 			'amount' => $amount,
-			'type' => $type
+			'type' => $type,
+			'check_num' => $check_number
 		);
 		//check that schoolid and customer number match same row and that it is only 1
 		$this->db->select('id');
@@ -364,6 +365,51 @@ class Invoice_sec extends CI_Model
 	}else{
 		return '0'; 
 	}
+	}
+	
+	public function list_school_payments($schoolid){
+		$total = $this->get_school_payments($schoolid);
+		$payments = $this->db->query('SELECT transactions.id, transactions.acctid, transactions.description, transactions.amount, transactions.type, schools.name FROM `transactions` INNER JOIN schools ON transactions.acctid = schools.id WHERE transactions.`acctid` ='.$schoolid);
+		if($payments->num_rows() > 0){
+			//$school_name = $payments->result()->name;
+			$list_payments = ''; 
+			foreach($payments->result() as $row)
+			{
+				$list_payments .= '<tr data-transaction="'.$row->id.'">';
+				$list_payments .= '<td>'.$row->description.'</td>';
+				$list_payments .= '<td>'.$row->type.'</td>';
+				$list_payments .= '<td>'.$row->amount.'</td>';
+				$list_payments .= '<td><button class="btn btn-danger btn-sm delete-payment" data-transaction="'.$row->id.'"><i class="fa fa-times"></i>&nbsp;Delete Payment</button></td>';
+				$list_payments .= '</tr>';
+				$school_name = $row->name;
+				
+			}
+			$response_array = array(
+			'schoolName' => $school_name,
+			'response' => $list_payments,
+			'total' => $total
+			);
+		}else{
+			$empty_response = '<div class="spacious col-md-12">';
+			$empty_response .= '<div class="col-md-12 text-center">';
+			$empty_response .= '<h2><i class="fa fa-exclamation-circle"></i></h2>';
+			$empty_response .= '<p class="lead"><strong>No Payments</strong></p><p>No payments have been logged for this school.</p>';
+			$empty_response .= '</div>';
+			$empty_response .= '</div>';
+			
+			$response_array = array(
+			'response' => $empty_response,
+			'total' => $total
+			);
+		}
+		
+		return json_encode($response_array);
+		
+	}
+	
+	public function delete_payment($transid){
+		$delete = $this->db->query('DELETE FROM `transactions` WHERE `id` ='.$transid);
+		return $this->db->affected_rows();
 	}
 	
 	public function update_invoice($schoolid, $delegate_quantity){

@@ -2,6 +2,19 @@
 
 class Download_table extends CI_Controller {
 
+		/*
+	 +------------------------------------------------------+
+	 |														|
+	 |	** THIS FILE IS NOT IN USE  **  					|
+	 |														|
+	 |	For table downloads, see assets/js/tableToExcel.js  |
+	 |														|
+	 +------------------------------------------------------+  	
+	 	*/
+
+
+
+
 	public function __construct(){
 	
 			parent::__construct();
@@ -30,7 +43,19 @@ class Download_table extends CI_Controller {
 	$data = $this->table->schools_table();
 
 	echo $data;
+		
+	}
+
+	public function delegates(){
+	$datetime = date('Y-m-d-h-i');
+	header("Content-type: text/csv"); 
+	header("Content-Disposition: attachment;filename=delegates".$datetime.".csv");
+	
+	$data = $this->table->delegates_table();
+
+	echo $data;
 	
 		
 	}
-	}
+
+}

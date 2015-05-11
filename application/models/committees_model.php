@@ -105,4 +105,15 @@ class Committees_model extends CI_Model
 			return $empty_response;
 		}
 	}
+	
+	public function get_committee_name($id){
+		$committee = $this->db->query('SELECT name FROM committees WHERE id = '. $id);
+		$row = $committee->row(); 
+		if(isset($row)){
+		return $row->name;
+		}
+		else{
+			return false;
+		}
+	}
 }

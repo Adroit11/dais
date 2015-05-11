@@ -91,12 +91,16 @@ class Committees_page extends CI_Model
 				}
 				$committee_divs .= '&nbsp;&nbsp;<span class="label label-primary" style="text-transform: capitalize;">' .  $row->size . '</span>';
 				if(!empty($row->location)){
-				$committee_divs .= '&nbsp;&nbsp;<a href="#locate-'.$row->location_code.'" class="modal-location"><span class="label label-primary" style="text-transform: capitalize;">' .  $row->location . '</span></a>';
+				$committee_divs .= '&nbsp;&nbsp;<a href="#locate-'.$row->location_code.'" class="modal-location"><span class="label label-primary" style="text-transform: capitalize;"><i class="fa fa-map-marker"></i> &nbsp; ' .  $row->location . '</span></a>';
 				}
 				$committee_divs .= '</p>';
 				$committee_divs .= '</div>';
 				$committee_divs .= '<p class="lead">Description</p>';
 				$committee_divs .= '<p class="committee-desc">' . $this->get_committee_desc($row->id) . '</p>';
+				
+				if($this->get_notices($row->id)){
+					$committee_divs .= $this->get_notices($row->id);
+				}
 				
 				if(is_null($row->letter)){
 					//do nothing
@@ -221,6 +225,26 @@ class Committees_page extends CI_Model
 	        return $modal_result;
 		}
 	}
+	}
+	
+	public function get_notices($committee_id){
+		$notices = $this->db->query('SELECT * FROM committee_notices WHERE committeeid = ' . $committee_id);
+		if ($notices->num_rows() > 0){
+			$notice_response = '';
+			
+			foreach($notices->result() as $row){
+				$notice_response .= '<div class="alert alert-'.$row->type.'" data-notice-id="'.$row->id.'" role="alert">';
+				$notice_response .= '<strong>'.$row->title.'</strong>';
+				$notice_response .= '<br />'.$row->message;
+				$notice_response .= '</div>';
+			}
+			
+			return $notice_response;
+			
+		}else{
+			return false;
+		}
+		
 	}
 	
 	public function has_guides($committee_id){
